@@ -1,0 +1,8 @@
+build
+linux-build
+emscripten-build
+nmake-build
+mingw-build
+vs-build
+.vscode
+.cache
