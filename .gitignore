@@ -14,3 +14,5 @@ vs-build
 /bin/assets
 /bin/hamster.exe
 /bin/hamster.pdb
+/hamster.exe
+/.vs/cmake.db
