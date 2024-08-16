@@ -2,14 +2,16 @@
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <CustomBuild Include="C:\Users\sigon\source\repos\hamster\assets\.keepme" />
-    <CustomBuild Include="C:\Users\sigon\source\repos\hamster\assets\gfx\space.png">
+    <CustomBuild Include="C:\Users\sigon\source\repos\hamster\assets\border.png">
       <Filter>Resources</Filter>
     </CustomBuild>
-    <CustomBuild Include="C:\Users\sigon\source\repos\hamster\assets\sounds\Explosions1.wav" />
-    <CustomBuild Include="C:\Users\sigon\source\repos\hamster\assets\sounds\Laser_Shoot11.wav" />
-    <CustomBuild Include="C:\Users\sigon\source\repos\hamster\assets\sounds\bg-music.wav" />
-    <CustomBuild Include="C:\Users\sigon\source\repos\hamster\assets\sounds\lose9.wav" />
-    <CustomBuild Include="C:\Users\sigon\source\repos\hamster\assets\sounds\thruster.wav" />
+    <CustomBuild Include="C:\Users\sigon\source\repos\hamster\assets\border.xcf" />
+    <CustomBuild Include="C:\Users\sigon\source\repos\hamster\assets\gametiles.png">
+      <Filter>Resources</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\sigon\source\repos\hamster\assets\toybox32-1x.png">
+      <Filter>Resources</Filter>
+    </CustomBuild>
     <CustomBuild Include="C:\Users\sigon\source\repos\hamster\CMakeFiles\842494a5b997e5d0cebd893a59fb5c26\copy_data.rule">
       <Filter>CMake Rules</Filter>
     </CustomBuild>

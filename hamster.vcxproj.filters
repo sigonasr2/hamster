@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="src\HamsterGame.cpp">
+    <ClCompile Include="C:\Users\sigon\source\repos\hamster\src\HamsterGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="C:\Users\sigon\source\repos\hamster\src\olcPGEX_MiniAudio.cpp">
@@ -18,45 +18,5 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{6FA4D8BB-23B0-3494-9ED3-B7DCE970FEDF}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{7d02a2cb-d3b1-4576-813d-9a586e6aedd3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Documentation">
-      <UniqueIdentifier>{ecbaa59b-6b75-4ab7-ab55-985bbd1e800c}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\miniaudio.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\olcPGEX_MiniAudio.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\olcPixelGameEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="olcUTIL_Geometry2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\olcPGEX_ViewPort.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\olcUTIL_Geometry2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\HamsterGame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\olcUTIL_Animate2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="src\TODO.txt">
-      <Filter>Documentation</Filter>
-    </Text>
-    <Text Include="src\CREDITS.txt">
-      <Filter>Documentation</Filter>
-    </Text>
   </ItemGroup>
 </Project>

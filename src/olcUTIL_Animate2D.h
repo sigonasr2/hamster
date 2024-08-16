@@ -59,7 +59,7 @@
 #pragma once
 
 #include "olcPixelGameEngine.h"
-#include "utilities/olcUTIL_Geometry2D.h"
+#include "olcUTIL_Geometry2D.h"
 #include <unordered_map>
 
 namespace olc::utils::Animate2D

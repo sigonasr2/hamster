@@ -11,3 +11,6 @@ vs-build
 /CMakeFiles
 /hamster.dir/Debug
 /x64/Debug
+/bin/assets
+/bin/hamster.exe
+/bin/hamster.pdb
