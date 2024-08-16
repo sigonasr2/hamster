@@ -17,25 +17,37 @@ bool HamsterGame::OnUserCreate(){
 	return true;
 }
 
+void HamsterGame::_LoadImage(const std::string_view img){
+	GFX.insert({ASSETS_DIR+std::string(img),Renderable{}});
+	rcode result{GFX[ASSETS_DIR+std::string(img)].Load(ASSETS_DIR+std::string(img))};
+	if(result!=OK)throw std::runtime_error{std::format("Failed to Load Image {}. OLC Rcode: {}",img,int(result))};
+}
+
 void HamsterGame::LoadGraphics(){
-
-	#undef LoadImage
-	auto LoadImage=[this](std::string_view img){
-		GFX.insert({ASSETS_DIR+std::string(img),Renderable{}});
-		rcode result{GFX[ASSETS_DIR+std::string(img)].Load(ASSETS_DIR+std::string(img))};
-		if(result!=OK)throw std::runtime_error{std::format("Failed to Load Image {}. OLC Rcode: {}",img,int(result))};
-	};
-
-	LoadImage("border.png");
+	_LoadImage("border.png");
 }
 
 void HamsterGame::LoadAnimations(){
-	
+	auto LoadStillAnimation=[this](const AnimationState state,const std::string_view img){
+		Animate2D::FrameSequence stillAnimation{0.f,Animate2D::Style::OneShot};
+		if(!GFX.count(ASSETS_DIR+std::string(img)))_LoadImage(img);
+		stillAnimation.AddFrame(Animate2D::Frame{&GetGFX(img),{{},GetGFX(img).Sprite()->Size()}});
+		ANIMATIONS[ASSETS_DIR+std::string(img)].AddState(state,stillAnimation);
+	};
+	auto LoadAnimation=[this](const AnimationState state,const std::string_view img,const std::vector<vf2d>frames,const float frameDuration=0.1f,const Animate2D::Style style=Animate2D::Style::Repeat,vf2d frameSize={32,32}){
+		Animate2D::FrameSequence stillAnimation{0.f,Animate2D::Style::OneShot};
+		if(!GFX.count(ASSETS_DIR+std::string(img)))_LoadImage(img);
+		stillAnimation.AddFrame(Animate2D::Frame{&GetGFX(img),{{},GetGFX(img).Sprite()->Size()}});
+		ANIMATIONS[ASSETS_DIR+std::string(img)].AddState(state,stillAnimation);
+	};
+
+	LoadAnimation(DEFAULT,"hamster.png",{{},{0,32}},0.3f);
 }
 
 bool HamsterGame::OnUserUpdate(float fElapsedTime){
 	DrawDecal({},GetGFX("border.png").Decal());
 	gameWindow.FillRectDecal({},{500.f,150.f},WHITE);
+
 	return true;
 }
 

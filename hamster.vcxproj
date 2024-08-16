@@ -344,6 +344,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <Text Include="src\TODO.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Hamster.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="src\HamsterGame.h" />
     <ClInclude Include="src\miniaudio.h" />
     <ClInclude Include="src\olcPGEX_MiniAudio.h" />

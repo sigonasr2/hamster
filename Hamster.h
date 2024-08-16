@@ -36,33 +36,9 @@ All rights reserved.
 */
 #pragma endregion
 #pragma once
-#include <unordered_map>
-#include "olcUTIL_Geometry2D.h"
-#include "olcUTIL_Animate2D.h"
-#include "olcPGEX_ViewPort.h"
 
-class HamsterGame : public olc::PixelGameEngine
-{
-	const static std::string ASSETS_DIR;
-public:
-	enum AnimationState{
-		DEFAULT
-	};
+#include <vector>
 
-	HamsterGame();
-	static geom2d::rect<float>SCREEN_FRAME;
-	const ViewPort gameWindow{{SCREEN_FRAME.pos,SCREEN_FRAME.pos+vf2d{0.f,SCREEN_FRAME.size.y},SCREEN_FRAME.pos+SCREEN_FRAME.size,SCREEN_FRAME.pos+vf2d{SCREEN_FRAME.size.x,0.f}},{96,0}};
-public:
-	bool OnUserCreate()override final;
-	bool OnUserUpdate(float fElapsedTime)override final;
-	bool OnUserDestroy()override final;
-
-	static const Renderable&GetGFX(const std::string_view img);
-	static const Animate2D::Animation<int>&GetAnimations(const std::string_view img);
-private:
-	void LoadGraphics();
-	void LoadAnimations();
-	void _LoadImage(const std::string_view img);
-	static std::unordered_map<std::string,Renderable>GFX;
-	static std::unordered_map<std::string,Animate2D::Animation<int>>ANIMATIONS;
+class Hamster{
+	//static std::vector<Hamster>HAMSTER_LIST;
 };
