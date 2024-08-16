@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.10)
 #
 #   - dictates the output executable filename
 #
-project(TestApp)
+project(hamster)
 
 # Options you can set via command-line
 option(HAS_TERMINAL "Show a terminal window for STDOUT/STDERR" ON)
@@ -23,7 +23,7 @@ set(C_CXX_SOURCES_DIR "src")
 #
 #   - the place where your C/C++ header files are located
 #
-set(C_CXX_HEADERS_DIR "include")
+set(C_CXX_HEADERS_DIR "src")
 
 #
 # ASSETS_DIR

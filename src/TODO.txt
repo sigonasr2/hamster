@@ -1,0 +1,2 @@
+
+olcPGEX_ViewPort - Submit a PR where the offset is subtracted instead of added to determine clip region cutoffs.

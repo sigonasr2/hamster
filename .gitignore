@@ -6,3 +6,8 @@ mingw-build
 vs-build
 .vscode
 .cache
+/.vs/hamster/v17
+/.vs/hamster/FileContentIndex
+/CMakeFiles
+/hamster.dir/Debug
+/x64/Debug
