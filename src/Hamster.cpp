@@ -204,20 +204,22 @@ const Terrain::TerrainType Hamster::GetTerrainStandingOn()const{
 
 const float Hamster::GetTimeToMaxSpeed()const{
 	float finalTimeToMaxSpd{DEFAULT_TIME_TO_MAX_SPD};
-	if(GetTerrainStandingOn()==Terrain::ICE)finalTimeToMaxSpd*=3;
+	if(!HasPowerup(Powerup::ICE)&&GetTerrainStandingOn()==Terrain::ICE)finalTimeToMaxSpd*=3;
+	else if(!HasPowerup(Powerup::SWAMP)&&GetTerrainStandingOn()==Terrain::SWAMP)finalTimeToMaxSpd*=1.25;
 	return finalTimeToMaxSpd;
 }
 const float Hamster::GetMaxSpeed()const{
 	float finalMaxSpd{DEFAULT_MAX_SPD};
 	switch(GetTerrainStandingOn()){
 		case Terrain::GRASS:{
-			finalMaxSpd*=0.80f;
+			if(!HasPowerup(Powerup::GRASS))finalMaxSpd*=0.80f;
 		}break;
 		case Terrain::SAND:{
-			finalMaxSpd*=0.60f;
+			if(!HasPowerup(Powerup::SAND))finalMaxSpd*=0.60f;
 		}break;
 		case Terrain::SWAMP:{
-			finalMaxSpd*=0.50f;
+			if(HasPowerup(Powerup::SWAMP))finalMaxSpd*=0.80f;
+			else finalMaxSpd*=0.50f;
 		}break;
 		case Terrain::SHORE:{
 			finalMaxSpd*=0.80f;
@@ -226,20 +228,21 @@ const float Hamster::GetMaxSpeed()const{
 			finalMaxSpd*=0.10f;
 		}break;
 		case Terrain::FOREST:{
-			finalMaxSpd*=0.50f;
+			if(!HasPowerup(Powerup::FOREST))finalMaxSpd*=0.50f;
 		}break;
 	}
+	if(HasPowerup(Powerup::WHEEL))finalMaxSpd*=1.5f;
 	return finalMaxSpd;
 }
 const float Hamster::GetFriction()const{
 	float finalFriction{DEFAULT_FRICTION};
-	if(GetTerrainStandingOn()==Terrain::ICE)finalFriction*=0.1f;
-	else if(GetTerrainStandingOn()==Terrain::SWAMP)finalFriction*=0.6f;
+	if(!HasPowerup(Powerup::ICE)&&GetTerrainStandingOn()==Terrain::ICE)finalFriction*=0.1f;
+	else if(!HasPowerup(Powerup::SWAMP)&&GetTerrainStandingOn()==Terrain::SWAMP)finalFriction*=0.6f;
 	return finalFriction;
 }
 const float Hamster::GetTurnSpeed()const{
 	float finalTurnSpd{DEFAULT_TURN_SPD};
-	if(GetTerrainStandingOn()==Terrain::ICE)finalTurnSpd*=0.6f;
+	if(!HasPowerup(Powerup::ICE)&&GetTerrainStandingOn()==Terrain::ICE)finalTurnSpd*=0.6f;
 	return finalTurnSpd;
 }
 const float Hamster::GetBumpAmount()const{

@@ -5571,12 +5571,12 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="5"/>
   </properties>
  </tile>
- <tile id="1165" type="TileProps">
+ <tile id="1165" type="TileProps" probability="4">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="4"/>
   </properties>
  </tile>
- <tile id="1166" type="TileProps">
+ <tile id="1166" type="TileProps" probability="10">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="4"/>
   </properties>
@@ -5671,7 +5671,7 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="5"/>
   </properties>
  </tile>
- <tile id="1193" type="TileProps">
+ <tile id="1193" type="TileProps" probability="4">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="4"/>
   </properties>
