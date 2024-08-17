@@ -58,6 +58,8 @@ class Hamster{
 	vf2d pos;
 	vf2d vel;
 	float rot{};
+	float targetRot{};
+	float turnSpd{2.f*geom2d::pi};
 	std::string img;
 	Animate2D::Animation<HamsterGame::AnimationState>animations;
 	Animate2D::AnimationState internalAnimState;
@@ -71,4 +73,6 @@ public:
 	static void DrawHamsters(TransformedView&tv);
 	const Animate2D::Frame&GetCurrentAnimation()const;
 	const vf2d&GetPos()const;
+	void HandlePlayerControls();
+	void TurnTowardsTargetDirection();
 };

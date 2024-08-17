@@ -59,6 +59,10 @@ Hamster::Hamster(const vf2d spawnPos,const std::string_view img,const PlayerCont
 void Hamster::UpdateHamsters(const float fElapsedTime){
 	for(Hamster&h:HAMSTER_LIST){
 		h.animations.UpdateState(h.internalAnimState,fElapsedTime);
+		if(h.IsPlayerControlled){
+			h.HandlePlayerControls();
+		}
+		h.TurnTowardsTargetDirection();
 	}
 }
 
@@ -91,4 +95,27 @@ const Hamster&Hamster::GetPlayer(){
 
 const vf2d&Hamster::GetPos()const{
 	return pos;
+}
+
+void Hamster::HandlePlayerControls(){
+	vf2d aimingDir{};
+	if(HamsterGame::Game().GetKey(W).bHeld){
+		aimingDir+=vf2d{0,-1};
+	}
+	if(HamsterGame::Game().GetKey(D).bHeld){
+		aimingDir+=vf2d{1,0};
+	}
+	if(HamsterGame::Game().GetKey(S).bHeld){
+		aimingDir+=vf2d{0,1};
+	}
+	if(HamsterGame::Game().GetKey(A).bHeld){
+		aimingDir+=vf2d{-1,0};
+	}
+	if(aimingDir!=vf2d{}){
+		targetRot=aimingDir.norm().polar().y;
+	}
+}
+
+void Hamster::TurnTowardsTargetDirection(){
+	util::turn_towards_direction(rot,targetRot,turnSpd*HamsterGame::Game().GetElapsedTime());
 }

@@ -3901,7 +3901,7 @@ namespace olc
 		m_tp1 = m_tp2;
 
 		// Our time per frame coefficient
-		float fElapsedTime = elapsedTime.count();
+		float fElapsedTime = std::clamp(elapsedTime.count(),0.f,1/30.f);
 		fLastElapsed = fElapsedTime;
 
 		if (bConsoleSuspendTime)

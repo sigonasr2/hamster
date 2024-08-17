@@ -6,10 +6,11 @@ geom2d::rect<float>HamsterGame::SCREEN_FRAME{{96,0},{320,288}};
 std::unordered_map<std::string,Animate2D::Animation<HamsterGame::AnimationState>>HamsterGame::ANIMATIONS;
 std::unordered_map<std::string,Renderable>HamsterGame::GFX;
 const std::string HamsterGame::ASSETS_DIR{"assets/"};
+PixelGameEngine*HamsterGame::self{nullptr};
 
-HamsterGame::HamsterGame()
-{
+HamsterGame::HamsterGame(){
 	sAppName = "Project Hamster";
+	HamsterGame::self=this;
 }
 
 bool HamsterGame::OnUserCreate(){
@@ -90,6 +91,10 @@ bool HamsterGame::OnUserDestroy(){
 	ANIMATIONS.clear();
 	GFX.clear();
 	return true;
+}
+
+PixelGameEngine&HamsterGame::Game(){
+	return *self;
 }
 
 int main()

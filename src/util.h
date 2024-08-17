@@ -45,4 +45,6 @@ namespace olc::util{
 	const float random_range(const float min,const float max);
 	//Returns 0-32767 (as an int).
 	int random();
+	float angle_difference(float angle_1, float angle_2);
+	void turn_towards_direction(float&angle,float target,float rate);
 };

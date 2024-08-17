@@ -60,6 +60,7 @@ public:
 
 	static const Renderable&GetGFX(const std::string_view img);
 	static const Animate2D::Animation<HamsterGame::AnimationState>&GetAnimations(const std::string_view img);
+	static PixelGameEngine&Game();
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -70,4 +71,5 @@ private:
 	void _LoadImage(const std::string_view img);
 	static std::unordered_map<std::string,Renderable>GFX;
 	static std::unordered_map<std::string,Animate2D::Animation<HamsterGame::AnimationState>>ANIMATIONS;
+	static PixelGameEngine*self;
 };
