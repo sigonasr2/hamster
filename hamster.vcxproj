@@ -324,6 +324,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="C:\Users\sigon\source\repos\hamster\src\HamsterGame.cpp" />
     <ClCompile Include="C:\Users\sigon\source\repos\hamster\src\olcPGEX_MiniAudio.cpp" />
     <ClCompile Include="C:\Users\sigon\source\repos\hamster\src\olcPixelGameEngine.cpp" />
+    <ClCompile Include="src\Border.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="src\Hamster.cpp" />
     <ClCompile Include="src\util.cpp" />
   </ItemGroup>
@@ -346,6 +350,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <Text Include="src\TODO.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Border.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="src\Hamster.h" />
     <ClInclude Include="src\HamsterGame.h" />
     <ClInclude Include="src\miniaudio.h" />

@@ -21,6 +21,8 @@ bool HamsterGame::OnUserCreate(){
 	LoadGraphics();
 	LoadAnimations();
 	LoadLevel(); //THIS IS TEMPORARY.
+
+	border.ChangeBorder(Border::DEFAULT);
 	return true;
 }
 
@@ -64,12 +66,13 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 	camera.Update(fElapsedTime);
 	tv.SetWorldOffset(-SCREEN_FRAME.pos+camera.GetViewPosition());
 	Hamster::UpdateHamsters(fElapsedTime);
+	border.Update(fElapsedTime);
 }
 
 void HamsterGame::DrawGame(){
 	tv.FillRectDecal({10,10},{500.f,150.f},WHITE);
 	Hamster::DrawHamsters(tv);
-	DrawDecal({},GetGFX("border.png").Decal());
+	border.Draw();
 }
 
 bool HamsterGame::OnUserUpdate(float fElapsedTime){

@@ -36,42 +36,36 @@ All rights reserved.
 */
 #pragma endregion
 #pragma once
-#include <unordered_map>
-#include "olcUTIL_Geometry2D.h"
-#include "olcUTIL_Animate2D.h"
-#include "olcPGEX_TransformedView.h"
-#include "olcUTIL_Camera2D.h"
-#include "Border.h"
 
-class HamsterGame : public olc::PixelGameEngine
-{
-	const static std::string ASSETS_DIR;
+#include "olcPixelGameEngine.h"
+
+class Border{
 public:
-	enum AnimationState{
-		DEFAULT
+	enum BorderTemplate{
+		DEFAULT,
 	};
-
-	HamsterGame();
-	static geom2d::rect<float>SCREEN_FRAME;
-	TransformedView tv{};
 public:
-	bool OnUserCreate()override final;
-	bool OnUserUpdate(float fElapsedTime)override final;
-	bool OnUserDestroy()override final;
-
-	static const Renderable&GetGFX(const std::string_view img);
-	static const Animate2D::Animation<HamsterGame::AnimationState>&GetAnimations(const std::string_view img);
-	static PixelGameEngine&Game();
+	class CycleTimer{
+		friend class Border;
+		float repeatTime;
+		float currentTime;
+		std::vector<Pixel>cycle;
+		size_t currentInd{};
+		Border*borderParent;
+	public:
+		CycleTimer()=default;
+		CycleTimer(const std::vector<Pixel>cycle,const float repeatTime);
+		void Update(const float fElapsedTime);
+	};
+	Renderable img;
+	CycleTimer decorative;
+	CycleTimer highlight;
+	CycleTimer background;
 private:
-	void UpdateGame(const float fElapsedTime);
-	void DrawGame();
-	Camera2D camera;
-	void LoadGraphics();
-	void LoadAnimations();
-	void LoadLevel();
-	void _LoadImage(const std::string_view img);
-	static std::unordered_map<std::string,Renderable>GFX;
-	static std::unordered_map<std::string,Animate2D::Animation<HamsterGame::AnimationState>>ANIMATIONS;
-	static PixelGameEngine*self;
-	Border border;
+	static const std::unordered_map<BorderTemplate,std::tuple<std::string,Border::CycleTimer,Border::CycleTimer,Border::CycleTimer>>BORDER_TEMPLATES;
+public:
+	Border()=default;
+	void ChangeBorder(const Border::BorderTemplate borderTemplate);
+	void Update(const float fElapsedTime);
+	void Draw();
 };

@@ -116,7 +116,7 @@ void Hamster::HandlePlayerControls(){
 	if(aimingDir!=vf2d{}){
 		targetRot=aimingDir.norm().polar().y;
 		const vf2d currentVel{vel};
-		vel=vf2d{std::min(maxSpd,currentVel.polar().x+(maxSpd*HamsterGame::Game().GetElapsedTime())/timeToMaxSpd),currentVel.polar().y}.cart();
+		vel=vf2d{std::min(maxSpd,currentVel.polar().x+(maxSpd*HamsterGame::Game().GetElapsedTime())/timeToMaxSpd),rot}.cart();
 		frictionEnabled=false;
 	}
 }
