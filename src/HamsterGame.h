@@ -49,7 +49,7 @@ class HamsterGame : public olc::PixelGameEngine
 	const static std::string ASSETS_DIR;
 public:
 	enum AnimationState{
-		DEFAULT
+		DEFAULT,
 	};
 
 	HamsterGame();
@@ -63,6 +63,8 @@ public:
 	static const Renderable&GetGFX(const std::string_view img);
 	static const Animate2D::Animation<HamsterGame::AnimationState>&GetAnimations(const std::string_view img);
 	static PixelGameEngine&Game();
+	static std::unordered_map<uint32_t,Animate2D::FrameSequence>ANIMATED_TILE_IDS;
+	const double GetRuntime()const;
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -77,4 +79,5 @@ private:
 	Border border;
 	void DrawLevelTiles();
 	std::optional<TMXParser>currentMap;
+	double runTime{};
 };

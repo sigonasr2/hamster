@@ -2855,8 +2855,8 @@ namespace olc
 		di.decal = decal;
 		di.tint = { tint, tint, tint, tint };
 		di.pos = { { vQuantisedPos.x, vQuantisedPos.y }, { vQuantisedPos.x, vQuantisedDim.y }, { vQuantisedDim.x, vQuantisedDim.y }, { vQuantisedDim.x, vQuantisedPos.y } };
-		olc::vf2d uvtl = (source_pos + olc::vf2d(0.0001f, 0.0001f)) * decal->vUVScale;
-		olc::vf2d uvbr = (source_pos + source_size - olc::vf2d(0.0001f, 0.0001f)) * decal->vUVScale;
+		olc::vf2d uvtl = (source_pos + olc::vf2d(0.01f, 0.01f)) * decal->vUVScale;
+		olc::vf2d uvbr = uvtl + ((source_size - olc::vf2d(0.02f, 0.02f)) * decal->vUVScale);
 		di.uv = { { uvtl.x, uvtl.y }, { uvtl.x, uvbr.y }, { uvbr.x, uvbr.y }, { uvbr.x, uvtl.y } };
 		di.w = { 1,1,1,1 };
 		di.mode = nDecalMode;
@@ -2883,8 +2883,8 @@ namespace olc
 		di.decal = decal;
 		di.tint = { tint, tint, tint, tint };
 		di.pos = { { vScreenSpacePos.x, vScreenSpacePos.y }, { vScreenSpacePos.x, vScreenSpaceDim.y }, { vScreenSpaceDim.x, vScreenSpaceDim.y }, { vScreenSpaceDim.x, vScreenSpacePos.y } };
-		olc::vf2d uvtl = (source_pos) * decal->vUVScale;
-		olc::vf2d uvbr = uvtl + ((source_size) * decal->vUVScale);
+		olc::vf2d uvtl = (source_pos + olc::vf2d(0.02f, 0.02f)) * decal->vUVScale;
+		olc::vf2d uvbr = (source_pos + source_size - olc::vf2d(0.03f, 0.03f)) * decal->vUVScale;
 		di.uv = { { uvtl.x, uvtl.y }, { uvtl.x, uvbr.y }, { uvbr.x, uvbr.y }, { uvbr.x, uvtl.y } };
 		di.w = { 1,1,1,1 };
 		di.mode = nDecalMode;

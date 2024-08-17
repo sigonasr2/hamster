@@ -8,6 +8,7 @@ std::unordered_map<std::string,Animate2D::Animation<HamsterGame::AnimationState>
 std::unordered_map<std::string,Renderable>HamsterGame::GFX;
 const std::string HamsterGame::ASSETS_DIR{"assets/"};
 PixelGameEngine*HamsterGame::self{nullptr};
+std::unordered_map<uint32_t,Animate2D::FrameSequence>HamsterGame::ANIMATED_TILE_IDS;
 
 HamsterGame::HamsterGame(){
 	sAppName = "Project Hamster";
@@ -56,6 +57,14 @@ void HamsterGame::LoadAnimations(){
 	};
 
 	LoadAnimation(DEFAULT,"hamster.png",{{0,32},{32,32}},0.3f);
+	Animate2D::FrameSequence&waterAnimFrames{(*ANIMATED_TILE_IDS.insert({1384,Animate2D::FrameSequence{0.2f}}).first).second};
+	for(vf2d&sourcePos:std::vector<vf2d>{{192+16*0,784},{192+16*1,784},{192+16*2,784},{192+16*3,784},{192+16*4,784},{192+16*5,784},{192+16*6,784},{192+16*7,784}}){
+		waterAnimFrames.AddFrame(Animate2D::Frame{&GetGFX("gametiles.png"),{sourcePos,{16,16}}});
+	}
+	Animate2D::FrameSequence&lavaAnimFrames{(*ANIMATED_TILE_IDS.insert({1412,Animate2D::FrameSequence{0.2f}}).first).second};
+	for(vf2d&sourcePos:std::vector<vf2d>{{192+16*0,800},{192+16*1,800},{192+16*2,800},{192+16*3,800},{192+16*4,800},{192+16*5,800},{192+16*6,800},{192+16*7,800},{192+16*8,800}}){
+		lavaAnimFrames.AddFrame(Animate2D::Frame{&GetGFX("gametiles.png"),{sourcePos,{16,16}}});
+	}
 }
 
 void HamsterGame::LoadLevel(const std::string_view mapName){
@@ -93,12 +102,19 @@ void HamsterGame::DrawLevelTiles(){
 
 			int imgTileX{tileID%numTilesWide};
 			int imgTileY{tileID/numTilesWide};
-			tv.DrawPartialDecal(vf2d{float(tileX),float(tileY)}*16,GetGFX("gametiles.png").Decal(),vf2d{float(imgTileX),float(imgTileY)}*16,{16,16});
+			if(ANIMATED_TILE_IDS.count(tileID)){
+				Animate2D::FrameSequence&animatedTile{ANIMATED_TILE_IDS[tileID]};
+				const Animate2D::Frame&currentFrame{animatedTile.GetFrame(runTime)};
+				tv.DrawPartialDecal(vf2d{float(tileX),float(tileY)}*16,currentFrame.GetSourceImage()->Decal(),currentFrame.GetSourceRect().pos,currentFrame.GetSourceRect().size);
+			}else{
+				tv.DrawPartialDecal(vf2d{float(tileX),float(tileY)}*16,GetGFX("gametiles.png").Decal(),vf2d{float(imgTileX),float(imgTileY)}*16,{16,16});
+			}
 		}
 	}
 }
 
 bool HamsterGame::OnUserUpdate(float fElapsedTime){
+	runTime+=fElapsedTime;
 	UpdateGame(fElapsedTime);
 	DrawGame();
 	return true;
@@ -121,6 +137,10 @@ bool HamsterGame::OnUserDestroy(){
 
 PixelGameEngine&HamsterGame::Game(){
 	return *self;
+}
+
+const double HamsterGame::GetRuntime()const{
+	return runTime;
 }
 
 int main()

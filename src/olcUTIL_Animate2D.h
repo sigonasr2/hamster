@@ -124,7 +124,7 @@ namespace olc::utils::Animate2D
 		}
 
 		// Returns a Frame Object for a given time into an animation
-		inline const Frame& GetFrame(const float fTime) const
+		inline const Frame& GetFrame(const double fTime) const
 		{
 			return m_vFrames[ConvertTimeToFrame(fTime)];
 		}
@@ -135,7 +135,7 @@ namespace olc::utils::Animate2D
 		float m_fFrameDuration = 0.1f;
 		float m_fFrameRate = 10.0f;
 
-		inline const size_t ConvertTimeToFrame(const float fTime) const
+		inline const size_t ConvertTimeToFrame(const double fTime) const
 		{
 			switch (m_nStyle)
 			{

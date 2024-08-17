@@ -6,6 +6,31 @@
  <tile id="1148" probability="4"/>
  <tile id="1176" probability="4"/>
  <tile id="1207" probability="10"/>
+ <tile id="1384">
+  <animation>
+   <frame tileid="1384" duration="200"/>
+   <frame tileid="1385" duration="200"/>
+   <frame tileid="1386" duration="200"/>
+   <frame tileid="1387" duration="200"/>
+   <frame tileid="1388" duration="200"/>
+   <frame tileid="1389" duration="200"/>
+   <frame tileid="1390" duration="200"/>
+   <frame tileid="1391" duration="200"/>
+  </animation>
+ </tile>
+ <tile id="1412">
+  <animation>
+   <frame tileid="1412" duration="200"/>
+   <frame tileid="1413" duration="200"/>
+   <frame tileid="1414" duration="200"/>
+   <frame tileid="1415" duration="200"/>
+   <frame tileid="1416" duration="200"/>
+   <frame tileid="1417" duration="200"/>
+   <frame tileid="1418" duration="200"/>
+   <frame tileid="1419" duration="200"/>
+   <frame tileid="1420" duration="200"/>
+  </animation>
+ </tile>
  <wangsets>
   <wangset name="Sand" type="corner" tile="-1">
    <wangcolor name="Desert" color="#ff0000" tile="-1" probability="1"/>
