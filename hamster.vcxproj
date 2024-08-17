@@ -324,6 +324,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="C:\Users\sigon\source\repos\hamster\src\HamsterGame.cpp" />
     <ClCompile Include="C:\Users\sigon\source\repos\hamster\src\olcPGEX_MiniAudio.cpp" />
     <ClCompile Include="C:\Users\sigon\source\repos\hamster\src\olcPixelGameEngine.cpp" />
+    <ClCompile Include="src\Hamster.cpp" />
+    <ClCompile Include="src\util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:\Users\sigon\source\repos\hamster\ZERO_CHECK.vcxproj">
@@ -344,16 +346,16 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <Text Include="src\TODO.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Hamster.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
+    <ClInclude Include="src\Hamster.h" />
     <ClInclude Include="src\HamsterGame.h" />
     <ClInclude Include="src\miniaudio.h" />
     <ClInclude Include="src\olcPGEX_MiniAudio.h" />
     <ClInclude Include="src\olcPGEX_ViewPort.h" />
     <ClInclude Include="src\olcPixelGameEngine.h" />
+    <ClInclude Include="src\olcUTIL_Animate2D.h" />
+    <ClInclude Include="src\olcUTIL_Camera2D.h" />
     <ClInclude Include="src\olcUTIL_Geometry2D.h" />
+    <ClInclude Include="src\util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -35,10 +35,46 @@ Project (www.freetype.org). Please see LICENSE_FT.txt for more information.
 All rights reserved.
 */
 #pragma endregion
-#pragma once
 
-#include <vector>
+#include "HamsterGame.h"
+#include "Hamster.h"
+#include "util.h"
+#include <ranges>
 
-class Hamster{
-	//static std::vector<Hamster>HAMSTER_LIST;
+std::vector<Hamster>Hamster::HAMSTER_LIST;
+const uint8_t Hamster::NPC_HAMSTER_COUNT{5U};
+const std::vector<std::string>Hamster::NPC_HAMSTER_IMAGES{
+	"hamster.png",
 };
+const std::string Hamster::PLAYER_HAMSTER_IMAGE{"hamster.png"};
+
+Hamster::Hamster(const vf2d spawnPos,const std::string_view img,const PlayerControlled playerControlled)
+:pos(spawnPos),playerControlled(playerControlled){
+	animations=HamsterGame::GetAnimations(img);
+	animations.ChangeState(internalAnimState,HamsterGame::DEFAULT);
+}
+
+void Hamster::UpdateHamsters(const float fElapsedTime){
+	for(Hamster&h:HAMSTER_LIST){
+		h.animations.UpdateState(h.internalAnimState,fElapsedTime);
+	}
+}
+
+void Hamster::LoadHamsters(const vf2d startingLoc){
+	HAMSTER_LIST.clear();
+	HAMSTER_LIST.emplace_back(startingLoc,PLAYER_HAMSTER_IMAGE,PLAYER_CONTROLLED);
+	for(int i:std::ranges::iota_view(0U,NPC_HAMSTER_COUNT)){
+		HAMSTER_LIST.emplace_back(startingLoc,NPC_HAMSTER_IMAGES.at(util::random()%NPC_HAMSTER_IMAGES.size()),NPC);
+	}
+}
+
+void Hamster::DrawHamsters(const ViewPort&view){
+	for(Hamster&h:HAMSTER_LIST){
+		const Animate2D::Frame&img{h.GetCurrentAnimation()};
+		view.DrawPartialRotatedDecal(h.pos,img.GetSourceImage()->Decal(),h.rot,img.GetSourceRect().size/2,img.GetSourceRect().pos,img.GetSourceRect().size);
+	}
+}
+
+const Animate2D::Frame&Hamster::GetCurrentAnimation()const{
+	return animations.GetFrame(internalAnimState);
+}

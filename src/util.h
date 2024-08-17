@@ -36,38 +36,13 @@ All rights reserved.
 */
 #pragma endregion
 #pragma once
-#include <unordered_map>
-#include "olcUTIL_Geometry2D.h"
-#include "olcUTIL_Animate2D.h"
-#include "olcPGEX_ViewPort.h"
-#include "olcUTIL_Camera2D.h"
+#include <random>
 
-class HamsterGame : public olc::PixelGameEngine
-{
-	const static std::string ASSETS_DIR;
-public:
-	enum AnimationState{
-		DEFAULT
-	};
-
-	HamsterGame();
-	static geom2d::rect<float>SCREEN_FRAME;
-	const ViewPort gameWindow{{SCREEN_FRAME.pos,SCREEN_FRAME.pos+vf2d{0.f,SCREEN_FRAME.size.y},SCREEN_FRAME.pos+SCREEN_FRAME.size,SCREEN_FRAME.pos+vf2d{SCREEN_FRAME.size.x,0.f}},{96,0}};
-public:
-	bool OnUserCreate()override final;
-	bool OnUserUpdate(float fElapsedTime)override final;
-	bool OnUserDestroy()override final;
-
-	static const Renderable&GetGFX(const std::string_view img);
-	static const Animate2D::Animation<HamsterGame::AnimationState>&GetAnimations(const std::string_view img);
-private:
-	void UpdateGame(const float fElapsedTime);
-	void DrawGame();
-	Camera2D camera;
-	void LoadGraphics();
-	void LoadAnimations();
-	void LoadLevel();
-	void _LoadImage(const std::string_view img);
-	static std::unordered_map<std::string,Renderable>GFX;
-	static std::unordered_map<std::string,Animate2D::Animation<HamsterGame::AnimationState>>ANIMATIONS;
+namespace olc::util{
+	//Returns 0-range (as a float).
+	float random(float range);
+	//Returns a random float value min(inclusive) to max(exclusive).
+	const float random_range(const float min,const float max);
+	//Returns 0-32767 (as an int).
+	int random();
 };

@@ -505,8 +505,8 @@ void olc::ViewPort::DrawPolygonDecal(Decal *decal,
 void olc::ViewPort::DrawLineDecal(const vf2d &pos1,
                                   const vf2d &pos2,
                                   Pixel p) const {
-    vf2d posA = pos1 + offset;
-    vf2d posB = pos2 + offset;
+    vf2d posA = pos1;
+    vf2d posB = pos2;
 
     for (auto i = 0u; i < clipVertices.size(); i++) {
         auto clipA = clipVertices[i] - offset;
@@ -640,8 +640,8 @@ void olc::ViewPort::drawClippedPolygonDecal(Decal *decal,
     std::vector<float> outputDepths{depth, depth + elements};
 
     for (auto i = 0u; i < clipVertices.size(); i++) {
-        auto clipA = clipVertices[i] + offset;
-        auto clipB = clipVertices[(i + 1) % clipVertices.size()] + offset;
+        auto clipA = clipVertices[i] - offset;
+        auto clipB = clipVertices[(i + 1) % clipVertices.size()] - offset;
 
         auto inputList{outputList};
         auto inputUvs{outputUvs};

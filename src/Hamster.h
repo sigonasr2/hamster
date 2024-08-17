@@ -36,38 +36,36 @@ All rights reserved.
 */
 #pragma endregion
 #pragma once
-#include <unordered_map>
+
+#include <vector>
 #include "olcUTIL_Geometry2D.h"
 #include "olcUTIL_Animate2D.h"
 #include "olcPGEX_ViewPort.h"
-#include "olcUTIL_Camera2D.h"
 
-class HamsterGame : public olc::PixelGameEngine
-{
-	const static std::string ASSETS_DIR;
-public:
-	enum AnimationState{
-		DEFAULT
+class Hamster{
+	enum PlayerControlled{
+		PLAYER_CONTROLLED,
+		NPC,
 	};
 
-	HamsterGame();
-	static geom2d::rect<float>SCREEN_FRAME;
-	const ViewPort gameWindow{{SCREEN_FRAME.pos,SCREEN_FRAME.pos+vf2d{0.f,SCREEN_FRAME.size.y},SCREEN_FRAME.pos+SCREEN_FRAME.size,SCREEN_FRAME.pos+vf2d{SCREEN_FRAME.size.x,0.f}},{96,0}};
-public:
-	bool OnUserCreate()override final;
-	bool OnUserUpdate(float fElapsedTime)override final;
-	bool OnUserDestroy()override final;
+	static std::vector<Hamster>HAMSTER_LIST;
 
-	static const Renderable&GetGFX(const std::string_view img);
-	static const Animate2D::Animation<HamsterGame::AnimationState>&GetAnimations(const std::string_view img);
-private:
-	void UpdateGame(const float fElapsedTime);
-	void DrawGame();
-	Camera2D camera;
-	void LoadGraphics();
-	void LoadAnimations();
-	void LoadLevel();
-	void _LoadImage(const std::string_view img);
-	static std::unordered_map<std::string,Renderable>GFX;
-	static std::unordered_map<std::string,Animate2D::Animation<HamsterGame::AnimationState>>ANIMATIONS;
+	static const uint8_t NPC_HAMSTER_COUNT;
+
+	static const std::vector<std::string>NPC_HAMSTER_IMAGES;
+	static const std::string PLAYER_HAMSTER_IMAGE;
+
+	vf2d pos;
+	vf2d vel;
+	float rot{};
+	std::string img;
+	Animate2D::Animation<HamsterGame::AnimationState>animations;
+	Animate2D::AnimationState internalAnimState;
+	PlayerControlled playerControlled;
+public:
+	Hamster(const vf2d spawnPos,const std::string_view img,const PlayerControlled playerControlled=NPC);
+	static void UpdateHamsters(const float fElapsedTime);
+	static void LoadHamsters(const vf2d startingLoc);
+	static void DrawHamsters(const ViewPort&view);
+	const Animate2D::Frame&GetCurrentAnimation()const;
 };

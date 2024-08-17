@@ -10,6 +10,12 @@
     <ClCompile Include="C:\Users\sigon\source\repos\hamster\src\olcPixelGameEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Hamster.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Users\sigon\source\repos\hamster\CMakeLists.txt" />
@@ -52,7 +58,16 @@
     <ClInclude Include="src\olcUTIL_Geometry2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hamster.h">
+    <ClInclude Include="src\olcUTIL_Animate2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\olcUTIL_Camera2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hamster.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
