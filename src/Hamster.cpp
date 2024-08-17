@@ -128,13 +128,14 @@ void Hamster::HandlePlayerControls(){
 	if(aimingDir!=vf2d{}){
 		targetRot=aimingDir.norm().polar().y;
 		const vf2d currentVel{vel};
-		vel=vf2d{std::min(maxSpd,currentVel.polar().x+(maxSpd*HamsterGame::Game().GetElapsedTime())/timeToMaxSpd),rot}.cart();
+		vel+=vf2d{currentVel.polar().x+(GetMaxSpeed()*HamsterGame::Game().GetElapsedTime())/GetTimeToMaxSpeed(),rot}.cart();
+		vel=vf2d{std::min(GetMaxSpeed(),vel.polar().x),vel.polar().y}.cart();
 		frictionEnabled=false;
 	}
 }
 
 void Hamster::TurnTowardsTargetDirection(){
-	util::turn_towards_direction(rot,targetRot,turnSpd*HamsterGame::Game().GetElapsedTime());
+	util::turn_towards_direction(rot,targetRot,GetTurnSpeed()*HamsterGame::Game().GetElapsedTime());
 }
 
 void Hamster::MoveHamster(){
@@ -143,7 +144,7 @@ void Hamster::MoveHamster(){
 	#pragma region Handle Friction
 		if(frictionEnabled){
 			const vf2d currentVel{vel};
-			vel=vf2d{std::max(0.f,currentVel.polar().x-friction*HamsterGame::Game().GetElapsedTime()),currentVel.polar().y}.cart();
+			vel=vf2d{std::max(0.f,currentVel.polar().x-GetFriction()*HamsterGame::Game().GetElapsedTime()),currentVel.polar().y}.cart();
 		}
 	#pragma endregion
 }
@@ -158,8 +159,8 @@ void Hamster::HandleCollision(){
 				vf2d collisionResolve2{h.GetPos()+vf2d{h.GetRadius(),float(randDir+geom2d::pi)}.cart()};
 				pos=collisionResolve1;
 				h.pos=collisionResolve2;
-				vel=vf2d{100.f,randDir}.cart();
-				h.vel=vf2d{100.f,float(randDir+geom2d::pi)}.cart();
+				vel=vf2d{GetBumpAmount(),randDir}.cart();
+				h.vel=vf2d{GetBumpAmount(),float(randDir+geom2d::pi)}.cart();
 			}else{
 				geom2d::line<float>collisionLine{geom2d::line<float>(GetPos(),h.GetPos())};
 				float distance{collisionLine.length()};
@@ -169,8 +170,8 @@ void Hamster::HandleCollision(){
 				vf2d collisionResolve2{h.GetPos()+vf2d{bumpDistance/2.f,collisionLine.vector().polar().y}.cart()};
 				pos=collisionResolve1;
 				h.pos=collisionResolve2;
-				vel=vf2d{100.f,float(collisionLine.vector().polar().y+geom2d::pi)}.cart();
-				h.vel=vf2d{100.f,collisionLine.vector().polar().y}.cart();
+				vel=vf2d{GetBumpAmount(),float(collisionLine.vector().polar().y+geom2d::pi)}.cart();
+				h.vel=vf2d{GetBumpAmount(),collisionLine.vector().polar().y}.cart();
 			}
 			state=h.state=BUMPED;
 			bumpTimer=h.bumpTimer=0.12f;
@@ -184,4 +185,49 @@ const float Hamster::GetRadius()const{
 
 const Terrain::TerrainType Hamster::GetTerrainStandingOn()const{
 	return HamsterGame::Game().GetTerrainTypeAtPos(GetPos());
+}
+
+const float Hamster::GetTimeToMaxSpeed()const{
+	float finalTimeToMaxSpd{DEFAULT_TIME_TO_MAX_SPD};
+	if(GetTerrainStandingOn()==Terrain::ICE)finalTimeToMaxSpd*=3;
+	return finalTimeToMaxSpd;
+}
+const float Hamster::GetMaxSpeed()const{
+	float finalMaxSpd{DEFAULT_MAX_SPD};
+	switch(GetTerrainStandingOn()){
+		case Terrain::GRASS:{
+			finalMaxSpd*=0.80f;
+		}break;
+		case Terrain::SAND:{
+			finalMaxSpd*=0.60f;
+		}break;
+		case Terrain::SWAMP:{
+			finalMaxSpd*=0.50f;
+		}break;
+		case Terrain::SHORE:{
+			finalMaxSpd*=0.80f;
+		}break;
+		case Terrain::OCEAN:{
+			finalMaxSpd*=0.10f;
+		}break;
+		case Terrain::FOREST:{
+			finalMaxSpd*=0.50f;
+		}break;
+	}
+	return finalMaxSpd;
+}
+const float Hamster::GetFriction()const{
+	float finalFriction{DEFAULT_FRICTION};
+	if(GetTerrainStandingOn()==Terrain::ICE)finalFriction*=0.1f;
+	else if(GetTerrainStandingOn()==Terrain::SWAMP)finalFriction*=0.6f;
+	return finalFriction;
+}
+const float Hamster::GetTurnSpeed()const{
+	float finalTurnSpd{DEFAULT_TURN_SPD};
+	if(GetTerrainStandingOn()==Terrain::ICE)finalTurnSpd*=0.6f;
+	return finalTurnSpd;
+}
+const float Hamster::GetBumpAmount()const{
+	float finalBumpAmt{DEFAULT_BUMP_AMT};
+	return finalBumpAmt*GetMaxSpeed()/DEFAULT_MAX_SPD;
 }

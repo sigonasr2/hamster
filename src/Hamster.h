@@ -61,14 +61,16 @@ class Hamster{
 	static const std::vector<std::string>NPC_HAMSTER_IMAGES;
 	static const std::string PLAYER_HAMSTER_IMAGE;
 
+	const float DEFAULT_MAX_SPD{128.f};
+	const float DEFAULT_TIME_TO_MAX_SPD{0.5f};
+	const float DEFAULT_FRICTION{400.f};
+	const float DEFAULT_TURN_SPD{2.f*geom2d::pi};
+	const float DEFAULT_BUMP_AMT{100.f};
+
 	vf2d pos;
 	vf2d vel;
 	float rot{};
 	float targetRot{};
-	float turnSpd{2.f*geom2d::pi};
-	float maxSpd{128.f};
-	float timeToMaxSpd{0.5f};
-	float friction{400.f};
 	bool frictionEnabled{false};
 	float collisionRadius{12.f};
 	float bumpTimer{};
@@ -92,4 +94,9 @@ public:
 	void HandleCollision();
 	const float GetRadius()const;
 	const Terrain::TerrainType GetTerrainStandingOn()const;
+	const float GetTimeToMaxSpeed()const;
+	const float GetMaxSpeed()const;
+	const float GetFriction()const;
+	const float GetTurnSpeed()const;
+	const float GetBumpAmount()const;
 };
