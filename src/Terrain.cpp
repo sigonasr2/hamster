@@ -35,61 +35,42 @@ Project (www.freetype.org). Please see LICENSE_FT.txt for more information.
 All rights reserved.
 */
 #pragma endregion
-#pragma once
-
-#include <vector>
-#include "olcUTIL_Geometry2D.h"
-#include "olcUTIL_Animate2D.h"
 #include "Terrain.h"
 
-class Hamster{
-	enum PlayerControlled{
-		PLAYER_CONTROLLED=true,
-		NPC=false,
-	};
-
-	enum PlayerState{
-		NORMAL,
-		BUMPED,
-	};
-
-	static std::vector<Hamster>HAMSTER_LIST;
-
-	static const uint8_t MAX_HAMSTER_COUNT;
-	static const uint8_t NPC_HAMSTER_COUNT;
-
-	static const std::vector<std::string>NPC_HAMSTER_IMAGES;
-	static const std::string PLAYER_HAMSTER_IMAGE;
-
-	vf2d pos;
-	vf2d vel;
-	float rot{};
-	float targetRot{};
-	float turnSpd{2.f*geom2d::pi};
-	float maxSpd{128.f};
-	float timeToMaxSpd{0.5f};
-	float friction{400.f};
-	bool frictionEnabled{false};
-	float collisionRadius{12.f};
-	float bumpTimer{};
-	std::string img;
-	Animate2D::Animation<HamsterGame::AnimationState>animations;
-	Animate2D::AnimationState internalAnimState;
-	PlayerControlled IsPlayerControlled;
-	static std::optional<Hamster*>playerHamster;
-	PlayerState state{NORMAL};
-public:
-	Hamster(const vf2d spawnPos,const std::string_view img,const PlayerControlled IsPlayerControlled=NPC);
-	static const Hamster&GetPlayer();
-	static void UpdateHamsters(const float fElapsedTime);
-	static void LoadHamsters(const vf2d startingLoc);
-	static void DrawHamsters(TransformedView&tv);
-	const Animate2D::Frame&GetCurrentAnimation()const;
-	const vf2d&GetPos()const;
-	void HandlePlayerControls();
-	void TurnTowardsTargetDirection();
-	void MoveHamster();
-	void HandleCollision();
-	const float GetRadius()const;
-	const Terrain::TerrainType GetTerrainStandingOn()const;
-};
+const std::string Terrain::TerrainToString(const TerrainType type){
+	switch(type){
+		case ROCK:{
+			return "Rock";
+		}break;
+		case GRASS:{
+			return "Grass";
+		}break;
+		case SAND:{
+			return "Sand";
+		}break;
+		case SWAMP:{
+			return "Swamp";
+		}break;
+		case LAVA:{
+			return "Lava";
+		}break;
+		case SHORE:{
+			return "Shore";
+		}break;
+		case OCEAN:{
+			return "Ocean";
+		}break;
+		case FOREST:{
+			return "Forest";
+		}break;
+		case TUNNEL:{
+			return "Tunnel";
+		}break;
+		case ICE:{
+			return "Ice";
+		}break;
+		default:{
+			return "Void";
+		}
+	}
+}

@@ -43,6 +43,8 @@ All rights reserved.
 #include "olcUTIL_Camera2D.h"
 #include "Border.h"
 #include "TMXParser.h"
+#include "TSXParser.h"
+#include "Terrain.h"
 
 class HamsterGame : public olc::PixelGameEngine
 {
@@ -62,9 +64,10 @@ public:
 
 	static const Renderable&GetGFX(const std::string_view img);
 	static const Animate2D::Animation<HamsterGame::AnimationState>&GetAnimations(const std::string_view img);
-	static PixelGameEngine&Game();
+	static HamsterGame&Game();
 	static std::unordered_map<uint32_t,Animate2D::FrameSequence>ANIMATED_TILE_IDS;
 	const double GetRuntime()const;
+	const Terrain::TerrainType GetTerrainTypeAtPos(const vf2d pos)const;
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -75,9 +78,10 @@ private:
 	void _LoadImage(const std::string_view img);
 	static std::unordered_map<std::string,Renderable>GFX;
 	static std::unordered_map<std::string,Animate2D::Animation<HamsterGame::AnimationState>>ANIMATIONS;
-	static PixelGameEngine*self;
+	static HamsterGame*self;
 	Border border;
 	void DrawLevelTiles();
 	std::optional<TMXParser>currentMap;
+	std::optional<TSXParser>currentTileset;
 	double runTime{};
 };

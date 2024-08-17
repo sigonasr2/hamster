@@ -181,3 +181,7 @@ void Hamster::HandleCollision(){
 const float Hamster::GetRadius()const{
 	return collisionRadius;
 }
+
+const Terrain::TerrainType Hamster::GetTerrainStandingOn()const{
+	return HamsterGame::Game().GetTerrainTypeAtPos(GetPos());
+}

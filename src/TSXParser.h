@@ -38,6 +38,7 @@ All rights reserved.
 #pragma once
 #include <sstream>
 #include "TMXParser.h"
+#include "Terrain.h"
 
 using namespace olc;
 
@@ -53,17 +54,20 @@ struct Tileset{
     bool isTerrain=false;
     std::unordered_map<int,TileCollisionData>CollisionData;
     std::unordered_map<int,std::vector<int>>AnimationData;
+    std::unordered_map<int,std::pair<Terrain::SolidType,Terrain::TerrainType>>TerrainData;
     friend std::ostream& operator << (std::ostream& os, Tileset& rhs);
+public:
+    const std::unordered_map<int,std::pair<Terrain::SolidType,Terrain::TerrainType>>&GetTerrainData()const;
 };
 
 class TSXParser{
 	public:
-	Tileset&GetData();
+	const Tileset&GetData()const;
 	private:
 	Tileset parsedTilesetInfo;
 	void ParseTag(std::string tag);
-    std::string previousTag;
-    int previousTagID;
+    std::vector<std::string> previousTag;
+    std::vector<int> previousTagID;
 	public:
 	TSXParser(std::string file);
 };
@@ -73,12 +77,15 @@ class TSXParser{
 #ifdef TSX_PARSER_SETUP
 #undef TSX_PARSER_SETUP
     extern bool _DEBUG_MAP_LOAD_INFO;
-	Tileset&TSXParser::GetData() {
+	const Tileset&TSXParser::GetData()const{
 		return parsedTilesetInfo;
 	}
     std::ostream&operator<<(std::ostream& os, Tileset& rhs){
         os<<rhs.ImageData.FormatTagData(rhs.ImageData.data)<<"\n";
         return os;
+    }
+    const std::unordered_map<int,std::pair<Terrain::SolidType,Terrain::TerrainType>>&Tileset::GetTerrainData()const{
+        return TerrainData;
     }
     void TSXParser::ParseTag(std::string tag) {
         XMLTag newTag;
@@ -138,25 +145,42 @@ class TSXParser{
             parsedTilesetInfo.imageheight=newTag.GetInteger("height");
         } else
         if (newTag.tag=="tile"){
-            previousTag=newTag.tag;
-            previousTagID=newTag.GetInteger("id");
+            previousTag.emplace_back(newTag.tag);
+            previousTagID.emplace_back(newTag.GetInteger("id"));
         } else
-        if (newTag.tag=="frame"){
+        if(newTag.tag=="frame"){
             //The way animation data is stored is every "animation_tile_precision" ms indicating which frame we should be on.
-            for(int i=0;i<newTag.GetInteger("duration")/100;i++){
-                parsedTilesetInfo.AnimationData[previousTagID].push_back(newTag.GetInteger("tileid"));
+            for(int&tagID:previousTagID){
+                for(int i=0;i<newTag.GetInteger("duration")/100;i++){
+                    parsedTilesetInfo.AnimationData[tagID].push_back(newTag.GetInteger("tileid"));
+                }
+            }
+        } else
+        if(newTag.tag=="property"&&newTag.data["propertytype"]=="TerrainType"){
+            //The way animation data is stored is every "animation_tile_precision" ms indicating which frame we should be on.
+            for(int&tagID:previousTagID){
+                std::pair<Terrain::SolidType,Terrain::TerrainType>&tileData{parsedTilesetInfo.TerrainData[tagID]};
+                tileData.second=Terrain::TerrainType(newTag.GetInteger("value"));
+            }
+        } else
+        if(newTag.tag=="property"&&newTag.data["propertytype"]=="Solid"){
+            //The way animation data is stored is every "animation_tile_precision" ms indicating which frame we should be on.
+            for(int&tagID:previousTagID){
+                std::pair<Terrain::SolidType,Terrain::TerrainType>&tileData{parsedTilesetInfo.TerrainData[tagID]};
+                tileData.first=Terrain::SolidType(newTag.GetBool("value"));
             }
         }
-        if (newTag.tag=="object"&&previousTag=="tile"){
-            TileCollisionData data;
-            data.collision=geom2d::rect<float>{{newTag.GetFloat("x"),newTag.GetFloat("y")},{newTag.GetFloat("width"),newTag.GetFloat("height")}};
-            if(!parsedTilesetInfo.CollisionData.count(previousTagID)){
-                parsedTilesetInfo.CollisionData[previousTagID]=data;
+        if (newTag.tag=="object"&&previousTag.size()>0&&previousTag[0]=="tile"){
+            for(int&tagID:previousTagID){
+                TileCollisionData data;
+                data.collision=geom2d::rect<float>{{newTag.GetFloat("x"),newTag.GetFloat("y")},{newTag.GetFloat("width"),newTag.GetFloat("height")}};
+                if(!parsedTilesetInfo.CollisionData.count(tagID)){
+                    parsedTilesetInfo.CollisionData[tagID]=data;
+                }
             }
         }
     }
-    TSXParser::TSXParser(std::string file)
-    :previousTagID(-1){
+    TSXParser::TSXParser(std::string file){
         std::ifstream f(file,std::ios::in);
 
         std::string accumulator="";
@@ -178,6 +202,10 @@ class TSXParser{
                     //Beginning of XML tag.
                     accumulator=data;
                     if(accumulator.length()>1&&accumulator.at(1)=='/'){
+                        if(accumulator.starts_with("</tile>")){
+                            previousTag.clear();
+                            previousTagID.clear();
+                        }
                         accumulator=""; //Restart because this is an end tag.
                     }
                     if(accumulator.length()>1&&accumulator.find('>')!=std::string::npos){

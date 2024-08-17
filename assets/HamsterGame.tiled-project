@@ -13,9 +13,10 @@
         {
             "id": 1,
             "name": "TerrainType",
-            "storageType": "string",
+            "storageType": "int",
             "type": "enum",
             "values": [
+                "Void",
                 "Rock",
                 "Grass",
                 "Sand",
@@ -42,8 +43,8 @@
                 {
                     "name": "Terrain Type",
                     "propertyType": "TerrainType",
-                    "type": "string",
-                    "value": "Rock"
+                    "type": "int",
+                    "value": 0
                 }
             ],
             "name": "TileProps",

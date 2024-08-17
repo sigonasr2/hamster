@@ -7,7 +7,7 @@ geom2d::rect<float>HamsterGame::SCREEN_FRAME{{96,0},{320,288}};
 std::unordered_map<std::string,Animate2D::Animation<HamsterGame::AnimationState>>HamsterGame::ANIMATIONS;
 std::unordered_map<std::string,Renderable>HamsterGame::GFX;
 const std::string HamsterGame::ASSETS_DIR{"assets/"};
-PixelGameEngine*HamsterGame::self{nullptr};
+HamsterGame*HamsterGame::self{nullptr};
 std::unordered_map<uint32_t,Animate2D::FrameSequence>HamsterGame::ANIMATED_TILE_IDS;
 
 HamsterGame::HamsterGame(){
@@ -71,6 +71,7 @@ void HamsterGame::LoadLevel(const std::string_view mapName){
 	const vf2d levelSpawnLoc{50,50}; //TEMPORARY
 
 	currentMap=TMXParser{ASSETS_DIR+std::string(mapName)};
+	currentTileset=TSXParser{ASSETS_DIR+std::string("Terrain.tsx")};
 
 	Hamster::LoadHamsters(levelSpawnLoc);
 	camera.SetTarget(Hamster::GetPlayer().GetPos());
@@ -87,6 +88,21 @@ void HamsterGame::DrawGame(){
 	DrawLevelTiles();
 	Hamster::DrawHamsters(tv);
 	border.Draw();
+	DrawStringDecal(SCREEN_FRAME.pos+vf2d{1,1},"Terrain Type: "+Terrain::TerrainToString(Hamster::GetPlayer().GetTerrainStandingOn()),BLACK);
+	DrawStringDecal(SCREEN_FRAME.pos,"Terrain Type: "+Terrain::TerrainToString(Hamster::GetPlayer().GetTerrainStandingOn()));
+}
+
+const Terrain::TerrainType HamsterGame::GetTerrainTypeAtPos(const vf2d pos)const{
+	Terrain::TerrainType tileType{Terrain::VOID};
+	if(pos.x<=0.f||pos.y<=0.f||pos.x>=currentMap.value().GetData().GetMapData().width*16||pos.y>=currentMap.value().GetData().GetMapData().height*16)return tileType;
+	for(const LayerTag&layer:currentMap.value().GetData().GetLayers()){
+		int tileX{int(floor(pos.x)/16)};
+		int tileY{int(floor(pos.y)/16)};
+		int tileID{layer.tiles[tileY][tileX]-1};
+		if(tileID==-1)continue;
+		if(currentTileset.value().GetData().GetTerrainData().count(tileID))tileType=currentTileset.value().GetData().GetTerrainData().at(tileID).second;
+	}
+	return tileType;
 }
 
 void HamsterGame::DrawLevelTiles(){
@@ -138,7 +154,7 @@ bool HamsterGame::OnUserDestroy(){
 	return true;
 }
 
-PixelGameEngine&HamsterGame::Game(){
+HamsterGame&HamsterGame::Game(){
 	return *self;
 }
 
