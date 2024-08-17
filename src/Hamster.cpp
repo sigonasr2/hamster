@@ -60,8 +60,20 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 	for(Hamster&h:HAMSTER_LIST){
 		h.animations.UpdateState(h.internalAnimState,fElapsedTime);
 		h.frictionEnabled=true;
-		if(h.IsPlayerControlled){
-			h.HandlePlayerControls();
+		h.bumpTimer-=fElapsedTime;
+		h.HandleCollision();
+		switch(h.state){
+			case NORMAL:{
+				//TODO: NPC controls.
+				if(h.IsPlayerControlled){
+					h.HandlePlayerControls();
+				}
+			}break;
+			case BUMPED:{
+				if(h.bumpTimer<=0.f){
+					h.state=NORMAL;
+				}
+			}break;
 		}
 		h.TurnTowardsTargetDirection();
 		h.MoveHamster();
@@ -134,4 +146,38 @@ void Hamster::MoveHamster(){
 			vel=vf2d{std::max(0.f,currentVel.polar().x-friction*HamsterGame::Game().GetElapsedTime()),currentVel.polar().y}.cart();
 		}
 	#pragma endregion
+}
+
+void Hamster::HandleCollision(){
+	for(Hamster&h:HAMSTER_LIST){
+		if(this==&h)continue;
+		if(geom2d::overlaps(geom2d::circle<float>(GetPos(),GetRadius()),geom2d::circle<float>(h.GetPos(),h.GetRadius()))){
+			if(geom2d::line<float>(GetPos(),h.GetPos()).length()==0.f){ //Push these two in random directions, they are on top of each other!
+				float randDir{util::random(2*geom2d::pi)};
+				vf2d collisionResolve1{GetPos()+vf2d{GetRadius(),randDir}.cart()};
+				vf2d collisionResolve2{h.GetPos()+vf2d{h.GetRadius(),float(randDir+geom2d::pi)}.cart()};
+				pos=collisionResolve1;
+				h.pos=collisionResolve2;
+				vel=vf2d{100.f,randDir}.cart();
+				h.vel=vf2d{100.f,float(randDir+geom2d::pi)}.cart();
+			}else{
+				geom2d::line<float>collisionLine{geom2d::line<float>(GetPos(),h.GetPos())};
+				float distance{collisionLine.length()};
+				float totalRadii{GetRadius()+h.GetRadius()};
+				float bumpDistance{totalRadii-distance};
+				vf2d collisionResolve1{GetPos()+vf2d{bumpDistance/2.f,float(collisionLine.vector().polar().y+geom2d::pi)}.cart()};
+				vf2d collisionResolve2{h.GetPos()+vf2d{bumpDistance/2.f,collisionLine.vector().polar().y}.cart()};
+				pos=collisionResolve1;
+				h.pos=collisionResolve2;
+				vel=vf2d{100.f,float(collisionLine.vector().polar().y+geom2d::pi)}.cart();
+				h.vel=vf2d{100.f,collisionLine.vector().polar().y}.cart();
+			}
+			state=h.state=BUMPED;
+			bumpTimer=h.bumpTimer=0.12f;
+		}
+	}
+}
+
+const float Hamster::GetRadius()const{
+	return collisionRadius;
 }

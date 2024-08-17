@@ -47,6 +47,11 @@ class Hamster{
 		NPC=false,
 	};
 
+	enum PlayerState{
+		NORMAL,
+		BUMPED,
+	};
+
 	static std::vector<Hamster>HAMSTER_LIST;
 
 	static const uint8_t MAX_HAMSTER_COUNT;
@@ -64,11 +69,14 @@ class Hamster{
 	float timeToMaxSpd{0.5f};
 	float friction{400.f};
 	bool frictionEnabled{false};
+	float collisionRadius{12.f};
+	float bumpTimer{};
 	std::string img;
 	Animate2D::Animation<HamsterGame::AnimationState>animations;
 	Animate2D::AnimationState internalAnimState;
 	PlayerControlled IsPlayerControlled;
 	static std::optional<Hamster*>playerHamster;
+	PlayerState state{NORMAL};
 public:
 	Hamster(const vf2d spawnPos,const std::string_view img,const PlayerControlled IsPlayerControlled=NPC);
 	static const Hamster&GetPlayer();
@@ -80,4 +88,6 @@ public:
 	void HandlePlayerControls();
 	void TurnTowardsTargetDirection();
 	void MoveHamster();
+	void HandleCollision();
+	const float GetRadius()const;
 };
