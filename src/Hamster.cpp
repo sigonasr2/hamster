@@ -99,9 +99,9 @@ void Hamster::DrawHamsters(TransformedView&tv){
 		const Animate2D::Frame&img{h.animations.GetState(h.internalAnimState)==HamsterGame::DEFAULT?anim.GetFrame(h.distanceTravelled/100.f):h.GetCurrentAnimation()};
 		const Animate2D::Frame&wheelTopImg{wheelTopAnim.GetFrame(h.distanceTravelled/80.f)};
 		const Animate2D::Frame&wheelBottomImg{wheelBottomAnim.GetFrame(h.distanceTravelled/80.f)};
-		tv.DrawPartialRotatedDecal(h.pos,wheelBottomImg.GetSourceImage()->Decal(),h.rot,wheelBottomImg.GetSourceRect().size/2,wheelBottomImg.GetSourceRect().pos,wheelBottomImg.GetSourceRect().size);
+		if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos,wheelBottomImg.GetSourceImage()->Decal(),h.rot,wheelBottomImg.GetSourceRect().size/2,wheelBottomImg.GetSourceRect().pos,wheelBottomImg.GetSourceRect().size);
 		tv.DrawPartialRotatedDecal(h.pos,img.GetSourceImage()->Decal(),h.rot,img.GetSourceRect().size/2,img.GetSourceRect().pos,img.GetSourceRect().size);
-		tv.DrawPartialRotatedDecal(h.pos,wheelTopImg.GetSourceImage()->Decal(),h.rot,wheelTopImg.GetSourceRect().size/2,wheelTopImg.GetSourceRect().pos,wheelTopImg.GetSourceRect().size,{1.f,1.f},{255,255,255,192});
+		if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos,wheelTopImg.GetSourceImage()->Decal(),h.rot,wheelTopImg.GetSourceRect().size/2,wheelTopImg.GetSourceRect().pos,wheelTopImg.GetSourceRect().size,{1.f,1.f},{255,255,255,192});
 	}
 }
 
@@ -186,6 +186,12 @@ void Hamster::HandleCollision(){
 			bumpTimer=h.bumpTimer=0.12f;
 		}
 	}
+	for(Powerup&powerup:Powerup::GetPowerups()){
+		if(!HasPowerup(powerup.GetType())&&geom2d::overlaps(geom2d::circle<float>(GetPos(),collisionRadius),geom2d::circle<float>(powerup.GetPos(),20.f))){
+			ObtainPowerup(powerup.GetType());
+			powerup.OnPowerupObtain();
+		}
+	}
 }
 
 const float Hamster::GetRadius()const{
@@ -239,4 +245,12 @@ const float Hamster::GetTurnSpeed()const{
 const float Hamster::GetBumpAmount()const{
 	float finalBumpAmt{DEFAULT_BUMP_AMT};
 	return finalBumpAmt*GetMaxSpeed()/DEFAULT_MAX_SPD;
+}
+
+void Hamster::ObtainPowerup(const Powerup::PowerupType powerup){
+	powerups.insert(powerup);
+	
+}
+const bool Hamster::HasPowerup(const Powerup::PowerupType powerup)const{
+	return powerups.count(powerup);
 }

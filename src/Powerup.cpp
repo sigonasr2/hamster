@@ -55,7 +55,7 @@ const vf2d&Powerup::GetPos()const{
 const Powerup::PowerupType&Powerup::GetType()const{
 	return type;
 }
-const std::vector<Powerup>&Powerup::GetPowerups(){
+std::vector<Powerup>&Powerup::GetPowerups(){
 	return powerupList;
 }
 
@@ -88,9 +88,30 @@ const Powerup::PowerupType Powerup::TileIDPowerupType(const int tileId){
 	return powerupIds.at(tileId).first;
 }
 
+void Powerup::UpdatePowerups(const float fElapsedTime){
+	for(Powerup&powerup:powerupList){
+		powerup.z=abs(pow(sin(HamsterGame::Game().GetRuntime()/1.5f*geom2d::pi),4.f)*4)+5;
+		if(powerup.spinSpd>0.f){
+			powerup.spinSpd+=fElapsedTime;
+			if(powerup.spinSpd>=3.f)powerup.spinSpd=0.f;
+		}
+	}
+}
+
 void Powerup::DrawPowerups(TransformedView&tv){
 	for(const Powerup&powerup:powerupList){
-		geom2d::rect<float>spriteRect{POWERUP_TILESET_STARTING_POS+vf2d{int(powerup.GetType())*32.f,0.f},{32,32}};
-		tv.DrawPartialRotatedDecal(powerup.GetPos(),HamsterGame::GetGFX("gametiles.png").Decal(),0.f,{16,16},spriteRect.pos,spriteRect.size);
+		geom2d::rect<float>spriteRect{GetPowerupSubimageRect(powerup.GetType())};
+		tv.DrawRotatedDecal(powerup.GetPos(),HamsterGame::GetGFX("shadow.png").Decal(),0.f,{16,16});
+		float scaleX{1.f};
+		if(powerup.spinSpd>0.f)scaleX=sin(geom2d::pi*HamsterGame::Game().GetRuntime()/powerup.spinSpd);
+		tv.DrawPartialRotatedDecal(powerup.GetPos()-vf2d{0,powerup.z},HamsterGame::GetGFX("gametiles.png").Decal(),0.f,{16,16},spriteRect.pos,spriteRect.size,{scaleX,1.f});
 	}
+}
+
+const geom2d::rect<float>Powerup::GetPowerupSubimageRect(const PowerupType powerupType){
+	return {POWERUP_TILESET_STARTING_POS+vf2d{int(powerupType)*32.f,0.f},{32,32}};
+}
+
+void Powerup::OnPowerupObtain(){
+	spinSpd=0.3f;
 }

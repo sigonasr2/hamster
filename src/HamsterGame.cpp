@@ -38,6 +38,7 @@ void HamsterGame::_LoadImage(const std::string_view img){
 void HamsterGame::LoadGraphics(){
 	_LoadImage("border.png");
 	_LoadImage("gametiles.png");
+	_LoadImage("shadow.png");
 }
 
 void HamsterGame::LoadAnimations(){
@@ -96,6 +97,7 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 	camera.Update(fElapsedTime);
 	tv.SetWorldOffset(-SCREEN_FRAME.pos+camera.GetViewPosition());
 	Hamster::UpdateHamsters(fElapsedTime);
+	Powerup::UpdatePowerups(fElapsedTime);
 	border.Update(fElapsedTime);
 }
 
@@ -106,6 +108,24 @@ void HamsterGame::DrawGame(){
 	border.Draw();
 	DrawStringDecal(SCREEN_FRAME.pos+vf2d{1,1},"Terrain Type: "+Terrain::TerrainToString(Hamster::GetPlayer().GetTerrainStandingOn()),BLACK);
 	DrawStringDecal(SCREEN_FRAME.pos,"Terrain Type: "+Terrain::TerrainToString(Hamster::GetPlayer().GetTerrainStandingOn()));
+
+	for(int y:std::ranges::iota_view(0,4)){
+		for(int x:std::ranges::iota_view(0,2)){
+			const int powerupInd{y*2+x};
+			const float drawX{x*32.f+12.f};
+			const float drawY{y*32.f+12.f+96.f};
+			const Powerup::PowerupType powerupType{Powerup::PowerupType(powerupInd)};
+			const geom2d::rect<float>powerupSubimageRect{Powerup::GetPowerupSubimageRect(powerupType)};
+			if(Hamster::GetPlayer().HasPowerup(powerupType)){
+				SetDecalMode(DecalMode::ADDITIVE);
+				DrawPartialRotatedDecal(vf2d{drawX,drawY}+16,GetGFX("gametiles.png").Decal(),0.f,{16.f,16.f},powerupSubimageRect.pos,powerupSubimageRect.size,{1.1f,1.1f});
+				SetDecalMode(DecalMode::NORMAL);
+				DrawPartialDecal({drawX,drawY},GetGFX("gametiles.png").Decal(),powerupSubimageRect.pos,powerupSubimageRect.size);
+			}else{
+				DrawPartialDecal({drawX,drawY},GetGFX("gametiles.png").Decal(),powerupSubimageRect.pos,powerupSubimageRect.size,{1.f,1.f},VERY_DARK_GREY);
+			}
+		}
+	}
 }
 
 const Terrain::TerrainType HamsterGame::GetTerrainTypeAtPos(const vf2d pos)const{

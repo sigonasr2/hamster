@@ -62,17 +62,22 @@ private:
 	static std::unordered_map<int,std::pair<PowerupType,TileType>>powerupIds;
 	static const vf2d POWERUP_TILESET_STARTING_POS;
 	vf2d pos;
+	float z{5.f};
+	float spinSpd{};
 	PowerupType type;
 public:
 	Powerup(const vf2d pos,const PowerupType type);
 	static void Initialize(const std::vector<Powerup>&powerupList);
 	const vf2d&GetPos()const;
 	const PowerupType&GetType()const;
-	static const std::vector<Powerup>&GetPowerups();
+	static std::vector<Powerup>&GetPowerups();
 	static void AddOrUpdatePowerupIdList(const int powerupId,const PowerupType powerupType);
 	static void AddOrUpdatePowerupIdList(const int powerupId,const TileType powerupTileType);
 	static const bool TileIDIsPowerupTile(const int tileId);
 	static const bool TileIDIsUpperLeftPowerupTile(const int tileId);
 	static const PowerupType TileIDPowerupType(const int tileId);
+	static void UpdatePowerups(const float fElapsedTime);
 	static void DrawPowerups(TransformedView&tv);
+	static const geom2d::rect<float>GetPowerupSubimageRect(const PowerupType powerupType);
+	void OnPowerupObtain();
 };
