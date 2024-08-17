@@ -57,6 +57,8 @@ void HamsterGame::LoadAnimations(){
 	};
 
 	LoadAnimation(DEFAULT,"hamster.png",{{0,32},{32,32}},0.3f);
+	LoadAnimation(WHEEL_TOP,"hamster.png",{{0,96},{32,96}},0.1f);
+	LoadAnimation(WHEEL_BOTTOM,"hamster.png",{{64,96},{96,96}},0.1f);
 	Animate2D::FrameSequence&waterAnimFrames{(*ANIMATED_TILE_IDS.insert({1384,Animate2D::FrameSequence{0.2f}}).first).second};
 	for(vf2d&sourcePos:std::vector<vf2d>{{192+16*0,784},{192+16*1,784},{192+16*2,784},{192+16*3,784},{192+16*4,784},{192+16*5,784},{192+16*6,784},{192+16*7,784}}){
 		waterAnimFrames.AddFrame(Animate2D::Frame{&GetGFX("gametiles.png"),{sourcePos,{16,16}}});

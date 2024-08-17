@@ -48,7 +48,7 @@ class Hamster{
 		NPC=false,
 	};
 
-	enum PlayerState{
+	enum HamsterState{
 		NORMAL,
 		BUMPED,
 	};
@@ -74,12 +74,13 @@ class Hamster{
 	bool frictionEnabled{false};
 	float collisionRadius{12.f};
 	float bumpTimer{};
+	double distanceTravelled{};
 	std::string img;
 	Animate2D::Animation<HamsterGame::AnimationState>animations;
 	Animate2D::AnimationState internalAnimState;
 	PlayerControlled IsPlayerControlled;
 	static std::optional<Hamster*>playerHamster;
-	PlayerState state{NORMAL};
+	HamsterState state{NORMAL};
 public:
 	Hamster(const vf2d spawnPos,const std::string_view img,const PlayerControlled IsPlayerControlled=NPC);
 	static const Hamster&GetPlayer();

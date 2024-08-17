@@ -93,8 +93,15 @@ void Hamster::LoadHamsters(const vf2d startingLoc){
 
 void Hamster::DrawHamsters(TransformedView&tv){
 	for(Hamster&h:HAMSTER_LIST){
-		const Animate2D::Frame&img{h.GetCurrentAnimation()};
+		const Animate2D::FrameSequence&anim{h.animations.GetFrames(h.internalAnimState)};
+		const Animate2D::FrameSequence&wheelTopAnim{h.animations.GetFrames(HamsterGame::WHEEL_TOP)};
+		const Animate2D::FrameSequence&wheelBottomAnim{h.animations.GetFrames(HamsterGame::WHEEL_BOTTOM)};
+		const Animate2D::Frame&img{h.animations.GetState(h.internalAnimState)==HamsterGame::DEFAULT?anim.GetFrame(h.distanceTravelled/100.f):h.GetCurrentAnimation()};
+		const Animate2D::Frame&wheelTopImg{wheelTopAnim.GetFrame(h.distanceTravelled/80.f)};
+		const Animate2D::Frame&wheelBottomImg{wheelBottomAnim.GetFrame(h.distanceTravelled/80.f)};
+		tv.DrawPartialRotatedDecal(h.pos,wheelBottomImg.GetSourceImage()->Decal(),h.rot,wheelBottomImg.GetSourceRect().size/2,wheelBottomImg.GetSourceRect().pos,wheelBottomImg.GetSourceRect().size);
 		tv.DrawPartialRotatedDecal(h.pos,img.GetSourceImage()->Decal(),h.rot,img.GetSourceRect().size/2,img.GetSourceRect().pos,img.GetSourceRect().size);
+		tv.DrawPartialRotatedDecal(h.pos,wheelTopImg.GetSourceImage()->Decal(),h.rot,wheelTopImg.GetSourceRect().size/2,wheelTopImg.GetSourceRect().pos,wheelTopImg.GetSourceRect().size,{1.f,1.f},{255,255,255,192});
 	}
 }
 
@@ -140,6 +147,8 @@ void Hamster::TurnTowardsTargetDirection(){
 
 void Hamster::MoveHamster(){
 	pos+=vel*HamsterGame::Game().GetElapsedTime();
+	
+	distanceTravelled+=vel.mag()*HamsterGame::Game().GetElapsedTime();
 
 	#pragma region Handle Friction
 		if(frictionEnabled){

@@ -117,6 +117,11 @@ namespace olc::utils::Animate2D
 			m_nStyle = nStyle;
 		}
 
+		inline void ChangeFrameDuration(const float fFrameDuration){
+			m_fFrameDuration = fFrameDuration;
+			m_fFrameRate = 1.0f / m_fFrameDuration;
+		}
+
 		// Adds a frame to this sequence
 		inline void AddFrame(const Frame& frame)
 		{
@@ -165,6 +170,7 @@ namespace olc::utils::Animate2D
 	// that are animated. Under normal circumstances, it is never updated manually
 	struct AnimationState
 	{
+
 	private:
 		size_t nIndex = 0;
 		float fTime = 0.0f;		
@@ -212,10 +218,24 @@ namespace olc::utils::Animate2D
 		{
 			m_vSequences.emplace_back(sequence);
 			m_mapStateIndices[sStateName] = m_vSequences.size() - 1;
+			m_mapIndexStates[m_vSequences.size() - 1] = sStateName;
+		}
+
+		inline const FrameSequence&GetFrames(const StatesEnum&sStateName)const{
+			return m_vSequences.at(m_mapStateIndices.at(sStateName));
+		}
+
+		inline const FrameSequence&GetFrames(const AnimationState& state)const{
+			return m_vSequences.at(state.nIndex);
+		}
+
+		inline const StatesEnum&GetState(const AnimationState& state)const{
+			return m_mapIndexStates.at(state.nIndex);
 		}
 
 	private:
 		std::vector<FrameSequence> m_vSequences;
 		std::unordered_map<StatesEnum, size_t> m_mapStateIndices;
+		std::unordered_map<size_t,StatesEnum> m_mapIndexStates;
 	};
 }

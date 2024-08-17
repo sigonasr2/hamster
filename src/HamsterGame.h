@@ -52,6 +52,8 @@ class HamsterGame : public olc::PixelGameEngine
 public:
 	enum AnimationState{
 		DEFAULT,
+		WHEEL_TOP,
+		WHEEL_BOTTOM,
 	};
 
 	HamsterGame();
