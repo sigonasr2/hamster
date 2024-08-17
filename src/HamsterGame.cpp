@@ -13,7 +13,9 @@ HamsterGame::HamsterGame()
 }
 
 bool HamsterGame::OnUserCreate(){
-	tv.Initialise({320,288},{1,1});
+	camera=Camera2D{SCREEN_FRAME.size};
+	camera.SetMode(Camera2D::Mode::LazyFollow);
+	tv.Initialise(SCREEN_FRAME.size,{1,1});
 	tv.SetWorldOffset(-SCREEN_FRAME.pos);
 	LoadGraphics();
 	LoadAnimations();
@@ -54,9 +56,12 @@ void HamsterGame::LoadAnimations(){
 void HamsterGame::LoadLevel(){
 	const vf2d levelSpawnLoc{50,50}; //TEMPORARY
 	Hamster::LoadHamsters(levelSpawnLoc);
+	camera.SetTarget(Hamster::GetPlayer().GetPos());
 }
 
 void HamsterGame::UpdateGame(const float fElapsedTime){
+	camera.Update(fElapsedTime);
+	tv.SetWorldOffset(-SCREEN_FRAME.pos+camera.GetViewPosition());
 	Hamster::UpdateHamsters(fElapsedTime);
 }
 

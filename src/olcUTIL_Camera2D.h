@@ -116,7 +116,7 @@ namespace olc::utils
 		}
 
 		// Set tracked point via pointer
-		inline void SetTarget(olc::vf2d& vTarget)
+		inline void SetTarget(const olc::vf2d& vTarget)
 		{
 			m_pTarget = &vTarget;
 		}
@@ -242,7 +242,7 @@ namespace olc::utils
 		Mode m_nMode = Mode::Simple;
 
 		// Target Vector2D object camera should follow (either ref or ptr)
-		olc::vf2d* m_pTarget = nullptr;
+		const olc::vf2d* m_pTarget = nullptr;
 		olc::vf2d m_vLocalTarget;
 
 		// World Boundary

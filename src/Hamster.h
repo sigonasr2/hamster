@@ -49,6 +49,7 @@ class Hamster{
 
 	static std::vector<Hamster>HAMSTER_LIST;
 
+	static const uint8_t MAX_HAMSTER_COUNT;
 	static const uint8_t NPC_HAMSTER_COUNT;
 
 	static const std::vector<std::string>NPC_HAMSTER_IMAGES;
@@ -60,11 +61,14 @@ class Hamster{
 	std::string img;
 	Animate2D::Animation<HamsterGame::AnimationState>animations;
 	Animate2D::AnimationState internalAnimState;
-	PlayerControlled playerControlled;
+	PlayerControlled IsPlayerControlled;
+	static std::optional<Hamster*>playerHamster;
 public:
-	Hamster(const vf2d spawnPos,const std::string_view img,const PlayerControlled playerControlled=NPC);
+	Hamster(const vf2d spawnPos,const std::string_view img,const PlayerControlled IsPlayerControlled=NPC);
+	static const Hamster&GetPlayer();
 	static void UpdateHamsters(const float fElapsedTime);
 	static void LoadHamsters(const vf2d startingLoc);
 	static void DrawHamsters(TransformedView&tv);
 	const Animate2D::Frame&GetCurrentAnimation()const;
+	const vf2d&GetPos()const;
 };

@@ -42,14 +42,16 @@ All rights reserved.
 #include <ranges>
 
 std::vector<Hamster>Hamster::HAMSTER_LIST;
+const uint8_t Hamster::MAX_HAMSTER_COUNT{100U};
 const uint8_t Hamster::NPC_HAMSTER_COUNT{5U};
 const std::vector<std::string>Hamster::NPC_HAMSTER_IMAGES{
 	"hamster.png",
 };
 const std::string Hamster::PLAYER_HAMSTER_IMAGE{"hamster.png"};
+std::optional<Hamster*>Hamster::playerHamster;
 
-Hamster::Hamster(const vf2d spawnPos,const std::string_view img,const PlayerControlled playerControlled)
-:pos(spawnPos),playerControlled(playerControlled){
+Hamster::Hamster(const vf2d spawnPos,const std::string_view img,const PlayerControlled IsPlayerControlled)
+:pos(spawnPos),IsPlayerControlled(IsPlayerControlled){
 	animations=HamsterGame::GetAnimations(img);
 	animations.ChangeState(internalAnimState,HamsterGame::DEFAULT);
 }
@@ -62,7 +64,10 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 
 void Hamster::LoadHamsters(const vf2d startingLoc){
 	HAMSTER_LIST.clear();
-	HAMSTER_LIST.emplace_back(startingLoc,PLAYER_HAMSTER_IMAGE,PLAYER_CONTROLLED);
+	playerHamster.reset();
+	HAMSTER_LIST.reserve(MAX_HAMSTER_COUNT);
+	if(NPC_HAMSTER_COUNT+1>MAX_HAMSTER_COUNT)throw std::runtime_error{std::format("WARNING! Max hamster count is too high! Please expand the MAX_HAMSTER_COUNT if you want more hamsters. Requested {} hamsters.",MAX_HAMSTER_COUNT)};
+	playerHamster=&HAMSTER_LIST.emplace_back(startingLoc,PLAYER_HAMSTER_IMAGE,PLAYER_CONTROLLED);
 	for(int i:std::ranges::iota_view(0U,NPC_HAMSTER_COUNT)){
 		HAMSTER_LIST.emplace_back(startingLoc,NPC_HAMSTER_IMAGES.at(util::random()%NPC_HAMSTER_IMAGES.size()),NPC);
 	}
@@ -77,4 +82,13 @@ void Hamster::DrawHamsters(TransformedView&tv){
 
 const Animate2D::Frame&Hamster::GetCurrentAnimation()const{
 	return animations.GetFrame(internalAnimState);
+}
+
+const Hamster&Hamster::GetPlayer(){
+	if(!playerHamster.has_value())throw std::runtime_error{std::format("WARNING! Player is not created at this time! There should not be any code referencing the player at this moment!")};
+	return *playerHamster.value();
+}
+
+const vf2d&Hamster::GetPos()const{
+	return pos;
 }
