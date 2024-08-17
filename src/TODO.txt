@@ -8,6 +8,8 @@ Swamp - 50%, after 5 seconds: Hamster sinks and respawns.
 	Hardness: SOFT
 Lava - Hamster melts (*dies*) and respawns.
 	Hardness: SOFT
+Ice - Very Slippery, acceleration massively reduced.
+	Hardness: HARD
 Shore - 80%
 	Hardness: MEDIUM
 Deep Water - 10%, after 5 seconds: Hamster drowns and respawns.
@@ -16,6 +18,11 @@ Forests - 50%
 	Hardness: MEDIUM
 Tunnels - Transports you from Point A to Point B. Takes a small animation to enter/exit
 	Hardness: HARD
+
+When walking on tiles, particles left behind will use colors from the tile we are walking on.
+Solid Tiles
+Forest overrides whatever it's layered on.
+
 
 Radar - Display nearby upgrades as icons. Also displays checkpoints.
 
@@ -26,6 +33,7 @@ Upgrades -
 	Swamp - 80%, no more sinking
 	Lava - Fire-resistant, can run on lava.
 	Forest - No slowdown in forests
+	Ice - Normal Grip on Ice, normal acceleration.
 
 Penalties -
 	If you have to get shuttled by the Hamster Rescue Boat, you lose all upgrades

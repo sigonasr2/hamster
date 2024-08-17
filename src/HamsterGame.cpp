@@ -90,24 +90,27 @@ void HamsterGame::DrawGame(){
 }
 
 void HamsterGame::DrawLevelTiles(){
-	for(float y=tv.GetWorldTL().y-16;y<=tv.GetWorldBR().y+16;y+=16){
-		for(float x=tv.GetWorldTL().x-1+SCREEN_FRAME.pos.x;x<=tv.GetWorldBR().x+16+SCREEN_FRAME.pos.x;x+=16){
-			if(x<=0.f||y<=0.f||x>=currentMap.value().GetData().GetMapData().width*16||y>=currentMap.value().GetData().GetMapData().height*16)continue;
-			const int numTilesWide{GetGFX("gametiles.png").Sprite()->width/16};
-			const int numTilesTall{GetGFX("gametiles.png").Sprite()->height/16};
+	for(const LayerTag&layer:currentMap.value().GetData().GetLayers()){
+		for(float y=tv.GetWorldTL().y-16;y<=tv.GetWorldBR().y+16;y+=16){
+			for(float x=tv.GetWorldTL().x-1+SCREEN_FRAME.pos.x;x<=tv.GetWorldBR().x+16+SCREEN_FRAME.pos.x;x+=16){
+				if(x<=0.f||y<=0.f||x>=currentMap.value().GetData().GetMapData().width*16||y>=currentMap.value().GetData().GetMapData().height*16)continue;
+				const int numTilesWide{GetGFX("gametiles.png").Sprite()->width/16};
+				const int numTilesTall{GetGFX("gametiles.png").Sprite()->height/16};
 
-			int tileX{int(floor(x)/16)};
-			int tileY{int(floor(y)/16)};
-			int tileID{currentMap.value().GetData().GetLayers()[0].tiles[tileY][tileX]-1};
+				int tileX{int(floor(x)/16)};
+				int tileY{int(floor(y)/16)};
+				int tileID{layer.tiles[tileY][tileX]-1};
+				if(tileID==-1)continue;
 
-			int imgTileX{tileID%numTilesWide};
-			int imgTileY{tileID/numTilesWide};
-			if(ANIMATED_TILE_IDS.count(tileID)){
-				Animate2D::FrameSequence&animatedTile{ANIMATED_TILE_IDS[tileID]};
-				const Animate2D::Frame&currentFrame{animatedTile.GetFrame(runTime)};
-				tv.DrawPartialDecal(vf2d{float(tileX),float(tileY)}*16,currentFrame.GetSourceImage()->Decal(),currentFrame.GetSourceRect().pos,currentFrame.GetSourceRect().size);
-			}else{
-				tv.DrawPartialDecal(vf2d{float(tileX),float(tileY)}*16,GetGFX("gametiles.png").Decal(),vf2d{float(imgTileX),float(imgTileY)}*16,{16,16});
+				int imgTileX{tileID%numTilesWide};
+				int imgTileY{tileID/numTilesWide};
+				if(ANIMATED_TILE_IDS.count(tileID)){
+					Animate2D::FrameSequence&animatedTile{ANIMATED_TILE_IDS[tileID]};
+					const Animate2D::Frame&currentFrame{animatedTile.GetFrame(runTime)};
+					tv.DrawPartialDecal(vf2d{float(tileX),float(tileY)}*16,currentFrame.GetSourceImage()->Decal(),currentFrame.GetSourceRect().pos,currentFrame.GetSourceRect().size);
+				}else{
+					tv.DrawPartialDecal(vf2d{float(tileX),float(tileY)}*16,GetGFX("gametiles.png").Decal(),vf2d{float(imgTileX),float(imgTileY)}*16,{16,16});
+				}
 			}
 		}
 	}

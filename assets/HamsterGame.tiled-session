@@ -7,13 +7,32 @@
     "expandedProjectPaths": [
     ],
     "fileStates": {
+        "TestLevel.tmx": {
+            "scale": 4,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 174.625,
+                "y": 138.625
+            }
+        },
+        "TreeTemplates.tmx": {
+            "scale": 4,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 192.125,
+                "y": 87.875
+            }
+        }
     },
     "frame.defaultDuration": 200,
     "last.imagePath": "C:/Users/sigon/source/repos/hamster/assets",
     "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
     "openFiles": [
     ],
     "project": "HamsterGame.tiled-project",
+    "property.type": "TerrainType",
     "recentFiles": [
     ],
     "tileset.lastUsedFormat": "tsx",

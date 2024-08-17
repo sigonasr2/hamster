@@ -10,5 +10,55 @@
     "properties": [
     ],
     "propertyTypes": [
+        {
+            "id": 1,
+            "name": "TerrainType",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "Rock",
+                "Grass",
+                "Sand",
+                "Swamp",
+                "Lava",
+                "Shore",
+                "Ocean",
+                "Forest",
+                "Tunnel",
+                "Ice"
+            ],
+            "valuesAsFlags": false
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 2,
+            "members": [
+                {
+                    "name": "Solid",
+                    "type": "bool",
+                    "value": false
+                },
+                {
+                    "name": "Terrain Type",
+                    "propertyType": "TerrainType",
+                    "type": "string",
+                    "value": "Rock"
+                }
+            ],
+            "name": "TileProps",
+            "type": "class",
+            "useAs": [
+                "property",
+                "map",
+                "layer",
+                "object",
+                "tile",
+                "tileset",
+                "wangcolor",
+                "wangset",
+                "project"
+            ]
+        }
     ]
 }

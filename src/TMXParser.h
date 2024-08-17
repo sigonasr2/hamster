@@ -129,7 +129,7 @@ struct Property{
 
 class TMXParser{
     public:
-    Map GetData();
+    Map&GetData();
     private:
     Map parsedMapInfo;
     std::string fileName;
@@ -256,7 +256,7 @@ class TMXParser{
             rhs.FormatLayerData(os,rhs.LayerData) <<"\n";
         return os;
     }
-    Map TMXParser::GetData() {
+    Map&TMXParser::GetData() {
         return parsedMapInfo;
     }
     void TMXParser::ParseTag(std::string tag) {
