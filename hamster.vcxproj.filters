@@ -49,9 +49,6 @@
     <ClInclude Include="src\olcPGEX_MiniAudio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\olcPGEX_ViewPort.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\olcPixelGameEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -68,6 +65,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\olcPGEX_TransformedView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

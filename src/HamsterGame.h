@@ -39,7 +39,7 @@ All rights reserved.
 #include <unordered_map>
 #include "olcUTIL_Geometry2D.h"
 #include "olcUTIL_Animate2D.h"
-#include "olcPGEX_ViewPort.h"
+#include "olcPGEX_TransformedView.h"
 #include "olcUTIL_Camera2D.h"
 
 class HamsterGame : public olc::PixelGameEngine
@@ -52,7 +52,7 @@ public:
 
 	HamsterGame();
 	static geom2d::rect<float>SCREEN_FRAME;
-	const ViewPort gameWindow{{SCREEN_FRAME.pos,SCREEN_FRAME.pos+vf2d{0.f,SCREEN_FRAME.size.y},SCREEN_FRAME.pos+SCREEN_FRAME.size,SCREEN_FRAME.pos+vf2d{SCREEN_FRAME.size.x,0.f}},{96,0}};
+	TransformedView tv{};
 public:
 	bool OnUserCreate()override final;
 	bool OnUserUpdate(float fElapsedTime)override final;

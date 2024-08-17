@@ -40,7 +40,6 @@ All rights reserved.
 #include <vector>
 #include "olcUTIL_Geometry2D.h"
 #include "olcUTIL_Animate2D.h"
-#include "olcPGEX_ViewPort.h"
 
 class Hamster{
 	enum PlayerControlled{
@@ -66,6 +65,6 @@ public:
 	Hamster(const vf2d spawnPos,const std::string_view img,const PlayerControlled playerControlled=NPC);
 	static void UpdateHamsters(const float fElapsedTime);
 	static void LoadHamsters(const vf2d startingLoc);
-	static void DrawHamsters(const ViewPort&view);
+	static void DrawHamsters(TransformedView&tv);
 	const Animate2D::Frame&GetCurrentAnimation()const;
 };

@@ -13,6 +13,8 @@ HamsterGame::HamsterGame()
 }
 
 bool HamsterGame::OnUserCreate(){
+	tv.Initialise({320,288},{1,1});
+	tv.SetWorldOffset(-SCREEN_FRAME.pos);
 	LoadGraphics();
 	LoadAnimations();
 	LoadLevel(); //THIS IS TEMPORARY.
@@ -59,9 +61,9 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 }
 
 void HamsterGame::DrawGame(){
+	tv.FillRectDecal({10,10},{500.f,150.f},WHITE);
+	Hamster::DrawHamsters(tv);
 	DrawDecal({},GetGFX("border.png").Decal());
-	gameWindow.FillRectDecal({},{500.f,150.f},WHITE);
-	Hamster::DrawHamsters(gameWindow);
 }
 
 bool HamsterGame::OnUserUpdate(float fElapsedTime){

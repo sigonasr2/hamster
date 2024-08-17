@@ -350,7 +350,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="src\HamsterGame.h" />
     <ClInclude Include="src\miniaudio.h" />
     <ClInclude Include="src\olcPGEX_MiniAudio.h" />
-    <ClInclude Include="src\olcPGEX_ViewPort.h" />
+    <ClInclude Include="src\olcPGEX_TransformedView.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="src\olcPixelGameEngine.h" />
     <ClInclude Include="src\olcUTIL_Animate2D.h" />
     <ClInclude Include="src\olcUTIL_Camera2D.h" />

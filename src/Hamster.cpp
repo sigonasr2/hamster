@@ -68,10 +68,10 @@ void Hamster::LoadHamsters(const vf2d startingLoc){
 	}
 }
 
-void Hamster::DrawHamsters(const ViewPort&view){
+void Hamster::DrawHamsters(TransformedView&tv){
 	for(Hamster&h:HAMSTER_LIST){
 		const Animate2D::Frame&img{h.GetCurrentAnimation()};
-		view.DrawPartialRotatedDecal(h.pos,img.GetSourceImage()->Decal(),h.rot,img.GetSourceRect().size/2,img.GetSourceRect().pos,img.GetSourceRect().size);
+		tv.DrawPartialRotatedDecal(h.pos,img.GetSourceImage()->Decal(),h.rot,img.GetSourceRect().size/2,img.GetSourceRect().pos,img.GetSourceRect().size);
 	}
 }
 
