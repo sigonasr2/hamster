@@ -2532,4 +2532,5 @@ namespace olc::utils::geom2d
 
 #endif // PGE_VER
 
+using namespace olc;
 using namespace olc::utils;

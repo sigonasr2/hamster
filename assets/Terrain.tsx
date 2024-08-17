@@ -597,7 +597,7 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="1"/>
   </properties>
  </tile>
- <tile id="101" type="TileProps"/>
+ <tile id="101" type="TileProps" probability="20"/>
  <tile id="102" type="TileProps">
   <properties>
    <property name="Solid" type="bool" value="true"/>
@@ -1753,7 +1753,7 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="1"/>
   </properties>
  </tile>
- <tile id="297" type="TileProps">
+ <tile id="297" type="TileProps" probability="20">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="3"/>
   </properties>
@@ -2839,7 +2839,7 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="1"/>
   </properties>
  </tile>
- <tile id="479" type="TileProps">
+ <tile id="479" type="TileProps" probability="20">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="10"/>
   </properties>
@@ -4882,7 +4882,7 @@
  <tile id="977" type="TileProps"/>
  <tile id="978" type="TileProps"/>
  <tile id="979" type="TileProps"/>
- <tile id="980" type="TileProps">
+ <tile id="980" type="TileProps" probability="4">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="1"/>
   </properties>
@@ -4892,7 +4892,7 @@
  <tile id="983" type="TileProps"/>
  <tile id="984" type="TileProps"/>
  <tile id="985" type="TileProps"/>
- <tile id="986" type="TileProps">
+ <tile id="986" type="TileProps" probability="4">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="10"/>
   </properties>
@@ -4902,7 +4902,7 @@
  <tile id="989" type="TileProps"/>
  <tile id="990" type="TileProps"/>
  <tile id="991" type="TileProps"/>
- <tile id="992" type="TileProps">
+ <tile id="992" type="TileProps" probability="4">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="3"/>
   </properties>
@@ -4912,7 +4912,7 @@
  <tile id="995" type="TileProps"/>
  <tile id="996" type="TileProps"/>
  <tile id="997" type="TileProps"/>
- <tile id="998" type="TileProps">
+ <tile id="998" type="TileProps" probability="4">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="2"/>
   </properties>
@@ -4926,7 +4926,7 @@
  <tile id="1005" type="TileProps"/>
  <tile id="1006" type="TileProps"/>
  <tile id="1007" type="TileProps"/>
- <tile id="1008" type="TileProps">
+ <tile id="1008" type="TileProps" probability="4">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="1"/>
   </properties>
@@ -4956,7 +4956,7 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="1"/>
   </properties>
  </tile>
- <tile id="1014" type="TileProps">
+ <tile id="1014" type="TileProps" probability="4">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="10"/>
   </properties>
@@ -4986,7 +4986,7 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="10"/>
   </properties>
  </tile>
- <tile id="1020" type="TileProps">
+ <tile id="1020" type="TileProps" probability="4">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="3"/>
   </properties>
@@ -5016,7 +5016,7 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="3"/>
   </properties>
  </tile>
- <tile id="1026" type="TileProps">
+ <tile id="1026" type="TileProps" probability="4">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="2"/>
   </properties>
@@ -5128,7 +5128,7 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="3"/>
   </properties>
  </tile>
- <tile id="1054" type="TileProps">
+ <tile id="1054" type="TileProps" probability="4">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="2"/>
   </properties>
@@ -5173,7 +5173,7 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="1"/>
   </properties>
  </tile>
- <tile id="1067" type="TileProps">
+ <tile id="1067" type="TileProps" probability="10">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="1"/>
   </properties>
@@ -5199,7 +5199,7 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="10"/>
   </properties>
  </tile>
- <tile id="1073" type="TileProps">
+ <tile id="1073" type="TileProps" probability="10">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="10"/>
   </properties>
@@ -5225,7 +5225,7 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="3"/>
   </properties>
  </tile>
- <tile id="1079" type="TileProps">
+ <tile id="1079" type="TileProps" probability="10">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="3"/>
   </properties>
@@ -5251,7 +5251,7 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="2"/>
   </properties>
  </tile>
- <tile id="1085" type="TileProps">
+ <tile id="1085" type="TileProps" probability="10">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="2"/>
   </properties>
@@ -5878,8 +5878,16 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="8"/>
   </properties>
  </tile>
- <tile id="1248" type="TileProps"/>
- <tile id="1249" type="TileProps"/>
+ <tile id="1248" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="8"/>
+  </properties>
+ </tile>
+ <tile id="1249" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="8"/>
+  </properties>
+ </tile>
  <tile id="1250" type="TileProps">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="4"/>
@@ -5907,8 +5915,16 @@
  </tile>
  <tile id="1255" type="TileProps"/>
  <tile id="1256" type="TileProps"/>
- <tile id="1257" type="TileProps"/>
- <tile id="1258" type="TileProps"/>
+ <tile id="1257" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="8"/>
+  </properties>
+ </tile>
+ <tile id="1258" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="8"/>
+  </properties>
+ </tile>
  <tile id="1259" type="TileProps"/>
  <tile id="1260" type="TileProps"/>
  <tile id="1261" type="TileProps">
@@ -5978,8 +5994,16 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="8"/>
   </properties>
  </tile>
- <tile id="1276" type="TileProps"/>
- <tile id="1277" type="TileProps"/>
+ <tile id="1276" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="8"/>
+  </properties>
+ </tile>
+ <tile id="1277" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="8"/>
+  </properties>
+ </tile>
  <tile id="1278" type="TileProps">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="4"/>
@@ -6007,8 +6031,16 @@
  </tile>
  <tile id="1283" type="TileProps"/>
  <tile id="1284" type="TileProps"/>
- <tile id="1285" type="TileProps"/>
- <tile id="1286" type="TileProps"/>
+ <tile id="1285" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="8"/>
+  </properties>
+ </tile>
+ <tile id="1286" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="8"/>
+  </properties>
+ </tile>
  <tile id="1287" type="TileProps"/>
  <tile id="1288" type="TileProps"/>
  <tile id="1289" type="TileProps"/>
@@ -6046,8 +6078,16 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="8"/>
   </properties>
  </tile>
- <tile id="1304" type="TileProps"/>
- <tile id="1305" type="TileProps"/>
+ <tile id="1304" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="8"/>
+  </properties>
+ </tile>
+ <tile id="1305" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="8"/>
+  </properties>
+ </tile>
  <tile id="1306" type="TileProps">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="4"/>
@@ -6075,8 +6115,16 @@
  </tile>
  <tile id="1311" type="TileProps"/>
  <tile id="1312" type="TileProps"/>
- <tile id="1313" type="TileProps"/>
- <tile id="1314" type="TileProps"/>
+ <tile id="1313" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="8"/>
+  </properties>
+ </tile>
+ <tile id="1314" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="8"/>
+  </properties>
+ </tile>
  <tile id="1315" type="TileProps"/>
  <tile id="1316" type="TileProps"/>
  <tile id="1317" type="TileProps"/>
@@ -6416,22 +6464,94 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
   </properties>
  </tile>
- <tile id="1437" type="TileProps"/>
- <tile id="1438" type="TileProps"/>
- <tile id="1439" type="TileProps"/>
- <tile id="1440" type="TileProps"/>
- <tile id="1441" type="TileProps"/>
- <tile id="1442" type="TileProps"/>
- <tile id="1443" type="TileProps"/>
- <tile id="1444" type="TileProps"/>
- <tile id="1445" type="TileProps"/>
- <tile id="1446" type="TileProps"/>
- <tile id="1447" type="TileProps"/>
- <tile id="1448" type="TileProps"/>
- <tile id="1449" type="TileProps"/>
- <tile id="1450" type="TileProps"/>
- <tile id="1451" type="TileProps"/>
- <tile id="1452" type="TileProps"/>
+ <tile id="1437" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="0"/>
+   <property name="Upper-Left" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="1438" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="0"/>
+  </properties>
+ </tile>
+ <tile id="1439" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="1"/>
+   <property name="Upper-Left" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="1440" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="1"/>
+  </properties>
+ </tile>
+ <tile id="1441" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="2"/>
+   <property name="Upper-Left" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="1442" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="2"/>
+  </properties>
+ </tile>
+ <tile id="1443" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="3"/>
+   <property name="Upper-Left" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="1444" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="3"/>
+  </properties>
+ </tile>
+ <tile id="1445" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="4"/>
+   <property name="Upper-Left" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="1446" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="4"/>
+  </properties>
+ </tile>
+ <tile id="1447" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="5"/>
+   <property name="Upper-Left" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="1448" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="5"/>
+  </properties>
+ </tile>
+ <tile id="1449" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="6"/>
+   <property name="Upper-Left" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="1450" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="6"/>
+  </properties>
+ </tile>
+ <tile id="1451" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="7"/>
+   <property name="Upper-Left" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="1452" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="7"/>
+  </properties>
+ </tile>
  <tile id="1453" type="TileProps"/>
  <tile id="1454" type="TileProps"/>
  <tile id="1455" type="TileProps"/>
@@ -6448,22 +6568,86 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
   </properties>
  </tile>
- <tile id="1465" type="TileProps"/>
- <tile id="1466" type="TileProps"/>
- <tile id="1467" type="TileProps"/>
- <tile id="1468" type="TileProps"/>
- <tile id="1469" type="TileProps"/>
- <tile id="1470" type="TileProps"/>
- <tile id="1471" type="TileProps"/>
- <tile id="1472" type="TileProps"/>
- <tile id="1473" type="TileProps"/>
- <tile id="1474" type="TileProps"/>
- <tile id="1475" type="TileProps"/>
- <tile id="1476" type="TileProps"/>
- <tile id="1477" type="TileProps"/>
- <tile id="1478" type="TileProps"/>
- <tile id="1479" type="TileProps"/>
- <tile id="1480" type="TileProps"/>
+ <tile id="1465" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="0"/>
+  </properties>
+ </tile>
+ <tile id="1466" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="0"/>
+  </properties>
+ </tile>
+ <tile id="1467" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="1"/>
+  </properties>
+ </tile>
+ <tile id="1468" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="1"/>
+  </properties>
+ </tile>
+ <tile id="1469" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="2"/>
+  </properties>
+ </tile>
+ <tile id="1470" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="2"/>
+  </properties>
+ </tile>
+ <tile id="1471" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="3"/>
+  </properties>
+ </tile>
+ <tile id="1472" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="3"/>
+  </properties>
+ </tile>
+ <tile id="1473" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="4"/>
+  </properties>
+ </tile>
+ <tile id="1474" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="4"/>
+  </properties>
+ </tile>
+ <tile id="1475" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="5"/>
+  </properties>
+ </tile>
+ <tile id="1476" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="5"/>
+  </properties>
+ </tile>
+ <tile id="1477" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="6"/>
+  </properties>
+ </tile>
+ <tile id="1478" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="6"/>
+  </properties>
+ </tile>
+ <tile id="1479" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="7"/>
+  </properties>
+ </tile>
+ <tile id="1480" type="PowerupProps">
+  <properties>
+   <property name="Powerup Type" type="int" propertytype="PowerupType" value="7"/>
+  </properties>
+ </tile>
  <tile id="1481" type="TileProps"/>
  <tile id="1482" type="TileProps"/>
  <tile id="1483" type="TileProps"/>

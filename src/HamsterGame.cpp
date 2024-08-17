@@ -22,6 +22,7 @@ bool HamsterGame::OnUserCreate(){
 	tv.SetWorldOffset(-SCREEN_FRAME.pos);
 	LoadGraphics();
 	LoadAnimations();
+	currentTileset=TSXParser{ASSETS_DIR+std::string("Terrain.tsx")};
 	LoadLevel("TestLevel.tmx"); //THIS IS TEMPORARY.
 
 	border.ChangeBorder(Border::DEFAULT);
@@ -73,10 +74,22 @@ void HamsterGame::LoadLevel(const std::string_view mapName){
 	const vf2d levelSpawnLoc{50,50}; //TEMPORARY
 
 	currentMap=TMXParser{ASSETS_DIR+std::string(mapName)};
-	currentTileset=TSXParser{ASSETS_DIR+std::string("Terrain.tsx")};
 
 	Hamster::LoadHamsters(levelSpawnLoc);
 	camera.SetTarget(Hamster::GetPlayer().GetPos());
+
+	#pragma region Detect powerup tiles
+		std::vector<Powerup>mapPowerups;
+		for(const LayerTag&layer:currentMap.value().GetData().GetLayers()){
+			for(size_t y:std::ranges::iota_view(0U,layer.tiles.size())){
+				for(size_t x:std::ranges::iota_view(0U,layer.tiles[y].size())){
+					const int tileID{layer.tiles[y][x]-1};
+					if(Powerup::TileIDIsUpperLeftPowerupTile(tileID))mapPowerups.emplace_back(vf2d{float(x),float(y)}*16+vf2d{16,16},Powerup::TileIDPowerupType(tileID));
+				}
+			}
+		}
+		Powerup::Initialize(mapPowerups);
+	#pragma endregion
 }
 
 void HamsterGame::UpdateGame(const float fElapsedTime){
@@ -88,6 +101,7 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 
 void HamsterGame::DrawGame(){
 	DrawLevelTiles();
+	Powerup::DrawPowerups(tv);
 	Hamster::DrawHamsters(tv);
 	border.Draw();
 	DrawStringDecal(SCREEN_FRAME.pos+vf2d{1,1},"Terrain Type: "+Terrain::TerrainToString(Hamster::GetPlayer().GetTerrainStandingOn()),BLACK);
@@ -118,7 +132,7 @@ void HamsterGame::DrawLevelTiles(){
 				int tileX{int(floor(x)/16)};
 				int tileY{int(floor(y)/16)};
 				int tileID{layer.tiles[tileY][tileX]-1};
-				if(tileID==-1)continue;
+				if(tileID==-1||Powerup::TileIDIsPowerupTile(tileID))continue;
 
 				int imgTileX{tileID%numTilesWide};
 				int imgTileY{tileID/numTilesWide};

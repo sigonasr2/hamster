@@ -329,6 +329,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       </SubType>
     </ClCompile>
     <ClCompile Include="src\Hamster.cpp" />
+    <ClCompile Include="src\Powerup.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="src\Terrain.cpp">
       <SubType>
       </SubType>
@@ -370,6 +374,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="src\olcUTIL_Animate2D.h" />
     <ClInclude Include="src\olcUTIL_Camera2D.h" />
     <ClInclude Include="src\olcUTIL_Geometry2D.h" />
+    <ClInclude Include="src\Powerup.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="src\Terrain.h">
       <SubType>
       </SubType>

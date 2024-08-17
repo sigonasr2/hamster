@@ -39,6 +39,7 @@ All rights reserved.
 #include <sstream>
 #include "TMXParser.h"
 #include "Terrain.h"
+#include "Powerup.h"
 
 using namespace olc;
 
@@ -169,7 +170,19 @@ class TSXParser{
                 std::pair<Terrain::SolidType,Terrain::TerrainType>&tileData{parsedTilesetInfo.TerrainData[tagID]};
                 tileData.first=Terrain::SolidType(newTag.GetBool("value"));
             }
-        }
+        } else
+        if(newTag.tag=="property"&&newTag.data["propertytype"]=="PowerupType"){
+            //The way animation data is stored is every "animation_tile_precision" ms indicating which frame we should be on.
+            for(int&tagID:previousTagID){
+                Powerup::AddOrUpdatePowerupIdList(tagID,Powerup::PowerupType(newTag.GetInteger("value")));
+            }
+        } else
+        if(newTag.tag=="property"&&newTag.data["name"]=="Upper-Left"){
+            //The way animation data is stored is every "animation_tile_precision" ms indicating which frame we should be on.
+            for(int&tagID:previousTagID){
+                Powerup::AddOrUpdatePowerupIdList(tagID,Powerup::TileType(newTag.GetBool("value")));
+            }
+        } else
         if (newTag.tag=="object"&&previousTag.size()>0&&previousTag[0]=="tile"){
             for(int&tagID:previousTagID){
                 TileCollisionData data;

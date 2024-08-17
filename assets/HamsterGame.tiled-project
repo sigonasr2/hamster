@@ -11,6 +11,54 @@
     ],
     "propertyTypes": [
         {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 4,
+            "members": [
+                {
+                    "name": "Powerup Type",
+                    "propertyType": "PowerupType",
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "name": "Upper-Left",
+                    "type": "bool",
+                    "value": false
+                }
+            ],
+            "name": "PowerupProps",
+            "type": "class",
+            "useAs": [
+                "property",
+                "map",
+                "layer",
+                "object",
+                "tile",
+                "tileset",
+                "wangcolor",
+                "wangset",
+                "project"
+            ]
+        },
+        {
+            "id": 3,
+            "name": "PowerupType",
+            "storageType": "int",
+            "type": "enum",
+            "values": [
+                "WHEEL",
+                "GRASS",
+                "SAND",
+                "SWAMP",
+                "LAVA",
+                "FOREST",
+                "ICE",
+                "JET"
+            ],
+            "valuesAsFlags": false
+        },
+        {
             "id": 1,
             "name": "TerrainType",
             "storageType": "int",

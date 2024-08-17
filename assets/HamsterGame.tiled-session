@@ -33,7 +33,7 @@
     "openFiles": [
     ],
     "project": "HamsterGame.tiled-project",
-    "property.type": "TerrainType",
+    "property.type": "bool",
     "recentFiles": [
     ],
     "tileset.lastUsedFormat": "tsx",
