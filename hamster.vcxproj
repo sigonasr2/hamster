@@ -366,6 +366,14 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="src\olcUTIL_Animate2D.h" />
     <ClInclude Include="src\olcUTIL_Camera2D.h" />
     <ClInclude Include="src\olcUTIL_Geometry2D.h" />
+    <ClInclude Include="src\TMXParser.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="src\TSXParser.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="src\util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

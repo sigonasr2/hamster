@@ -3,3 +3,7 @@
 #include "olcPixelGameEngine.h"
 #define OLC_PGEX_TRANSFORMEDVIEW
 #include "olcPGEX_TransformedView.h"
+#define TMX_PARSER_SETUP
+#include "TMXParser.h"
+#define TSX_PARSER_SETUP
+#include "TSXParser.h"

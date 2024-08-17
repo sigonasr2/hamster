@@ -40,7 +40,7 @@ All rights reserved.
 #include <ranges>
 
 const std::unordered_map<Border::BorderTemplate,std::tuple<std::string,Border::CycleTimer,Border::CycleTimer,Border::CycleTimer>>Border::BORDER_TEMPLATES{
-	{Border::DEFAULT,{"border.png",{{{170,97,124},{114,109,163}},0.6f},{{{252,119,144}},1.2f},{{{231,129,97}},3.6f}}},
+	{Border::DEFAULT,{"border.png",{{{170,97,124},{114,109,163}},0.6f},{{{252,119,144},{230,131,131},{170,97,123},{230,131,131}},1.2f},{{{231,129,97}},3.6f}}},
 };
 
 Border::CycleTimer::CycleTimer(const std::vector<Pixel>cycle,const float repeatTime)

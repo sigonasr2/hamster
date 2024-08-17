@@ -76,5 +76,11 @@
     <ClInclude Include="src\Border.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\TMXParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TSXParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

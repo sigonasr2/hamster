@@ -1,6 +1,7 @@
 #include "HamsterGame.h"
 #include "Hamster.h"
 #include <stdexcept>
+#include <ranges>
 
 geom2d::rect<float>HamsterGame::SCREEN_FRAME{{96,0},{320,288}};
 std::unordered_map<std::string,Animate2D::Animation<HamsterGame::AnimationState>>HamsterGame::ANIMATIONS;
@@ -20,7 +21,7 @@ bool HamsterGame::OnUserCreate(){
 	tv.SetWorldOffset(-SCREEN_FRAME.pos);
 	LoadGraphics();
 	LoadAnimations();
-	LoadLevel(); //THIS IS TEMPORARY.
+	LoadLevel("TestLevel.tmx"); //THIS IS TEMPORARY.
 
 	border.ChangeBorder(Border::DEFAULT);
 	return true;
@@ -34,6 +35,7 @@ void HamsterGame::_LoadImage(const std::string_view img){
 
 void HamsterGame::LoadGraphics(){
 	_LoadImage("border.png");
+	_LoadImage("gametiles.png");
 }
 
 void HamsterGame::LoadAnimations(){
@@ -56,8 +58,11 @@ void HamsterGame::LoadAnimations(){
 	LoadAnimation(DEFAULT,"hamster.png",{{0,32},{32,32}},0.3f);
 }
 
-void HamsterGame::LoadLevel(){
+void HamsterGame::LoadLevel(const std::string_view mapName){
 	const vf2d levelSpawnLoc{50,50}; //TEMPORARY
+
+	currentMap=TMXParser{ASSETS_DIR+std::string(mapName)};
+
 	Hamster::LoadHamsters(levelSpawnLoc);
 	camera.SetTarget(Hamster::GetPlayer().GetPos());
 }
@@ -70,9 +75,27 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 }
 
 void HamsterGame::DrawGame(){
-	tv.FillRectDecal({10,10},{500.f,150.f},WHITE);
+	DrawLevelTiles();
 	Hamster::DrawHamsters(tv);
 	border.Draw();
+}
+
+void HamsterGame::DrawLevelTiles(){
+	for(float y=tv.GetWorldTL().y-16;y<=tv.GetWorldBR().y+16;y+=16){
+		for(float x=tv.GetWorldTL().x-1+SCREEN_FRAME.pos.x;x<=tv.GetWorldBR().x+16+SCREEN_FRAME.pos.x;x+=16){
+			if(x<=0.f||y<=0.f||x>=currentMap.value().GetData().GetMapData().width*16||y>=currentMap.value().GetData().GetMapData().height*16)continue;
+			const int numTilesWide{GetGFX("gametiles.png").Sprite()->width/16};
+			const int numTilesTall{GetGFX("gametiles.png").Sprite()->height/16};
+
+			int tileX{int(floor(x)/16)};
+			int tileY{int(floor(y)/16)};
+			int tileID{currentMap.value().GetData().GetLayers()[0].tiles[tileY][tileX]-1};
+
+			int imgTileX{tileID%numTilesWide};
+			int imgTileY{tileID/numTilesWide};
+			tv.DrawPartialDecal(vf2d{float(tileX),float(tileY)}*16,GetGFX("gametiles.png").Decal(),vf2d{float(imgTileX),float(imgTileY)}*16,{16,16});
+		}
+	}
 }
 
 bool HamsterGame::OnUserUpdate(float fElapsedTime){

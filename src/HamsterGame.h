@@ -42,6 +42,7 @@ All rights reserved.
 #include "olcPGEX_TransformedView.h"
 #include "olcUTIL_Camera2D.h"
 #include "Border.h"
+#include "TMXParser.h"
 
 class HamsterGame : public olc::PixelGameEngine
 {
@@ -68,10 +69,12 @@ private:
 	Camera2D camera;
 	void LoadGraphics();
 	void LoadAnimations();
-	void LoadLevel();
+	void LoadLevel(const std::string_view mapName);
 	void _LoadImage(const std::string_view img);
 	static std::unordered_map<std::string,Renderable>GFX;
 	static std::unordered_map<std::string,Animate2D::Animation<HamsterGame::AnimationState>>ANIMATIONS;
 	static PixelGameEngine*self;
 	Border border;
+	void DrawLevelTiles();
+	std::optional<TMXParser>currentMap;
 };
