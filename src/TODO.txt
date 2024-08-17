@@ -1,11 +1,67 @@
-Walkways - 100%
+Walkways/Rock - 100%
+	Hardness: HARD
 Grass - 80%
+	Hardness: MEDIUM
 Sand - 60%
+	Hardness: SOFT
 Swamp - 50%, after 5 seconds: Hamster sinks and respawns.
+	Hardness: SOFT
 Lava - Hamster melts (*dies*) and respawns.
-Water - 
+	Hardness: SOFT
+Shore - 80%
+	Hardness: MEDIUM
+Deep Water - 10%, after 5 seconds: Hamster drowns and respawns.
+	Hardness: MEDIUM
+Forests - 50%
+	Hardness: MEDIUM
+Tunnels - Transports you from Point A to Point B. Takes a small animation to enter/exit
+	Hardness: HARD
+
+Radar - Display nearby upgrades as icons. Also displays checkpoints.
 
 Hamster Wheel - Enhances Speed
+Upgrades -
+	Grass - No slowdown in grass
+	Sand - No slowdown in sand
+	Swamp - 80%, no more sinking
+	Lava - Fire-resistant, can run on lava.
+	Forest - No slowdown in forests
+
+Penalties -
+	If you have to get shuttled by the Hamster Rescue Boat, you lose all upgrades
+
+Hamster Jets - Activate to take off into the sky. Zooms out the map and lets you target a landing area. 
+	When Hamster Jets are fully damaged, you need new ones.
+	MAX Fall -
+		HARD - 100% + Knockout
+		MEDIUM - 80% + Knockout
+		SOFT - 50%
+	Medium Fall -
+		HARD - 80%
+		MEDIUM - 50%
+		SOFT - 25%
+	Light Fall -
+		HARD - 50%
+		MEDIUM - 25%
+		SOFT - 25%
+
+Knockouts cause the Hamster to be unable to move for 5 seconds.
+
+All upgrades can only be obtained after obtaining a Hamster Wheel.
+
+Arrow pointing to nearest checkpoint.
+
+Racing progress is tracked by number of checkpoints.
+- Pseudo-live tracking 
+	Distance to nearest checkpoint based on distance from previous checkpoint.
+
+Speedometer
+- Segmented
+
+Fall-o-meter
+- Three distinct colored segments that fill up, analog control
+
+Hamster Rescue Boat
 
 ============================
 olcPGEX_ViewPort - Submit a PR where the offset is subtracted instead of added to determine clip region cutoffs.
