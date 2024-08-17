@@ -43,8 +43,8 @@ All rights reserved.
 
 class Hamster{
 	enum PlayerControlled{
-		PLAYER_CONTROLLED,
-		NPC,
+		PLAYER_CONTROLLED=true,
+		NPC=false,
 	};
 
 	static std::vector<Hamster>HAMSTER_LIST;
@@ -60,6 +60,10 @@ class Hamster{
 	float rot{};
 	float targetRot{};
 	float turnSpd{2.f*geom2d::pi};
+	float maxSpd{128.f};
+	float timeToMaxSpd{0.5f};
+	float friction{400.f};
+	bool frictionEnabled{false};
 	std::string img;
 	Animate2D::Animation<HamsterGame::AnimationState>animations;
 	Animate2D::AnimationState internalAnimState;
@@ -75,4 +79,5 @@ public:
 	const vf2d&GetPos()const;
 	void HandlePlayerControls();
 	void TurnTowardsTargetDirection();
+	void MoveHamster();
 };

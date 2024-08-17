@@ -59,10 +59,12 @@ Hamster::Hamster(const vf2d spawnPos,const std::string_view img,const PlayerCont
 void Hamster::UpdateHamsters(const float fElapsedTime){
 	for(Hamster&h:HAMSTER_LIST){
 		h.animations.UpdateState(h.internalAnimState,fElapsedTime);
+		h.frictionEnabled=true;
 		if(h.IsPlayerControlled){
 			h.HandlePlayerControls();
 		}
 		h.TurnTowardsTargetDirection();
+		h.MoveHamster();
 	}
 }
 
@@ -113,9 +115,23 @@ void Hamster::HandlePlayerControls(){
 	}
 	if(aimingDir!=vf2d{}){
 		targetRot=aimingDir.norm().polar().y;
+		const vf2d currentVel{vel};
+		vel=vf2d{std::min(maxSpd,currentVel.polar().x+(maxSpd*HamsterGame::Game().GetElapsedTime())/timeToMaxSpd),currentVel.polar().y}.cart();
+		frictionEnabled=false;
 	}
 }
 
 void Hamster::TurnTowardsTargetDirection(){
 	util::turn_towards_direction(rot,targetRot,turnSpd*HamsterGame::Game().GetElapsedTime());
+}
+
+void Hamster::MoveHamster(){
+	pos+=vel*HamsterGame::Game().GetElapsedTime();
+
+	#pragma region Handle Friction
+		if(frictionEnabled){
+			const vf2d currentVel{vel};
+			vel=vf2d{std::max(0.f,currentVel.polar().x-friction*HamsterGame::Game().GetElapsedTime()),currentVel.polar().y}.cart();
+		}
+	#pragma endregion
 }
