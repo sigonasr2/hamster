@@ -169,7 +169,7 @@ if(WIN32 AND MSVC)
     # set working directory for Visual Studio Debugger
     set_target_properties(
         ${OutputExecutable} PROPERTIES
-        VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     )
     
     # set subsytem, console if HAS_TERMINAL is true. windows if not
