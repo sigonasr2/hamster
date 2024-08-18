@@ -382,6 +382,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="src\SpecialRenderable.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="src\Terrain.h">
       <SubType>
       </SubType>

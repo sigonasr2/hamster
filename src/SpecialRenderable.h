@@ -36,65 +36,12 @@ All rights reserved.
 */
 #pragma endregion
 #pragma once
-#include <unordered_map>
-#include "olcUTIL_Geometry2D.h"
-#include "olcUTIL_Animate2D.h"
-#include "olcPGEX_TransformedView.h"
-#include "olcUTIL_Camera2D.h"
-#include "Border.h"
-#include "TMXParser.h"
-#include "TSXParser.h"
-#include "Terrain.h"
 
-struct Letter{
-	vf2d pos;
-	float spd;
-	char c;
-};
+#include "olcPixelGameEngine.h"
 
-class HamsterGame : public olc::PixelGameEngine
-{
-	const static std::string ASSETS_DIR;
+class SpecialRenderable{
+	Renderable originalImg;
+	Renderable modifiedImg;
 public:
-	enum AnimationState{
-		DEFAULT,
-		WHEEL_TOP,
-		WHEEL_BOTTOM,
-	};
 
-	HamsterGame();
-	static geom2d::rect<float>SCREEN_FRAME;
-	TransformedView tv{};
-public:
-	bool OnUserCreate()override final;
-	bool OnUserUpdate(float fElapsedTime)override final;
-	bool OnUserDestroy()override final;
-
-	static const Renderable&GetGFX(const std::string_view img);
-	static const Animate2D::Animation<HamsterGame::AnimationState>&GetAnimations(const std::string_view img);
-	static HamsterGame&Game();
-	static std::unordered_map<uint32_t,Animate2D::FrameSequence>ANIMATED_TILE_IDS;
-	const double GetRuntime()const;
-	const Terrain::TerrainType GetTerrainTypeAtPos(const vf2d pos)const;
-private:
-	void UpdateGame(const float fElapsedTime);
-	void DrawGame();
-	void LoadGraphics();
-	void LoadAnimations();
-	void LoadLevel(const std::string_view mapName);
-	void _LoadImage(const std::string_view img);
-	static std::unordered_map<std::string,Renderable>GFX;
-	static std::unordered_map<std::string,Animate2D::Animation<HamsterGame::AnimationState>>ANIMATIONS;
-	static HamsterGame*self;
-	Border border;
-	void DrawLevelTiles();
-	std::optional<TMXParser>currentMap;
-	std::optional<TSXParser>currentTileset;
-	double runTime{};
-	Camera2D camera;
-	Renderable mapImage;
-	void UpdateMatrixTexture();
-	float matrixTimer;
-	std::vector<Letter>activeLetters;
-	float updatePixelsTimer;
 };

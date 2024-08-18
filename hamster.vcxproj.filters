@@ -94,5 +94,8 @@
     <ClInclude Include="src\Powerup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\SpecialRenderable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

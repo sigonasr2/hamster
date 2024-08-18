@@ -2,6 +2,7 @@
 #include "Hamster.h"
 #include <stdexcept>
 #include <ranges>
+#include "util.h"
 
 geom2d::rect<float>HamsterGame::SCREEN_FRAME{{96,0},{320,288}};
 std::unordered_map<std::string,Animate2D::Animation<HamsterGame::AnimationState>>HamsterGame::ANIMATIONS;
@@ -113,6 +114,7 @@ void HamsterGame::LoadLevel(const std::string_view mapName){
 }
 
 void HamsterGame::UpdateGame(const float fElapsedTime){
+	UpdateMatrixTexture();
 	camera.SetViewSize(tv.GetWorldVisibleArea());
 	camera.Update(fElapsedTime);
 	tv.SetWorldOffset(tv.ScaleToWorld(-SCREEN_FRAME.pos)+camera.GetViewPosition());
@@ -156,8 +158,6 @@ void HamsterGame::DrawGame(){
 			GradientFillRectDecal(vf2d{12.f,240.f}+vf2d{12.f,5.f},vf2d{Hamster::GetPlayer().GetBurnRatio()*57.f,4.f},{250,177,163},{226,228,255},{226,228,255},{250,177,163});
 		}
 	#pragma endregion
-
-		tv.FillRectDecal(GetMousePos(),{2,2},GREEN);
 }
 
 const Terrain::TerrainType HamsterGame::GetTerrainTypeAtPos(const vf2d pos)const{
@@ -222,6 +222,65 @@ HamsterGame&HamsterGame::Game(){
 
 const double HamsterGame::GetRuntime()const{
 	return runTime;
+}
+
+void HamsterGame::UpdateMatrixTexture(){
+	const auto result{GFX.insert({ASSETS_DIR+"MATRIX_TEXTURE",Renderable{}})};
+	Renderable&texture{(*result.first).second};
+	if(result.second){
+		texture.Create(64,64);
+	}
+
+	const std::array<char,10>matrixLetters{'0','1','2','3','4','5','6','7','8','9'};
+	
+	if(matrixTimer==0){
+		activeLetters.emplace_back(vf2d{float(rand()%64),float(64)},util::random(-40)-20,matrixLetters[rand()%matrixLetters.size()]);
+		matrixTimer=util::random(0.125);
+	}
+	if(updatePixelsTimer==0){
+		SetDrawTarget(texture.Sprite());
+		Sprite*img=texture.Sprite();
+		for(int y=63;y>=0;y--){
+			for(int x=63;x>=0;x--){
+				Pixel col=img->GetPixel(x,y);
+				if(col.r>0){
+					if(x>0){
+						Pixel leftCol=img->GetPixel(x-1,y);
+						if(leftCol.r<col.r){
+							leftCol=PixelLerp(col,leftCol,0.125);
+						}
+						Draw(x-1,y,leftCol);
+					}
+					if(x<img->width-1){
+						Pixel rightCol=img->GetPixel(x+1,y);
+						if(rightCol.r<col.r){
+							rightCol=PixelLerp(col,rightCol,0.125);
+						}
+						Draw(x+1,y,rightCol);
+					}
+					col/=8;
+					Draw(x,y,col);
+				}
+			}
+		}
+		for(int y=0;y<64;y++){
+			Draw({0,y},img->GetPixel(1,y));
+		}
+		SetDrawTarget(nullptr);
+		updatePixelsTimer=0.1;
+	}
+	if(activeLetters.size()>0){
+		SetDrawTarget(texture.Sprite());
+		for(Letter&letter:activeLetters){
+			letter.pos.y+=letter.spd*GetElapsedTime();
+			DrawString(letter.pos,std::string(1,letter.c));
+		}
+		SetDrawTarget(nullptr);
+		texture.Decal()->Update();
+	}
+	matrixTimer=std::max(0.f,matrixTimer-GetElapsedTime());
+	updatePixelsTimer=std::max(0.f,updatePixelsTimer-GetElapsedTime());
+	std::erase_if(activeLetters,[](Letter&letter){return letter.pos.y<-32;});
 }
 
 int main()
