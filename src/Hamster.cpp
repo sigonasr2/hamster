@@ -58,6 +58,7 @@ Hamster::Hamster(const vf2d spawnPos,const std::string_view img,const PlayerCont
 
 void Hamster::UpdateHamsters(const float fElapsedTime){
 	for(Hamster&h:HAMSTER_LIST){
+		h.lastSafeLocationTimer=std::max(0.f,h.lastSafeLocationTimer-fElapsedTime);
 		h.animations.UpdateState(h.internalAnimState,fElapsedTime);
 		h.frictionEnabled=true;
 		h.bumpTimer-=fElapsedTime;
@@ -74,6 +75,49 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 					h.state=NORMAL;
 				}
 			}break;
+			case DROWNING:{
+				if(h.imgScale>0.f){
+					h.shrinkEffectColor=BLACK;
+					h.imgScale=std::max(0.f,h.imgScale-0.5f*fElapsedTime);
+				}
+				else{
+					h.waitTimer=4.f;
+					h.state=WAIT;
+				}
+			}break;
+			case WAIT:{
+				h.waitTimer=std::max(0.f,h.waitTimer-fElapsedTime);
+				if(h.waitTimer<=0.f){
+					h.imgScale=1.f;
+					h.drownTimer=0.f;
+					h.pos=h.lastSafeLocation;
+					h.state=NORMAL;
+					h.RemoveAllPowerups();
+				}
+			}break;
+			case BURNING:{
+				if(h.imgScale>0.f){
+					h.shrinkEffectColor=RED;
+					h.imgScale=std::max(0.f,h.imgScale-0.5f*fElapsedTime);
+				}else{
+					h.waitTimer=4.f;
+					h.state=WAIT;
+				}
+			}break;
+		}
+		if((h.GetTerrainStandingOn()==Terrain::OCEAN||!h.HasPowerup(Powerup::SWAMP)&&h.GetTerrainStandingOn()==Terrain::SWAMP)&&h.state!=DROWNING&&h.state!=WAIT)h.drownTimer+=fElapsedTime;
+		else if((!h.HasPowerup(Powerup::LAVA)&&h.GetTerrainStandingOn()==Terrain::LAVA)&&h.state!=BURNING&&h.state!=WAIT)h.burnTimer+=fElapsedTime;
+		else if(h.lastSafeLocationTimer<=0.f&&h.state==NORMAL&&!h.StandingOnLethalTerrain()){
+			h.lastSafeLocationTimer=0.5f;
+			h.drownTimer=0.f;
+			h.burnTimer=0.f;
+			h.lastSafeLocation=h.GetPos();
+		}
+		if(h.drownTimer>=h.DEFAULT_DROWN_TIME&&h.state!=DROWNING&&h.state!=WAIT){
+			h.state=DROWNING;
+		}
+		if(h.burnTimer>=h.DEFAULT_BURN_TIME&&h.state!=BURNING&&h.state!=WAIT){
+			h.state=BURNING;
 		}
 		h.TurnTowardsTargetDirection();
 		h.MoveHamster();
@@ -99,9 +143,9 @@ void Hamster::DrawHamsters(TransformedView&tv){
 		const Animate2D::Frame&img{h.animations.GetState(h.internalAnimState)==HamsterGame::DEFAULT?anim.GetFrame(h.distanceTravelled/100.f):h.GetCurrentAnimation()};
 		const Animate2D::Frame&wheelTopImg{wheelTopAnim.GetFrame(h.distanceTravelled/80.f)};
 		const Animate2D::Frame&wheelBottomImg{wheelBottomAnim.GetFrame(h.distanceTravelled/80.f)};
-		if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos,wheelBottomImg.GetSourceImage()->Decal(),h.rot,wheelBottomImg.GetSourceRect().size/2,wheelBottomImg.GetSourceRect().pos,wheelBottomImg.GetSourceRect().size);
-		tv.DrawPartialRotatedDecal(h.pos,img.GetSourceImage()->Decal(),h.rot,img.GetSourceRect().size/2,img.GetSourceRect().pos,img.GetSourceRect().size);
-		if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos,wheelTopImg.GetSourceImage()->Decal(),h.rot,wheelTopImg.GetSourceRect().size/2,wheelTopImg.GetSourceRect().pos,wheelTopImg.GetSourceRect().size,{1.f,1.f},{255,255,255,192});
+		if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos,wheelBottomImg.GetSourceImage()->Decal(),h.rot,wheelBottomImg.GetSourceRect().size/2,wheelBottomImg.GetSourceRect().pos,wheelBottomImg.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
+		tv.DrawPartialRotatedDecal(h.pos,img.GetSourceImage()->Decal(),h.rot,img.GetSourceRect().size/2,img.GetSourceRect().pos,img.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
+		if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos,wheelTopImg.GetSourceImage()->Decal(),h.rot,wheelTopImg.GetSourceRect().size/2,wheelTopImg.GetSourceRect().pos,wheelTopImg.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,{255,255,255,192},h.imgScale));
 	}
 }
 
@@ -256,4 +300,25 @@ void Hamster::ObtainPowerup(const Powerup::PowerupType powerup){
 }
 const bool Hamster::HasPowerup(const Powerup::PowerupType powerup)const{
 	return powerups.count(powerup);
+}
+
+void Hamster::RemoveAllPowerups(){
+	powerups.clear();
+}
+
+const bool Hamster::StandingOnLethalTerrain()const{
+	return GetTerrainStandingOn()==Terrain::LAVA||GetTerrainStandingOn()==Terrain::OCEAN||GetTerrainStandingOn()==Terrain::SWAMP;
+}
+
+const bool Hamster::IsDrowning()const{
+	return drownTimer>0.f;
+}
+const bool Hamster::IsBurning()const{
+	return burnTimer>0.f;
+}
+const float Hamster::GetDrownRatio()const{
+	return drownTimer/DEFAULT_DROWN_TIME;
+}
+const float Hamster::GetBurnRatio()const{
+	return burnTimer/DEFAULT_BURN_TIME;
 }

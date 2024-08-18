@@ -39,6 +39,8 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("border.png");
 	_LoadImage("gametiles.png");
 	_LoadImage("shadow.png");
+	_LoadImage("drownmeter.png");
+	_LoadImage("burnmeter.png");
 }
 
 void HamsterGame::LoadAnimations(){
@@ -109,23 +111,35 @@ void HamsterGame::DrawGame(){
 	DrawStringDecal(SCREEN_FRAME.pos+vf2d{1,1},"Terrain Type: "+Terrain::TerrainToString(Hamster::GetPlayer().GetTerrainStandingOn()),BLACK);
 	DrawStringDecal(SCREEN_FRAME.pos,"Terrain Type: "+Terrain::TerrainToString(Hamster::GetPlayer().GetTerrainStandingOn()));
 
-	for(int y:std::ranges::iota_view(0,4)){
-		for(int x:std::ranges::iota_view(0,2)){
-			const int powerupInd{y*2+x};
-			const float drawX{x*32.f+12.f};
-			const float drawY{y*32.f+12.f+96.f};
-			const Powerup::PowerupType powerupType{Powerup::PowerupType(powerupInd)};
-			const geom2d::rect<float>powerupSubimageRect{Powerup::GetPowerupSubimageRect(powerupType)};
-			if(Hamster::GetPlayer().HasPowerup(powerupType)){
-				SetDecalMode(DecalMode::ADDITIVE);
-				DrawPartialRotatedDecal(vf2d{drawX,drawY}+16,GetGFX("gametiles.png").Decal(),0.f,{16.f,16.f},powerupSubimageRect.pos,powerupSubimageRect.size,{1.1f,1.1f});
-				SetDecalMode(DecalMode::NORMAL);
-				DrawPartialDecal({drawX,drawY},GetGFX("gametiles.png").Decal(),powerupSubimageRect.pos,powerupSubimageRect.size);
-			}else{
-				DrawPartialDecal({drawX,drawY},GetGFX("gametiles.png").Decal(),powerupSubimageRect.pos,powerupSubimageRect.size,{1.f,1.f},VERY_DARK_GREY);
+	#pragma region Powerup Display
+		for(int y:std::ranges::iota_view(0,4)){
+			for(int x:std::ranges::iota_view(0,2)){
+				const int powerupInd{y*2+x};
+				const float drawX{x*32.f+12.f};
+				const float drawY{y*32.f+12.f+96.f};
+				const Powerup::PowerupType powerupType{Powerup::PowerupType(powerupInd)};
+				const geom2d::rect<float>powerupSubimageRect{Powerup::GetPowerupSubimageRect(powerupType)};
+				if(Hamster::GetPlayer().HasPowerup(powerupType)){
+					SetDecalMode(DecalMode::ADDITIVE);
+					DrawPartialRotatedDecal(vf2d{drawX,drawY}+16,GetGFX("gametiles.png").Decal(),0.f,{16.f,16.f},powerupSubimageRect.pos,powerupSubimageRect.size,{1.1f,1.1f});
+					SetDecalMode(DecalMode::NORMAL);
+					DrawPartialDecal({drawX,drawY},GetGFX("gametiles.png").Decal(),powerupSubimageRect.pos,powerupSubimageRect.size);
+				}else{
+					DrawPartialDecal({drawX,drawY},GetGFX("gametiles.png").Decal(),powerupSubimageRect.pos,powerupSubimageRect.size,{1.f,1.f},VERY_DARK_GREY);
+				}
 			}
 		}
-	}
+	#pragma endregion
+	#pragma region Drown/Burn Bar.
+		if(Hamster::GetPlayer().IsDrowning()){
+			DrawDecal({12.f,240.f},GetGFX("drownmeter.png").Decal());
+			GradientFillRectDecal(vf2d{12.f,240.f}+vf2d{12.f,5.f},vf2d{Hamster::GetPlayer().GetDrownRatio()*57.f,4.f},{145,199,255},{226,228,255},{226,228,255},{145,199,255});
+		}
+		else if(Hamster::GetPlayer().IsBurning()){
+			DrawDecal({12.f,240.f},GetGFX("burnmeter.png").Decal());
+			GradientFillRectDecal(vf2d{12.f,240.f}+vf2d{12.f,5.f},vf2d{Hamster::GetPlayer().GetBurnRatio()*57.f,4.f},{250,177,163},{226,228,255},{226,228,255},{250,177,163});
+		}
+	#pragma endregion
 }
 
 const Terrain::TerrainType HamsterGame::GetTerrainTypeAtPos(const vf2d pos)const{

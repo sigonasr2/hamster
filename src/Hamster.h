@@ -52,6 +52,10 @@ class Hamster{
 	enum HamsterState{
 		NORMAL,
 		BUMPED,
+		DROWNING,
+		FLYING,
+		WAIT,
+		BURNING,
 	};
 
 	static std::vector<Hamster>HAMSTER_LIST;
@@ -67,15 +71,24 @@ class Hamster{
 	const float DEFAULT_FRICTION{400.f};
 	const float DEFAULT_TURN_SPD{2.f*geom2d::pi};
 	const float DEFAULT_BUMP_AMT{100.f};
+	const float DEFAULT_DROWN_TIME{5.f};
+	const float DEFAULT_BURN_TIME{0.3f};
 
 	vf2d pos;
 	vf2d vel;
+	vf2d lastSafeLocation{};
+	float lastSafeLocationTimer{};
 	float rot{};
 	float targetRot{};
 	bool frictionEnabled{false};
 	float collisionRadius{12.f};
 	float bumpTimer{};
+	float waitTimer{};
 	double distanceTravelled{};
+	float drownTimer{};
+	float burnTimer{};
+	float imgScale{1.f};
+	Pixel shrinkEffectColor{BLACK};
 	std::string img;
 	Animate2D::Animation<HamsterGame::AnimationState>animations;
 	Animate2D::AnimationState internalAnimState;
@@ -104,4 +117,10 @@ public:
 	const float GetBumpAmount()const;
 	void ObtainPowerup(const Powerup::PowerupType powerup);
 	const bool HasPowerup(const Powerup::PowerupType powerup)const;
+	void RemoveAllPowerups();
+	const bool StandingOnLethalTerrain()const;
+	const bool IsDrowning()const;
+	const bool IsBurning()const;
+	const float GetDrownRatio()const;
+	const float GetBurnRatio()const;
 };
