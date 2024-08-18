@@ -258,7 +258,8 @@ if (EMSCRIPTEN)
             -sUSE_LIBPNG=1
             -sLLD_REPORT_UNDEFINED)
     endif()
-
+    
+    set_target_properties(${OutputExecutable} PROPERTIES LINK_FLAGS "--shell-file ${CMAKE_CURRENT_SOURCE_DIR}/emscripten_shell.html")
 endif() # Emscripten
 
 ######################################################################
