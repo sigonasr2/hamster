@@ -95,15 +95,9 @@ void HamsterGame::LoadLevel(const std::string_view mapName){
 }
 
 void HamsterGame::UpdateGame(const float fElapsedTime){
-	/*if(Hamster::GetPlayer().GetZ()>1.f){
-		tv.SetZoom(1/Hamster::GetPlayer().GetZ(),tv.WorldToScreen(Hamster::GetPlayer().GetPos()));
-	}else{
-		tv.SetZoom(1.f,tv.WorldToScreen(Hamster::GetPlayer().GetPos()));
-	}*/
-
-
+	camera.SetViewSize(tv.GetWorldVisibleArea());
 	camera.Update(fElapsedTime);
-	tv.SetWorldOffset(-SCREEN_FRAME.pos*(camera.GetViewSize()/SCREEN_FRAME.size)+camera.GetViewPosition());
+	tv.SetWorldOffset(tv.ScaleToWorld(-SCREEN_FRAME.pos)+camera.GetViewPosition());
 	Hamster::UpdateHamsters(fElapsedTime);
 	Powerup::UpdatePowerups(fElapsedTime);
 	border.Update(fElapsedTime);
