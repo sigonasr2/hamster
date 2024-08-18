@@ -6568,7 +6568,10 @@ namespace olc
 
 
 		virtual olc::rcode SetWindowTitle(const std::string& s) override
-		{ emscripten_set_window_title(s.c_str()); return olc::OK; }
+		{
+			// emscripten_set_window_title(s.c_str());
+			return olc::OK;
+		}
 
 		virtual olc::rcode StartSystemEventLoop() override 
 		{ return olc::OK; }
