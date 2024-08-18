@@ -70,10 +70,10 @@ public:
 	static std::unordered_map<uint32_t,Animate2D::FrameSequence>ANIMATED_TILE_IDS;
 	const double GetRuntime()const;
 	const Terrain::TerrainType GetTerrainTypeAtPos(const vf2d pos)const;
+	Camera2D camera;
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
-	Camera2D camera;
 	void LoadGraphics();
 	void LoadAnimations();
 	void LoadLevel(const std::string_view mapName);

@@ -96,13 +96,14 @@ void HamsterGame::LoadLevel(const std::string_view mapName){
 
 void HamsterGame::UpdateGame(const float fElapsedTime){
 	/*if(Hamster::GetPlayer().GetZ()>1.f){
-		tv.SetZoom(1.f/sqrt(Hamster::GetPlayer().GetZ()),tv.WorldToScreen(Hamster::GetPlayer().GetPos())-SCREEN_FRAME.pos);
+		tv.SetZoom(1/Hamster::GetPlayer().GetZ(),tv.WorldToScreen(Hamster::GetPlayer().GetPos()));
 	}else{
-		tv.SetZoom(1.f,tv.WorldToScreen(Hamster::GetPlayer().GetPos())-SCREEN_FRAME.pos);
+		tv.SetZoom(1.f,tv.WorldToScreen(Hamster::GetPlayer().GetPos()));
 	}*/
+
+
 	camera.Update(fElapsedTime);
-	tv.HandlePanAndZoom();
-	//std::cout<<tv.GetWorldScale().str()<<std::endl;
+	tv.SetWorldOffset(-SCREEN_FRAME.pos*(camera.GetViewSize()/SCREEN_FRAME.size)+camera.GetViewPosition());
 	Hamster::UpdateHamsters(fElapsedTime);
 	Powerup::UpdatePowerups(fElapsedTime);
 	border.Update(fElapsedTime);
@@ -113,8 +114,6 @@ void HamsterGame::DrawGame(){
 	Powerup::DrawPowerups(tv);
 	Hamster::DrawHamsters(tv);
 	border.Draw();
-	DrawStringDecal(SCREEN_FRAME.pos+vf2d{1,1},"Terrain Type: "+Terrain::TerrainToString(Hamster::GetPlayer().GetTerrainStandingOn()),BLACK);
-	DrawStringDecal(SCREEN_FRAME.pos,"Terrain Type: "+Terrain::TerrainToString(Hamster::GetPlayer().GetTerrainStandingOn()));
 
 	#pragma region Powerup Display
 		for(int y:std::ranges::iota_view(0,4)){
@@ -145,6 +144,8 @@ void HamsterGame::DrawGame(){
 			GradientFillRectDecal(vf2d{12.f,240.f}+vf2d{12.f,5.f},vf2d{Hamster::GetPlayer().GetBurnRatio()*57.f,4.f},{250,177,163},{226,228,255},{226,228,255},{250,177,163});
 		}
 	#pragma endregion
+
+		tv.FillRectDecal(GetMousePos(),{2,2},GREEN);
 }
 
 const Terrain::TerrainType HamsterGame::GetTerrainTypeAtPos(const vf2d pos)const{
@@ -163,11 +164,9 @@ const Terrain::TerrainType HamsterGame::GetTerrainTypeAtPos(const vf2d pos)const
 void HamsterGame::DrawLevelTiles(){
 	float extendedBounds{SCREEN_FRAME.pos.x};
 	extendedBounds*=1/tv.GetWorldScale().x;
-	std::cout<<tv.GetWorldTL().str()<<std::endl;
-	std::cout<<tv.GetWorldBR().str()<<std::endl;
 	for(const LayerTag&layer:currentMap.value().GetData().GetLayers()){
-		for(float y=tv.GetWorldTL().y-16;y<=tv.GetWorldBR().y+16;y+=16){
-			for(float x=tv.GetWorldTL().x-1+extendedBounds;x<=tv.GetWorldBR().x+16+extendedBounds;x+=16){
+		for(float y=tv.GetWorldTL().y-17;y<=tv.GetWorldBR().y+16;y+=16){
+			for(float x=tv.GetWorldTL().x-17+extendedBounds;x<=tv.GetWorldBR().x+16+extendedBounds;x+=16){
 				if(x<=0.f||y<=0.f||x>=currentMap.value().GetData().GetMapData().width*16||y>=currentMap.value().GetData().GetMapData().height*16)continue;
 				const int numTilesWide{GetGFX("gametiles.png").Sprite()->width/16};
 				const int numTilesTall{GetGFX("gametiles.png").Sprite()->height/16};

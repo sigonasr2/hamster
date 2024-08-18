@@ -176,11 +176,15 @@ void Hamster::HandlePlayerControls(){
 	if(HamsterGame::Game().GetKey(A).bHeld){
 		aimingDir+=vf2d{-1,0};
 	}
-	if(HamsterGame::Game().GetKey(PGUP).bHeld){
+	if(HamsterGame::Game().GetKey(PGUP).bPressed){
+		HamsterGame::Game().tv.ZoomAtScreenPos(0.95f,HamsterGame::Game().tv.WorldToScreen(GetPos()));
+		HamsterGame::Game().camera.SetViewSize(HamsterGame::Game().camera.GetViewSize()*1.05f);
 		z+=HamsterGame::Game().GetElapsedTime();
 	}
-	if(HamsterGame::Game().GetKey(PGDN).bHeld){
+	if(HamsterGame::Game().GetKey(PGDN).bPressed){
 		z=std::max(0.f,z-HamsterGame::Game().GetElapsedTime());
+		HamsterGame::Game().tv.ZoomAtScreenPos(1.05f,HamsterGame::Game().tv.WorldToScreen(GetPos()));
+		HamsterGame::Game().camera.SetViewSize(HamsterGame::Game().camera.GetViewSize()*0.95f);
 	}
 	if(aimingDir!=vf2d{}){
 		targetRot=aimingDir.norm().polar().y;
