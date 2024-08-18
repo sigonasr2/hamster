@@ -45,6 +45,7 @@ All rights reserved.
 #include "TMXParser.h"
 #include "TSXParser.h"
 #include "Terrain.h"
+#include "SpecialRenderable.h"
 
 struct Letter{
 	vf2d pos;
@@ -60,6 +61,7 @@ public:
 		DEFAULT,
 		WHEEL_TOP,
 		WHEEL_BOTTOM,
+		JET_LIGHTS,
 	};
 
 	HamsterGame();

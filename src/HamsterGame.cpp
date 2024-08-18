@@ -41,6 +41,8 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("shadow.png");
 	_LoadImage("drownmeter.png");
 	_LoadImage("burnmeter.png");
+	_LoadImage("hamster_jet.png");
+	UpdateMatrixTexture();
 }
 
 void HamsterGame::LoadAnimations(){
@@ -71,6 +73,7 @@ void HamsterGame::LoadAnimations(){
 	for(vf2d&sourcePos:std::vector<vf2d>{{192+16*0,800},{192+16*1,800},{192+16*2,800},{192+16*3,800},{192+16*4,800},{192+16*5,800},{192+16*6,800},{192+16*7,800},{192+16*8,800}}){
 		lavaAnimFrames.AddFrame(Animate2D::Frame{&GetGFX("gametiles.png"),{sourcePos,{16,16}}});
 	}
+	LoadAnimation(JET_LIGHTS,"hamster_jet.png",{{0,48},{48,48}},0.3f);
 }
 
 void HamsterGame::LoadLevel(const std::string_view mapName){
@@ -228,7 +231,7 @@ void HamsterGame::UpdateMatrixTexture(){
 	const auto result{GFX.insert({ASSETS_DIR+"MATRIX_TEXTURE",Renderable{}})};
 	Renderable&texture{(*result.first).second};
 	if(result.second){
-		texture.Create(64,64);
+		texture.Create(64,64,false,false);
 	}
 
 	const std::array<char,10>matrixLetters{'0','1','2','3','4','5','6','7','8','9'};

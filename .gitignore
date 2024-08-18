@@ -18,3 +18,7 @@ vs-build
 /.vs/cmake.db
 /hamster.dir/Release
 /x64/Release
+/copy_data.vcxproj
+/copy_data.vcxproj.filters
+/hamster.vcxproj
+/hamster.vcxproj.filters
