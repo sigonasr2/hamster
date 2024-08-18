@@ -16,3 +16,5 @@ vs-build
 /bin/hamster.pdb
 /hamster.exe
 /.vs/cmake.db
+/hamster.dir/Release
+/x64/Release

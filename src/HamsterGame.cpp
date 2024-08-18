@@ -19,7 +19,6 @@ bool HamsterGame::OnUserCreate(){
 	camera=Camera2D{SCREEN_FRAME.size};
 	camera.SetMode(Camera2D::Mode::LazyFollow);
 	tv.Initialise(SCREEN_FRAME.size,{1,1});
-	tv.SetWorldOffset(-SCREEN_FRAME.pos);
 	LoadGraphics();
 	LoadAnimations();
 	currentTileset=TSXParser{ASSETS_DIR+std::string("Terrain.tsx")};
@@ -96,8 +95,14 @@ void HamsterGame::LoadLevel(const std::string_view mapName){
 }
 
 void HamsterGame::UpdateGame(const float fElapsedTime){
+	/*if(Hamster::GetPlayer().GetZ()>1.f){
+		tv.SetZoom(1.f/sqrt(Hamster::GetPlayer().GetZ()),tv.WorldToScreen(Hamster::GetPlayer().GetPos())-SCREEN_FRAME.pos);
+	}else{
+		tv.SetZoom(1.f,tv.WorldToScreen(Hamster::GetPlayer().GetPos())-SCREEN_FRAME.pos);
+	}*/
 	camera.Update(fElapsedTime);
-	tv.SetWorldOffset(-SCREEN_FRAME.pos+camera.GetViewPosition());
+	tv.HandlePanAndZoom();
+	//std::cout<<tv.GetWorldScale().str()<<std::endl;
 	Hamster::UpdateHamsters(fElapsedTime);
 	Powerup::UpdatePowerups(fElapsedTime);
 	border.Update(fElapsedTime);
@@ -156,9 +161,13 @@ const Terrain::TerrainType HamsterGame::GetTerrainTypeAtPos(const vf2d pos)const
 }
 
 void HamsterGame::DrawLevelTiles(){
+	float extendedBounds{SCREEN_FRAME.pos.x};
+	extendedBounds*=1/tv.GetWorldScale().x;
+	std::cout<<tv.GetWorldTL().str()<<std::endl;
+	std::cout<<tv.GetWorldBR().str()<<std::endl;
 	for(const LayerTag&layer:currentMap.value().GetData().GetLayers()){
 		for(float y=tv.GetWorldTL().y-16;y<=tv.GetWorldBR().y+16;y+=16){
-			for(float x=tv.GetWorldTL().x-1+SCREEN_FRAME.pos.x;x<=tv.GetWorldBR().x+16+SCREEN_FRAME.pos.x;x+=16){
+			for(float x=tv.GetWorldTL().x-1+extendedBounds;x<=tv.GetWorldBR().x+16+extendedBounds;x+=16){
 				if(x<=0.f||y<=0.f||x>=currentMap.value().GetData().GetMapData().width*16||y>=currentMap.value().GetData().GetMapData().height*16)continue;
 				const int numTilesWide{GetGFX("gametiles.png").Sprite()->width/16};
 				const int numTilesTall{GetGFX("gametiles.png").Sprite()->height/16};

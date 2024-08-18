@@ -135,6 +135,10 @@ namespace olc::utils
 			m_vWorldBoundarySize = vSize;
 		}
 
+		inline void SetViewSize(const olc::vf2d&vSize){
+			m_vViewSize = vSize;
+		}
+
 		// Instruct camera to respect world boundaries
 		inline void EnableWorldBoundary(const bool bEnable)
 		{

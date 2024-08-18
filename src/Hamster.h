@@ -77,6 +77,7 @@ class Hamster{
 	vf2d pos;
 	vf2d vel;
 	vf2d lastSafeLocation{};
+	float z;
 	float lastSafeLocationTimer{};
 	float rot{};
 	float targetRot{};
@@ -104,6 +105,7 @@ public:
 	static void DrawHamsters(TransformedView&tv);
 	const Animate2D::Frame&GetCurrentAnimation()const;
 	const vf2d&GetPos()const;
+	const float&GetZ()const;
 	void HandlePlayerControls();
 	void TurnTowardsTargetDirection();
 	void MoveHamster();

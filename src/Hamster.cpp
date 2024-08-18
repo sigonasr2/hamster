@@ -176,6 +176,12 @@ void Hamster::HandlePlayerControls(){
 	if(HamsterGame::Game().GetKey(A).bHeld){
 		aimingDir+=vf2d{-1,0};
 	}
+	if(HamsterGame::Game().GetKey(PGUP).bHeld){
+		z+=HamsterGame::Game().GetElapsedTime();
+	}
+	if(HamsterGame::Game().GetKey(PGDN).bHeld){
+		z=std::max(0.f,z-HamsterGame::Game().GetElapsedTime());
+	}
 	if(aimingDir!=vf2d{}){
 		targetRot=aimingDir.norm().polar().y;
 		const vf2d currentVel{vel};
@@ -321,4 +327,8 @@ const float Hamster::GetDrownRatio()const{
 }
 const float Hamster::GetBurnRatio()const{
 	return burnTimer/DEFAULT_BURN_TIME;
+}
+
+const float&Hamster::GetZ()const{
+	return z;
 }
