@@ -86,7 +86,6 @@ add_executable(${OutputExecutable} ${SOURCE_CXX_FILES})
 # MacOS
 ######################################################################
 
-
 if(APPLE)
     
     # OpenGL
@@ -281,27 +280,4 @@ endif() # Emscripten
 ######################################################################
 if(IS_DIRECTORY ${SOURCE_CXX_INCLUDE_DIR})
     include_directories(${SOURCE_CXX_INCLUDE_DIR})
-endif()
-
-######################################################################
-# Copy assets/ directory target
-######################################################################
-
-set(DATA_OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/${ASSETS_DIR})
-
-file(GLOB_RECURSE src_data_files
-    RELATIVE ${SOURCE_DATA_DIR}/ "${SOURCE_DATA_DIR}/*.*" "${SOURCE_DATA_DIR}/*")
-foreach(fn ${src_data_files})
-    add_custom_command(
-        OUTPUT ${DATA_OUTPUT_DIR}/${fn}
-        COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE_DATA_DIR}/${fn} ${DATA_OUTPUT_DIR}/${fn}
-        MAIN_DEPENDENCY ${SOURCE_DATA_DIR}/${fn})
-    list(APPEND out_data_files ${DATA_OUTPUT_DIR}/${fn})
-endforeach()
-
-add_custom_target(copy_data DEPENDS ${out_data_files})
-
-# Copy Asset Files, if not Emscripten
-if (NOT EMSCRIPTEN)
-    add_dependencies(${OutputExecutable} copy_data)
 endif()
