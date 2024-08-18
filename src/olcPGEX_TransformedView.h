@@ -575,17 +575,17 @@ namespace olc
 
 	void TransformedView::DrawDecal(const olc::vf2d & pos, olc::Decal * decal, const olc::vf2d & scale, const olc::Pixel & tint)
 	{
-		pge->DrawDecal(WorldToScreen(pos), decal, scale * m_vWorldScale * m_vRecipPixel, tint);
+		pge->DrawDecal(WorldToScreen(pos), decal, scale * m_vWorldScale * m_vRecipPixel, tint,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 
 	void TransformedView::DrawPartialDecal(const olc::vf2d & pos, olc::Decal * decal, const olc::vf2d & source_pos, const olc::vf2d & source_size, const olc::vf2d & scale, const olc::Pixel & tint)
 	{
-		pge->DrawPartialDecal(WorldToScreen(pos), decal, source_pos, source_size, scale * m_vWorldScale * m_vRecipPixel, tint);
+		pge->DrawPartialDecal(WorldToScreen(pos), decal, source_pos, source_size, scale * m_vWorldScale * m_vRecipPixel, tint,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 
 	void TransformedView::DrawPartialDecal(const olc::vf2d & pos, const olc::vf2d & size, olc::Decal * decal, const olc::vf2d & source_pos, const olc::vf2d & source_size, const olc::Pixel & tint)
 	{
-		pge->DrawPartialDecal(WorldToScreen(pos), size * m_vWorldScale * m_vRecipPixel, decal, source_pos, source_size, tint);
+		pge->DrawPartialDecal(WorldToScreen(pos), size * m_vWorldScale * m_vRecipPixel, decal, source_pos, source_size, tint,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 	
 	void TransformedView::DrawExplicitDecal(olc::Decal* decal, const olc::vf2d* pos, const olc::vf2d* uv, const olc::Pixel* col, uint32_t elements)
@@ -593,7 +593,7 @@ namespace olc
 		std::vector<olc::vf2d> vTransformed(elements);
 		for (uint32_t n = 0; n < elements; n++)
 			vTransformed[n] = WorldToScreen(pos[n]);		
-		pge->DrawExplicitDecal(decal, vTransformed.data(), uv, col, elements);
+		pge->DrawExplicitDecal(decal, vTransformed.data(), uv, col, elements,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 
 	void TransformedView::DrawWarpedDecal(olc::Decal* decal, const olc::vf2d* pos, const olc::Pixel& tint)
@@ -604,7 +604,7 @@ namespace olc
 			WorldToScreen(pos[2]), WorldToScreen(pos[3]),
 		} };
 
-		pge->DrawWarpedDecal(decal, vTransformed, tint);
+		pge->DrawWarpedDecal(decal, vTransformed, tint,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 
 	void TransformedView::DrawWarpedDecal(olc::Decal* decal, const olc::vf2d(&pos)[4], const olc::Pixel& tint)
@@ -630,7 +630,7 @@ namespace olc
 			WorldToScreen(pos[2]), WorldToScreen(pos[3]),
 		} };
 
-		pge->DrawPartialWarpedDecal(decal, vTransformed, source_pos, source_size, tint);
+		pge->DrawPartialWarpedDecal(decal, vTransformed, source_pos, source_size, tint,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 
 	void TransformedView::DrawPartialWarpedDecal(olc::Decal* decal, const std::array<olc::vf2d, 4>& pos, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint)
@@ -640,42 +640,42 @@ namespace olc
 
 	void TransformedView::DrawRotatedDecal(const olc::vf2d & pos, olc::Decal * decal, const float fAngle, const olc::vf2d & center, const olc::vf2d & scale, const olc::Pixel & tint)
 	{
-		pge->DrawRotatedDecal(WorldToScreen(pos), decal, fAngle, center, scale * m_vWorldScale * m_vRecipPixel, tint);
+		pge->DrawRotatedDecal(WorldToScreen(pos), decal, fAngle, center, scale * m_vWorldScale * m_vRecipPixel, tint,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 
 	void TransformedView::DrawPartialRotatedDecal(const olc::vf2d & pos, olc::Decal * decal, const float fAngle, const olc::vf2d & center, const olc::vf2d & source_pos, const olc::vf2d & source_size, const olc::vf2d & scale, const olc::Pixel & tint)
 	{
-		pge->DrawPartialRotatedDecal(WorldToScreen(pos), decal, fAngle, center, source_pos, source_size, scale * m_vWorldScale * m_vRecipPixel, tint);
+		pge->DrawPartialRotatedDecal(WorldToScreen(pos), decal, fAngle, center, source_pos, source_size, scale * m_vWorldScale * m_vRecipPixel, tint,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 	
 	void TransformedView::DrawStringDecal(const olc::vf2d & pos, const std::string & sText, const olc::Pixel col, const olc::vf2d & scale)
 	{
-		pge->DrawStringDecal(WorldToScreen(pos), sText, col, scale * m_vWorldScale * m_vRecipPixel);
+		pge->DrawStringDecal(WorldToScreen(pos), sText, col, scale * m_vWorldScale * m_vRecipPixel,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 
 	void TransformedView::DrawStringPropDecal(const olc::vf2d & pos, const std::string & sText, const olc::Pixel col, const olc::vf2d & scale )
 	{
-		pge->DrawStringPropDecal(WorldToScreen(pos), sText, col, scale * m_vWorldScale * m_vRecipPixel);
+		pge->DrawStringPropDecal(WorldToScreen(pos), sText, col, scale * m_vWorldScale * m_vRecipPixel,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 
 	void TransformedView::FillRectDecal(const olc::vf2d & pos, const olc::vf2d & size, const olc::Pixel col)
 	{
-		pge->FillRectDecal(WorldToScreen(pos), (size * m_vWorldScale).ceil(), col);
+		pge->FillRectDecal(WorldToScreen(pos), (size * m_vWorldScale).ceil(), col,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 
 	void TransformedView::DrawRectDecal(const olc::vf2d& pos, const olc::vf2d& size, const olc::Pixel col)
 	{
-		pge->DrawRectDecal(WorldToScreen(pos), (size * m_vWorldScale).ceil(), col);
+		pge->DrawRectDecal(WorldToScreen(pos), (size * m_vWorldScale).ceil(), col,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 
 	void TransformedView::DrawLineDecal(const olc::vf2d& pos1, const olc::vf2d& pos2, Pixel p)
 	{
-		pge->DrawLineDecal(WorldToScreen(pos1), WorldToScreen(pos2), p);
+		pge->DrawLineDecal(WorldToScreen(pos1), WorldToScreen(pos2), p,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 	
 	void TransformedView::GradientFillRectDecal(const olc::vf2d & pos, const olc::vf2d & size, const olc::Pixel colTL, const olc::Pixel colBL, const olc::Pixel colBR, const olc::Pixel colTR)
 	{
-		pge->GradientFillRectDecal(WorldToScreen(pos), size * m_vWorldScale, colTL, colBL, colBR, colTR);
+		pge->GradientFillRectDecal(WorldToScreen(pos), size * m_vWorldScale, colTL, colBL, colBR, colTR,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 
 	void TransformedView::DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<olc::vf2d>& uv, const olc::Pixel tint)
@@ -683,7 +683,7 @@ namespace olc
 		std::vector<olc::vf2d> vTransformed(pos.size());
 		for (uint32_t n = 0; n < pos.size(); n++)
 			vTransformed[n] = WorldToScreen(pos[n]);
-		pge->DrawPolygonDecal(decal, vTransformed, uv, tint);
+		pge->DrawPolygonDecal(decal, vTransformed, uv, tint,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 
 	void TransformedView::DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<olc::vf2d>& uv, const std::vector<olc::Pixel> &tint)
@@ -691,7 +691,7 @@ namespace olc
 		std::vector<olc::vf2d> vTransformed(pos.size());
 		for (uint32_t n = 0; n < pos.size(); n++)
 			vTransformed[n] = WorldToScreen(pos[n]);
-		pge->DrawPolygonDecal(decal, vTransformed, uv, tint);
+		pge->DrawPolygonDecal(decal, vTransformed, uv, tint,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 
 	void TransformedView::DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<olc::vf2d>& uv, const std::vector<olc::Pixel>& colours, const olc::Pixel tint)
@@ -699,7 +699,7 @@ namespace olc
 		std::vector<olc::vf2d> vTransformed(pos.size());
 		for (uint32_t n = 0; n < pos.size(); n++)
 			vTransformed[n] = WorldToScreen(pos[n]);
-		pge->DrawPolygonDecal(decal, vTransformed, uv, colours, tint);
+		pge->DrawPolygonDecal(decal, vTransformed, uv, colours, tint,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 
 

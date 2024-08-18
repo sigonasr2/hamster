@@ -17,6 +17,7 @@ HamsterGame::HamsterGame(){
 }
 
 bool HamsterGame::OnUserCreate(){
+	olc::GFX3D::ConfigureDisplay();
 	camera=Camera2D{SCREEN_FRAME.size};
 	camera.SetMode(Camera2D::Mode::LazyFollow);
 	tv.Initialise(SCREEN_FRAME.size,{1,1});
@@ -26,6 +27,8 @@ bool HamsterGame::OnUserCreate(){
 	LoadLevel("TestLevel.tmx"); //THIS IS TEMPORARY.
 
 	border.ChangeBorder(Border::DEFAULT);
+
+	renderer.SetProjection(90.0f, (float)SCREEN_FRAME.size.y/(float)SCREEN_FRAME.size.x, 0.1f, 1000.0f, 0.0f, 0.0f, SCREEN_FRAME.size.x, SCREEN_FRAME.size.y);
 	return true;
 }
 
@@ -313,6 +316,9 @@ void HamsterGame::UpdateWaterTexture(){
 	DrawPartialSprite({},frame.GetSourceImage()->Sprite(),frame.GetSourceRect().pos,frame.GetSourceRect().size);
 	SetDrawTarget(nullptr);
 	animatedWaterTile.Decal()->Update();
+}
+
+void HamsterGame::Apply3DTransform(std::vector<DecalInstance>&decals){
 }
 
 int main()

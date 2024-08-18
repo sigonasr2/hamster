@@ -7,3 +7,5 @@
 #include "TMXParser.h"
 #define TSX_PARSER_SETUP
 #include "TSXParser.h"
+#define OLC_PGEX_GRAPHICS3D
+#include "olcPGEX_Graphics3D.h"

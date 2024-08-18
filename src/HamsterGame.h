@@ -46,6 +46,7 @@ All rights reserved.
 #include "TSXParser.h"
 #include "Terrain.h"
 #include "SpecialRenderable.h"
+#include "olcPGEX_Graphics3D.h"
 
 struct Letter{
 	vf2d pos;
@@ -102,4 +103,10 @@ private:
 	float updatePixelsTimer;
 	Renderable animatedWaterTile;
 	void UpdateWaterTexture();
+	GFX3D::PipeLine renderer;
+	virtual void Apply3DTransform(std::vector<DecalInstance>&decals)override final;
+	
+	const GFX3D::vec3d vUp = {0,1,0};
+	GFX3D::vec3d vEye = {0,0,-4};
+	const GFX3D::vec3d vLookDir = {0,0,1};
 };
