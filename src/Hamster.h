@@ -112,6 +112,7 @@ public:
 	void HandleCollision();
 	const float GetRadius()const;
 	const Terrain::TerrainType GetTerrainStandingOn()const;
+	const bool IsTerrainStandingOnSolid()const;
 	const float GetTimeToMaxSpeed()const;
 	const float GetMaxSpeed()const;
 	const float GetFriction()const;
@@ -125,4 +126,5 @@ public:
 	const bool IsBurning()const;
 	const float GetDrownRatio()const;
 	const float GetBurnRatio()const;
+	void SetPos(const vf2d pos);
 };

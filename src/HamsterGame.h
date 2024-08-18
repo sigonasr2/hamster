@@ -78,6 +78,7 @@ public:
 	static std::unordered_map<uint32_t,Animate2D::FrameSequence>ANIMATED_TILE_IDS;
 	const double GetRuntime()const;
 	const Terrain::TerrainType GetTerrainTypeAtPos(const vf2d pos)const;
+	const bool IsTerrainSolid(const vf2d pos)const;
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -99,4 +100,6 @@ private:
 	float matrixTimer;
 	std::vector<Letter>activeLetters;
 	float updatePixelsTimer;
+	Renderable animatedWaterTile;
+	void UpdateWaterTexture();
 };

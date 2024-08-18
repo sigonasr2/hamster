@@ -164,7 +164,7 @@ class TSXParser{
                 tileData.second=Terrain::TerrainType(newTag.GetInteger("value"));
             }
         } else
-        if(newTag.tag=="property"&&newTag.data["propertytype"]=="Solid"){
+        if(newTag.tag=="property"&&newTag.data["name"]=="Solid"){
             //The way animation data is stored is every "animation_tile_precision" ms indicating which frame we should be on.
             for(int&tagID:previousTagID){
                 std::pair<Terrain::SolidType,Terrain::TerrainType>&tileData{parsedTilesetInfo.TerrainData[tagID]};

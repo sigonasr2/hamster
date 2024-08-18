@@ -90,7 +90,7 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 				if(h.waitTimer<=0.f){
 					h.imgScale=1.f;
 					h.drownTimer=0.f;
-					h.pos=h.lastSafeLocation;
+					h.SetPos(h.lastSafeLocation);
 					h.state=NORMAL;
 					h.RemoveAllPowerups();
 				}
@@ -198,7 +198,7 @@ void Hamster::TurnTowardsTargetDirection(){
 }
 
 void Hamster::MoveHamster(){
-	pos+=vel*HamsterGame::Game().GetElapsedTime();
+	SetPos(GetPos()+vel*HamsterGame::Game().GetElapsedTime());
 	
 	distanceTravelled+=vel.mag()*HamsterGame::Game().GetElapsedTime();
 
@@ -218,8 +218,8 @@ void Hamster::HandleCollision(){
 				float randDir{util::random(2*geom2d::pi)};
 				vf2d collisionResolve1{GetPos()+vf2d{GetRadius(),randDir}.cart()};
 				vf2d collisionResolve2{h.GetPos()+vf2d{h.GetRadius(),float(randDir+geom2d::pi)}.cart()};
-				pos=collisionResolve1;
-				h.pos=collisionResolve2;
+				SetPos(collisionResolve1);
+				h.SetPos(collisionResolve2);
 				vel=vf2d{GetBumpAmount(),randDir}.cart();
 				h.vel=vf2d{GetBumpAmount(),float(randDir+geom2d::pi)}.cart();
 			}else{
@@ -229,8 +229,8 @@ void Hamster::HandleCollision(){
 				float bumpDistance{totalRadii-distance};
 				vf2d collisionResolve1{GetPos()+vf2d{bumpDistance/2.f,float(collisionLine.vector().polar().y+geom2d::pi)}.cart()};
 				vf2d collisionResolve2{h.GetPos()+vf2d{bumpDistance/2.f,collisionLine.vector().polar().y}.cart()};
-				pos=collisionResolve1;
-				h.pos=collisionResolve2;
+				SetPos(collisionResolve1);
+				h.SetPos(collisionResolve2);
 				vel=vf2d{GetBumpAmount(),float(collisionLine.vector().polar().y+geom2d::pi)}.cart();
 				h.vel=vf2d{GetBumpAmount(),collisionLine.vector().polar().y}.cart();
 			}
@@ -252,6 +252,10 @@ const float Hamster::GetRadius()const{
 
 const Terrain::TerrainType Hamster::GetTerrainStandingOn()const{
 	return HamsterGame::Game().GetTerrainTypeAtPos(GetPos());
+}
+
+const bool Hamster::IsTerrainStandingOnSolid()const{
+	return HamsterGame::Game().IsTerrainSolid(GetPos());
 }
 
 const float Hamster::GetTimeToMaxSpeed()const{
@@ -333,4 +337,12 @@ const float Hamster::GetBurnRatio()const{
 
 const float&Hamster::GetZ()const{
 	return z;
+}
+
+void Hamster::SetPos(const vf2d pos){
+	if(state!=FLYING){
+		if(!HamsterGame::Game().IsTerrainSolid(vf2d{this->pos.x,pos.y}))this->pos=vf2d{this->pos.x,pos.y};
+		if(!HamsterGame::Game().IsTerrainSolid(vf2d{pos.x,this->pos.y}))this->pos=vf2d{pos.x,this->pos.y};
+		if(!HamsterGame::Game().IsTerrainSolid(vf2d{this->pos.x,pos.y}))this->pos=vf2d{this->pos.x,pos.y};
+	}
 }
