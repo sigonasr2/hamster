@@ -258,7 +258,22 @@ if (EMSCRIPTEN)
             -sUSE_LIBPNG=1
             -sLLD_REPORT_UNDEFINED)
     endif()
+    
+    set_target_properties(${OutputExecutable} PROPERTIES LINK_FLAGS "--shell-file ${CMAKE_CURRENT_SOURCE_DIR}/emscripten_shell.html")
 
+    add_custom_command(
+        TARGET ${OutputExecutable}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+        ARGS -E remove -f ${CMAKE_BINARY_DIR}/bin/index.html
+    )
+
+    add_custom_command(
+        TARGET ${OutputExecutable}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+        ARGS -E rename ${CMAKE_BINARY_DIR}/bin/${OutputExecutable}.html ${CMAKE_BINARY_DIR}/bin/index.html
+    )
 endif() # Emscripten
 
 ######################################################################
