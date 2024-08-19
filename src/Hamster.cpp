@@ -151,7 +151,9 @@ void Hamster::DrawHamsters(TransformedView&tv){
 		if(h.state==FLYING)h.hamsterJet.value().Draw();
 		HamsterGame::Game().SetZ(h.z);
 		if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos,wheelBottomImg.GetSourceImage()->Decal(),h.rot,wheelBottomImg.GetSourceRect().size/2,wheelBottomImg.GetSourceRect().pos,wheelBottomImg.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
+		HamsterGame::Game().SetZ(h.z+0.005f);
 		tv.DrawPartialRotatedDecal(h.pos,img.GetSourceImage()->Decal(),h.rot,img.GetSourceRect().size/2,img.GetSourceRect().pos,img.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
+		HamsterGame::Game().SetZ(h.z+0.01f);
 		if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos,wheelTopImg.GetSourceImage()->Decal(),h.rot,wheelTopImg.GetSourceRect().size/2,wheelTopImg.GetSourceRect().pos,wheelTopImg.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,{255,255,255,192},h.imgScale));
 		HamsterGame::Game().SetZ(0.f);
 	}
@@ -270,6 +272,7 @@ const float Hamster::GetTimeToMaxSpeed()const{
 	float finalTimeToMaxSpd{DEFAULT_TIME_TO_MAX_SPD};
 	if(!HasPowerup(Powerup::ICE)&&GetTerrainStandingOn()==Terrain::ICE)finalTimeToMaxSpd*=3;
 	else if(!HasPowerup(Powerup::SWAMP)&&GetTerrainStandingOn()==Terrain::SWAMP)finalTimeToMaxSpd*=1.25;
+	if(state==FLYING)finalTimeToMaxSpd*=30.f;
 	return finalTimeToMaxSpd;
 }
 const float Hamster::GetMaxSpeed()const{
@@ -296,12 +299,14 @@ const float Hamster::GetMaxSpeed()const{
 		}break;
 	}
 	if(HasPowerup(Powerup::WHEEL))finalMaxSpd*=1.5f;
+	if(state==FLYING)finalMaxSpd*=8.f;
 	return finalMaxSpd;
 }
 const float Hamster::GetFriction()const{
 	float finalFriction{DEFAULT_FRICTION};
 	if(!HasPowerup(Powerup::ICE)&&GetTerrainStandingOn()==Terrain::ICE)finalFriction*=0.1f;
 	else if(!HasPowerup(Powerup::SWAMP)&&GetTerrainStandingOn()==Terrain::SWAMP)finalFriction*=0.6f;
+	if(state==FLYING)finalFriction*=8.f;
 	return finalFriction;
 }
 const float Hamster::GetTurnSpeed()const{

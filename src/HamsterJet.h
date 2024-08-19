@@ -50,6 +50,16 @@ class HamsterJet{
 		LANDING,
 		COMPLETE_LANDING,
 	};
+	enum JetDirection{
+		TOP_LEFT,
+		BOTTOM_LEFT,
+		BOTTOM_RIGHT,
+		TOP_RIGHT,
+	};
+	enum JetState{
+		ON=true,
+		OFF=false,
+	};
 	Hamster&hamster;
 	vf2d pos;
 	vf2d hamsterOriginalPos;
@@ -61,8 +71,11 @@ class HamsterJet{
 	SpecialRenderable jet;
 	SpecialRenderable lights;
 	float timer{};
+	std::array<JetState,4>jetState;
+	float lastTappedSpace{};
 public:
 	HamsterJet(Hamster&hamster);
 	void Update(const float fElapsedTime);
 	void Draw();
+	void HandleJetControls();
 };

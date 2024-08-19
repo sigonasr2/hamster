@@ -49,14 +49,20 @@ void HamsterJet::Update(const float fElapsedTime){
 	jet.Update(fElapsedTime);
 	lights.Update(fElapsedTime);
 	timer=std::max(0.f,timer-fElapsedTime);
+	lastTappedSpace+=fElapsedTime;
 	switch(state){
 		case SWOOP_DOWN:{
 			HamsterGame::Game().SetZoom(1.5f);
 			z=util::lerp(0.f,3.f,std::pow(timer/3.f,2));
 			vf2d originalPos{hamster.GetPos().x-128.f,hamster.GetPos().y+32.f};
-			pos=hamster.GetPos().lerp(originalPos,std::pow(timer/3.f,4));
 			if(timer<=0.4f){
 				hamster.SetPos(hamsterOriginalPos-vf2d{0.f,sin(float(geom2d::pi)*timer/0.4f)*8.f});
+				hamster.SetZ(sin(float(geom2d::pi)*timer/0.4f)*0.2f);
+				jetState[TOP_LEFT]=OFF;
+				jetState[BOTTOM_LEFT]=OFF;
+			}else{
+				jetState[TOP_LEFT]=jetState[BOTTOM_LEFT]=jetState[BOTTOM_RIGHT]=jetState[TOP_RIGHT]=ON;
+				pos=hamster.GetPos().lerp(originalPos,std::pow(timer/3.f,4));
 			}
 			if(timer<=0.f){
 				state=RISE_UP;
@@ -68,22 +74,74 @@ void HamsterJet::Update(const float fElapsedTime){
 			}
 		}break;
 		case RISE_UP:{
+			jetState[TOP_LEFT]=jetState[BOTTOM_LEFT]=jetState[BOTTOM_RIGHT]=jetState[TOP_RIGHT]=ON;
 			pos=targetPos.lerp(originalPos,std::sqrt(timer/3.f));
 			z=util::lerp(targetZ,0.f,timer/3.f);
 			hamster.SetPos(pos);
-			hamster.SetZ(z+0.01f);
+			hamster.SetZ(z+0.03f);
 			if(timer<=0.f){
 				state=PLAYER_CONTROL;
 				HamsterGame::Game().SetZoom(1.f);
 			}
+		}break;
+		case PLAYER_CONTROL:{
+			jetState[TOP_LEFT]=jetState[BOTTOM_LEFT]=jetState[BOTTOM_RIGHT]=jetState[TOP_RIGHT]=OFF;
+			HandleJetControls();
+			pos=hamster.GetPos();
 		}break;
 	}
 }
 void HamsterJet::Draw(){
 	HamsterGame::Game().SetZ(z);
 	HamsterGame::Game().tv.DrawPartialRotatedDecal(pos,jet.Decal(),0.f,{24,24},{},{48,48});
+	const Animate2D::FrameSequence&flameAnim{HamsterGame::Game().GetAnimation("hamster_jet.png",HamsterGame::AnimationState::JET_FLAMES)};
+	const Animate2D::Frame&flameFrame{flameAnim.GetFrame(HamsterGame::Game().GetRuntime())};
+	HamsterGame::Game().SetZ(z+0.01f);
+	if(jetState[TOP_LEFT])HamsterGame::Game().tv.DrawPartialRotatedDecal(pos,flameFrame.GetSourceImage()->Decal(),0.f,flameFrame.GetSourceRect().size/2,flameFrame.GetSourceRect().pos+vf2d{0,0},flameFrame.GetSourceRect().size/2);
+	if(jetState[BOTTOM_LEFT])HamsterGame::Game().tv.DrawPartialRotatedDecal(pos,flameFrame.GetSourceImage()->Decal(),0.f,{24,0},flameFrame.GetSourceRect().pos+vf2d{0,24},flameFrame.GetSourceRect().size/2);
+	if(jetState[BOTTOM_RIGHT])HamsterGame::Game().tv.DrawPartialRotatedDecal(pos,flameFrame.GetSourceImage()->Decal(),0.f,{0,0},flameFrame.GetSourceRect().pos+vf2d{24,24},flameFrame.GetSourceRect().size/2);
+	if(jetState[TOP_RIGHT])HamsterGame::Game().tv.DrawPartialRotatedDecal(pos,flameFrame.GetSourceImage()->Decal(),0.f,{0,24},flameFrame.GetSourceRect().pos+vf2d{24,0},flameFrame.GetSourceRect().size/2);
 	const Animate2D::FrameSequence&lightAnim{HamsterGame::Game().GetAnimation("hamster_jet.png",HamsterGame::AnimationState::JET_LIGHTS)};
 	const Animate2D::Frame&lightFrame{lightAnim.GetFrame(HamsterGame::Game().GetRuntime())};
+	HamsterGame::Game().SetZ(z+0.02f);
 	HamsterGame::Game().tv.DrawPartialRotatedDecal(pos,lights.Decal(),0.f,lightFrame.GetSourceRect().size/2.f,lightFrame.GetSourceRect().pos,lightFrame.GetSourceRect().size);
 	HamsterGame::Game().SetZ(0.f);
+}
+
+void HamsterJet::HandleJetControls(){
+	lastTappedSpace+=HamsterGame::Game().GetElapsedTime();
+	vf2d aimingDir{};
+	if(HamsterGame::Game().GetKey(W).bHeld){
+		aimingDir+=vf2d{0,-1};
+		jetState[BOTTOM_RIGHT]=ON;
+		jetState[BOTTOM_LEFT]=ON;
+	}
+	if(HamsterGame::Game().GetKey(D).bHeld){
+		aimingDir+=vf2d{1,0};
+		jetState[BOTTOM_LEFT]=ON;
+		jetState[TOP_LEFT]=ON;
+	}
+	if(HamsterGame::Game().GetKey(S).bHeld){
+		aimingDir+=vf2d{0,1};
+		jetState[TOP_LEFT]=ON;
+		jetState[TOP_RIGHT]=ON;
+	}
+	if(HamsterGame::Game().GetKey(A).bHeld){
+		aimingDir+=vf2d{-1,0};
+		jetState[BOTTOM_RIGHT]=ON;
+		jetState[TOP_RIGHT]=ON;
+	}
+	if(aimingDir!=vf2d{}){
+		hamster.targetRot=aimingDir.norm().polar().y;
+		const vf2d currentVel{hamster.vel};
+		hamster.vel+=vf2d{currentVel.polar().x+(hamster.GetMaxSpeed()*HamsterGame::Game().GetElapsedTime())/hamster.GetTimeToMaxSpeed(),hamster.rot}.cart();
+		hamster.vel=vf2d{std::min(hamster.GetMaxSpeed(),hamster.vel.polar().x),hamster.vel.polar().y}.cart();
+		hamster.frictionEnabled=false;
+	}
+	if(HamsterGame::Game().GetKey(SPACE).bPressed){
+		if(lastTappedSpace<=0.6f){
+			state=LANDING;
+		}
+		lastTappedSpace=0.f;
+	}
 }

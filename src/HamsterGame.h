@@ -63,6 +63,7 @@ public:
 		WHEEL_TOP,
 		WHEEL_BOTTOM,
 		JET_LIGHTS,
+		JET_FLAMES,
 	};
 
 	HamsterGame();
@@ -109,7 +110,6 @@ private:
 	GFX3D::PipeLine renderer;
 	virtual void Apply3DTransform(std::vector<DecalInstance>&decals)override final;
 	float zoom{1.f}; //Increase to zoom out, decrease to zoom in (this is the overhead distance from the player).
-	
 	GFX3D::vec3d vUp{0,-1,0};
 	GFX3D::vec3d vEye{0.f,0,1};
 	GFX3D::vec3d vLookDir{0,0,-1};

@@ -46,6 +46,7 @@ All rights reserved.
 #include "HamsterGame.h"
 
 class Hamster{
+	friend class HamsterJet;
 	enum PlayerControlled{
 		PLAYER_CONTROLLED=true,
 		NPC=false,

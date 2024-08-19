@@ -79,7 +79,7 @@ void HamsterGame::LoadAnimations(){
 		lavaAnimFrames.AddFrame(Animate2D::Frame{&GetGFX("gametiles.png"),{sourcePos,{16,16}}});
 	}
 	LoadAnimation(JET_LIGHTS,"hamster_jet.png",{{0,48},{48,48}},0.3f,Animate2D::Style::Repeat,{48,48});
-
+	LoadAnimation(JET_FLAMES,"hamster_jet.png",{{48,0},{96,0}},0.15f,Animate2D::Style::Repeat,{48,48});
 
 	animatedWaterTile.Create(16,16,false,false);
 	UpdateWaterTexture();
@@ -135,6 +135,7 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 	cloudOffset+=cloudSpd*fElapsedTime;
 	camera.SetViewSize(tv.GetWorldVisibleArea());
 	camera.Update(fElapsedTime);
+	camera.SetLazyFollowRate(4.f*Hamster::GetPlayer().GetMaxSpeed()/128.f);
 	tv.SetWorldOffset(tv.ScaleToWorld(-SCREEN_FRAME.pos)+camera.GetViewPosition());
 	Hamster::UpdateHamsters(fElapsedTime);
 	Powerup::UpdatePowerups(fElapsedTime);
