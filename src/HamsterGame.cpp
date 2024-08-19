@@ -47,6 +47,7 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("hamster_jet.png");
 	_LoadImage("dot.png");
 	_LoadImage("clouds.png");
+	_LoadImage("aimingTarget.png");
 	UpdateMatrixTexture();
 }
 
@@ -397,6 +398,10 @@ void HamsterGame::SetZoom(const float zoom){
 }
 const float HamsterGame::GetZoom()const{
 	return zoom;
+}
+
+const bool HamsterGame::IsInBounds(const vf2d pos)const{
+	return !(pos.x<=-160.f||pos.y<=-160.f||pos.x>=currentMap.value().GetData().GetMapData().width*16+160.f||pos.y>=currentMap.value().GetData().GetMapData().height*16+160.f);
 }
 
 int main()

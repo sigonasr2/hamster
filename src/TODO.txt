@@ -71,5 +71,26 @@ Fall-o-meter
 
 Hamster Rescue Boat
 
+
+LORE
+===================
+
+(?) discovered a strange floating energy orb while going for their morning run. Curious, they approached it and came into contact with it, granting them new powers.
+
+Excited by this discovery (?) decided to share it with the rest of their hamster friends.
+
+A couple villain/scientist hamsters realize that this has become a stubby legs race with great potential and recruited world class hamsters to run and obtain these new orbs for research.
+
+
+
+
+Hamsters are experimenting with new technologies to emphasize their running capabilities beyond what was originally thought possible.
+
+
+
+Hamsters from all around Hamster planet have been recruited to scavenge for 
+
+============================
+
 ============================
 olcPGEX_ViewPort - Submit a PR where the offset is subtracted instead of added to determine clip region cutoffs.

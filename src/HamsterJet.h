@@ -65,6 +65,7 @@ class HamsterJet{
 	vf2d hamsterOriginalPos;
 	vf2d originalPos;
 	vf2d targetPos;
+	float easeInTimer{};
 	float z;
 	float targetZ{};
 	State state;

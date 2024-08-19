@@ -150,11 +150,11 @@ void Hamster::DrawHamsters(TransformedView&tv){
 		const Animate2D::Frame&wheelBottomImg{wheelBottomAnim.GetFrame(h.distanceTravelled/80.f)};
 		if(h.state==FLYING)h.hamsterJet.value().Draw();
 		HamsterGame::Game().SetZ(h.z);
-		if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos,wheelBottomImg.GetSourceImage()->Decal(),h.rot,wheelBottomImg.GetSourceRect().size/2,wheelBottomImg.GetSourceRect().pos,wheelBottomImg.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
+		if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos+vf2d{0.f,h.drawingOffsetY},wheelBottomImg.GetSourceImage()->Decal(),h.rot,wheelBottomImg.GetSourceRect().size/2,wheelBottomImg.GetSourceRect().pos,wheelBottomImg.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
 		HamsterGame::Game().SetZ(h.z+0.005f);
-		tv.DrawPartialRotatedDecal(h.pos,img.GetSourceImage()->Decal(),h.rot,img.GetSourceRect().size/2,img.GetSourceRect().pos,img.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
+		tv.DrawPartialRotatedDecal(h.pos+vf2d{0.f,h.drawingOffsetY},img.GetSourceImage()->Decal(),h.rot,img.GetSourceRect().size/2,img.GetSourceRect().pos,img.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
 		HamsterGame::Game().SetZ(h.z+0.01f);
-		if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos,wheelTopImg.GetSourceImage()->Decal(),h.rot,wheelTopImg.GetSourceRect().size/2,wheelTopImg.GetSourceRect().pos,wheelTopImg.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,{255,255,255,192},h.imgScale));
+		if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos+vf2d{0.f,h.drawingOffsetY},wheelTopImg.GetSourceImage()->Decal(),h.rot,wheelTopImg.GetSourceRect().size/2,wheelTopImg.GetSourceRect().pos,wheelTopImg.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,{255,255,255,192},h.imgScale));
 		HamsterGame::Game().SetZ(0.f);
 	}
 }
@@ -261,6 +261,7 @@ const float Hamster::GetRadius()const{
 }
 
 const Terrain::TerrainType Hamster::GetTerrainStandingOn()const{
+	if(state==FLYING)return Terrain::ROCK;
 	return HamsterGame::Game().GetTerrainTypeAtPos(GetPos());
 }
 
@@ -354,12 +355,12 @@ const float&Hamster::GetZ()const{
 
 void Hamster::SetPos(const vf2d pos){
 	bool movedY{false};
-	if(state==FLYING||!HamsterGame::Game().IsTerrainSolid(vf2d{this->pos.x,pos.y})){
+	if(state==FLYING&&HamsterGame::Game().IsInBounds(vf2d{this->pos.x,pos.y})||!HamsterGame::Game().IsTerrainSolid(vf2d{this->pos.x,pos.y})){
 		this->pos=vf2d{this->pos.x,pos.y};
 		movedY=true;
 	}
-	if(state==FLYING||!HamsterGame::Game().IsTerrainSolid(vf2d{pos.x,this->pos.y}))this->pos=vf2d{pos.x,this->pos.y};
-	if (!movedY&&(state==FLYING||!HamsterGame::Game().IsTerrainSolid(vf2d{this->pos.x,pos.y})))this->pos=vf2d{this->pos.x,pos.y};
+	if(state==FLYING&&HamsterGame::Game().IsInBounds(vf2d{pos.x,this->pos.y})||!HamsterGame::Game().IsTerrainSolid(vf2d{pos.x,this->pos.y}))this->pos=vf2d{pos.x,this->pos.y};
+	if (!movedY&&(state==FLYING&&HamsterGame::Game().IsInBounds(vf2d{this->pos.x,pos.y})||!HamsterGame::Game().IsTerrainSolid(vf2d{this->pos.x,pos.y})))this->pos=vf2d{this->pos.x,pos.y};
 }
 
 void Hamster::SetZ(const float z){
@@ -368,4 +369,8 @@ void Hamster::SetZ(const float z){
 
 void Hamster::OnUserDestroy(){
 	HAMSTER_LIST.clear();
+}
+
+void Hamster::SetDrawingOffsetY(const float offsetY){
+	drawingOffsetY=offsetY;
 }

@@ -102,6 +102,7 @@ class Hamster{
 	std::unordered_set<Powerup::PowerupType>powerups;
 	std::optional<HamsterJet>hamsterJet;
 	float lastTappedSpace{0.f};
+	float drawingOffsetY{0.f};
 public:
 	Hamster(const vf2d spawnPos,const std::string_view img,const PlayerControlled IsPlayerControlled=NPC);
 	static const Hamster&GetPlayer();
@@ -134,4 +135,5 @@ public:
 	void SetPos(const vf2d pos);
 	void SetZ(const float z);
 	static void OnUserDestroy();
+	void SetDrawingOffsetY(const float offsetY);
 };

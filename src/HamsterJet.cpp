@@ -49,6 +49,7 @@ void HamsterJet::Update(const float fElapsedTime){
 	jet.Update(fElapsedTime);
 	lights.Update(fElapsedTime);
 	timer=std::max(0.f,timer-fElapsedTime);
+	easeInTimer=std::max(0.f,easeInTimer-fElapsedTime);
 	lastTappedSpace+=fElapsedTime;
 	switch(state){
 		case SWOOP_DOWN:{
@@ -58,8 +59,7 @@ void HamsterJet::Update(const float fElapsedTime){
 			if(timer<=0.4f){
 				hamster.SetPos(hamsterOriginalPos-vf2d{0.f,sin(float(geom2d::pi)*timer/0.4f)*8.f});
 				hamster.SetZ(sin(float(geom2d::pi)*timer/0.4f)*0.2f);
-				jetState[TOP_LEFT]=OFF;
-				jetState[BOTTOM_LEFT]=OFF;
+				jetState[TOP_LEFT]=jetState[BOTTOM_LEFT]=jetState[BOTTOM_RIGHT]=jetState[TOP_RIGHT]=OFF;
 			}else{
 				jetState[TOP_LEFT]=jetState[BOTTOM_LEFT]=jetState[BOTTOM_RIGHT]=jetState[TOP_RIGHT]=ON;
 				pos=hamster.GetPos().lerp(originalPos,std::pow(timer/3.f,4));
@@ -81,7 +81,8 @@ void HamsterJet::Update(const float fElapsedTime){
 			hamster.SetZ(z+0.03f);
 			if(timer<=0.f){
 				state=PLAYER_CONTROL;
-				HamsterGame::Game().SetZoom(1.f);
+				HamsterGame::Game().SetZoom(0.6f);
+				easeInTimer=0.6f;
 			}
 		}break;
 		case PLAYER_CONTROL:{
@@ -92,19 +93,29 @@ void HamsterJet::Update(const float fElapsedTime){
 	}
 }
 void HamsterJet::Draw(){
+	float drawingOffsetY{0.f};
+	hamster.SetDrawingOffsetY(0.f);
+	if((state==PLAYER_CONTROL||state==LANDING)&&z>2.f){
+		HamsterGame::Game().SetZ(z/2.f);
+		HamsterGame::Game().tv.DrawRotatedDecal(pos,HamsterGame::GetGFX("aimingTarget.png").Decal(),0.f,HamsterGame::GetGFX("aimingTarget.png").Sprite()->Size()/2);
+	}
+	if(state==PLAYER_CONTROL){
+		drawingOffsetY=util::lerp(48.f,0.f,easeInTimer/0.6f);
+		hamster.SetDrawingOffsetY(util::lerp(48.f,0.f,easeInTimer/0.6f));
+	}
 	HamsterGame::Game().SetZ(z);
-	HamsterGame::Game().tv.DrawPartialRotatedDecal(pos,jet.Decal(),0.f,{24,24},{},{48,48});
+	HamsterGame::Game().tv.DrawPartialRotatedDecal(pos+vf2d{0,drawingOffsetY},jet.Decal(),0.f,{24,24},{},{48,48});
 	const Animate2D::FrameSequence&flameAnim{HamsterGame::Game().GetAnimation("hamster_jet.png",HamsterGame::AnimationState::JET_FLAMES)};
 	const Animate2D::Frame&flameFrame{flameAnim.GetFrame(HamsterGame::Game().GetRuntime())};
 	HamsterGame::Game().SetZ(z+0.01f);
-	if(jetState[TOP_LEFT])HamsterGame::Game().tv.DrawPartialRotatedDecal(pos,flameFrame.GetSourceImage()->Decal(),0.f,flameFrame.GetSourceRect().size/2,flameFrame.GetSourceRect().pos+vf2d{0,0},flameFrame.GetSourceRect().size/2);
-	if(jetState[BOTTOM_LEFT])HamsterGame::Game().tv.DrawPartialRotatedDecal(pos,flameFrame.GetSourceImage()->Decal(),0.f,{24,0},flameFrame.GetSourceRect().pos+vf2d{0,24},flameFrame.GetSourceRect().size/2);
-	if(jetState[BOTTOM_RIGHT])HamsterGame::Game().tv.DrawPartialRotatedDecal(pos,flameFrame.GetSourceImage()->Decal(),0.f,{0,0},flameFrame.GetSourceRect().pos+vf2d{24,24},flameFrame.GetSourceRect().size/2);
-	if(jetState[TOP_RIGHT])HamsterGame::Game().tv.DrawPartialRotatedDecal(pos,flameFrame.GetSourceImage()->Decal(),0.f,{0,24},flameFrame.GetSourceRect().pos+vf2d{24,0},flameFrame.GetSourceRect().size/2);
+	if(jetState[TOP_LEFT])HamsterGame::Game().tv.DrawPartialRotatedDecal(pos+vf2d{0,drawingOffsetY},flameFrame.GetSourceImage()->Decal(),0.f,flameFrame.GetSourceRect().size/2,flameFrame.GetSourceRect().pos+vf2d{0,0},flameFrame.GetSourceRect().size/2);
+	if(jetState[BOTTOM_LEFT])HamsterGame::Game().tv.DrawPartialRotatedDecal(pos+vf2d{0,drawingOffsetY},flameFrame.GetSourceImage()->Decal(),0.f,{24,0},flameFrame.GetSourceRect().pos+vf2d{0,24},flameFrame.GetSourceRect().size/2);
+	if(jetState[BOTTOM_RIGHT])HamsterGame::Game().tv.DrawPartialRotatedDecal(pos+vf2d{0,drawingOffsetY},flameFrame.GetSourceImage()->Decal(),0.f,{0,0},flameFrame.GetSourceRect().pos+vf2d{24,24},flameFrame.GetSourceRect().size/2);
+	if(jetState[TOP_RIGHT])HamsterGame::Game().tv.DrawPartialRotatedDecal(pos+vf2d{0,drawingOffsetY},flameFrame.GetSourceImage()->Decal(),0.f,{0,24},flameFrame.GetSourceRect().pos+vf2d{24,0},flameFrame.GetSourceRect().size/2);
 	const Animate2D::FrameSequence&lightAnim{HamsterGame::Game().GetAnimation("hamster_jet.png",HamsterGame::AnimationState::JET_LIGHTS)};
 	const Animate2D::Frame&lightFrame{lightAnim.GetFrame(HamsterGame::Game().GetRuntime())};
 	HamsterGame::Game().SetZ(z+0.02f);
-	HamsterGame::Game().tv.DrawPartialRotatedDecal(pos,lights.Decal(),0.f,lightFrame.GetSourceRect().size/2.f,lightFrame.GetSourceRect().pos,lightFrame.GetSourceRect().size);
+	HamsterGame::Game().tv.DrawPartialRotatedDecal(pos+vf2d{0,drawingOffsetY},lights.Decal(),0.f,lightFrame.GetSourceRect().size/2.f,lightFrame.GetSourceRect().pos,lightFrame.GetSourceRect().size);
 	HamsterGame::Game().SetZ(0.f);
 }
 

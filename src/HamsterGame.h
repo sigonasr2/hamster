@@ -84,6 +84,7 @@ public:
 	const bool IsTerrainSolid(const vf2d pos)const;
 	void SetZoom(const float zoom);
 	const float GetZoom()const;
+	const bool IsInBounds(const vf2d pos)const;
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
