@@ -65,9 +65,10 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 		h.HandleCollision();
 		switch(h.state){
 			case NORMAL:{
-				//TODO: NPC controls.
 				if(h.IsPlayerControlled){
 					h.HandlePlayerControls();
+				}else{
+					//TODO: NPC controls.
 				}
 			}break;
 			case BUMPED:{
@@ -90,7 +91,64 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 				if(h.waitTimer<=0.f){
 					h.imgScale=1.f;
 					h.drownTimer=0.f;
-					h.SetPos(h.lastSafeLocation);
+					if(!h.lastSafeLocation.has_value()){
+						#pragma region Safe Terrain Outline Search Algorithm
+						{
+							using TilePos=vi2d;
+							using TileDistance=int;
+
+							const vi2d playerTile{h.GetPos()/16};
+							geom2d::rect<int>searchRect{{-1,-1},{3,3}};
+							std::optional<std::pair<TilePos,TileDistance>>closestTile;
+
+							const auto DetermineAndUpdateClosestTile=[&h,&playerTile,&closestTile](const vi2d&tile){
+								if(!h.IsLethalTerrain(tile*16)){
+									std::pair<TilePos,TileDistance>closest{closestTile.value_or(std::pair<TilePos,TileDistance>{{},std::numeric_limits<int>::max()})};
+									int tileDist{abs(playerTile.x-tile.x)+abs(playerTile.y-tile.y)};
+									if(tileDist<=closest.second)closestTile.emplace(std::pair<TilePos,TileDistance>{tile,tileDist});
+								}
+							};
+							while(!closestTile.has_value()){
+								#pragma region Top Outline Check
+								{
+									for(int offsetX:std::ranges::iota_view(searchRect.pos.x,searchRect.size.x)){
+										const vi2d checkTile{playerTile+vi2d{offsetX,searchRect.top().end.y}};
+										DetermineAndUpdateClosestTile(checkTile);
+									}
+								}
+								#pragma endregion
+								#pragma region Bottom Outline Check
+								{
+									for(int offsetX:std::ranges::iota_view(searchRect.pos.x,searchRect.size.x)){
+										const vi2d checkTile{playerTile+vi2d{offsetX,searchRect.bottom().end.y}};
+										DetermineAndUpdateClosestTile(checkTile);
+									}
+								}
+								#pragma endregion
+								#pragma region Right Outline Check
+								{
+									for(int offsetY:std::ranges::iota_view(searchRect.pos.y+1,searchRect.size.y-2+1)){
+										const vi2d checkTile{playerTile+vi2d{searchRect.right().end.x,offsetY}};
+										DetermineAndUpdateClosestTile(checkTile);
+									}
+								}
+								#pragma endregion
+								#pragma region Left Outline Check
+								{
+									for(int offsetY:std::ranges::iota_view(searchRect.pos.y+1,searchRect.size.y-2+1)){
+										const vi2d checkTile{playerTile+vi2d{searchRect.left().end.x,offsetY}};
+										DetermineAndUpdateClosestTile(checkTile);
+									}
+								}
+								#pragma endregion
+								searchRect.pos-=1;
+								searchRect.size+=2;
+							}
+							h.lastSafeLocation=closestTile.value().first*16+8;
+						}
+						#pragma endregion
+						h.SetPos(h.lastSafeLocation.value());
+					}
 					h.state=NORMAL;
 					h.RemoveAllPowerups();
 				}
@@ -104,14 +162,12 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 					h.state=WAIT;
 				}
 			}break;
-			case FLYING:{
-				h.hamsterJet.value().Update(fElapsedTime);
-			};
 		}
+		if(h.hamsterJet.has_value())h.hamsterJet.value().Update(fElapsedTime);
 		if(h.state!=FLYING){
-			if((h.GetTerrainStandingOn()==Terrain::OCEAN||!h.HasPowerup(Powerup::SWAMP)&&h.GetTerrainStandingOn()==Terrain::SWAMP)&&h.state!=DROWNING&&h.state!=WAIT)h.drownTimer+=fElapsedTime;
+			if((h.GetTerrainStandingOn()==Terrain::OCEAN||h.GetTerrainStandingOn()==Terrain::VOID||!h.HasPowerup(Powerup::SWAMP)&&h.GetTerrainStandingOn()==Terrain::SWAMP)&&h.state!=DROWNING&&h.state!=WAIT)h.drownTimer+=fElapsedTime;
 			else if((!h.HasPowerup(Powerup::LAVA)&&h.GetTerrainStandingOn()==Terrain::LAVA)&&h.state!=BURNING&&h.state!=WAIT)h.burnTimer+=fElapsedTime;
-			else if(h.lastSafeLocationTimer<=0.f&&h.state==NORMAL&&!h.StandingOnLethalTerrain()){
+			else if(h.lastSafeLocationTimer<=0.f&&h.state==NORMAL&&!h.IsLethalTerrain(h.GetPos())){
 				h.lastSafeLocationTimer=0.5f;
 				h.drownTimer=0.f;
 				h.burnTimer=0.f;
@@ -148,7 +204,7 @@ void Hamster::DrawHamsters(TransformedView&tv){
 		const Animate2D::Frame&img{h.animations.GetState(h.internalAnimState)==HamsterGame::DEFAULT?anim.GetFrame(h.distanceTravelled/100.f):h.GetCurrentAnimation()};
 		const Animate2D::Frame&wheelTopImg{wheelTopAnim.GetFrame(h.distanceTravelled/80.f)};
 		const Animate2D::Frame&wheelBottomImg{wheelBottomAnim.GetFrame(h.distanceTravelled/80.f)};
-		if(h.state==FLYING)h.hamsterJet.value().Draw();
+		if(h.hamsterJet.has_value())h.hamsterJet.value().Draw();
 		HamsterGame::Game().SetZ(h.z);
 		if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos+vf2d{0.f,h.drawingOffsetY},wheelBottomImg.GetSourceImage()->Decal(),h.rot,wheelBottomImg.GetSourceRect().size/2,wheelBottomImg.GetSourceRect().pos,wheelBottomImg.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
 		HamsterGame::Game().SetZ(h.z+0.005f);
@@ -197,10 +253,12 @@ void Hamster::HandlePlayerControls(){
 	if(HamsterGame::Game().GetKey(SPACE).bPressed){
 		if(lastTappedSpace<=0.6f&&HasPowerup(Powerup::JET)){
 			state=FLYING;
+			lastSafeLocation.reset();
 			hamsterJet.emplace(*this);
 		}
 		lastTappedSpace=0.f;
 	}
+	if(HamsterGame::Game().GetKey(P).bPressed)ObtainPowerup(Powerup::JET);
 }
 
 void Hamster::TurnTowardsTargetDirection(){
@@ -273,7 +331,10 @@ const float Hamster::GetTimeToMaxSpeed()const{
 	float finalTimeToMaxSpd{DEFAULT_TIME_TO_MAX_SPD};
 	if(!HasPowerup(Powerup::ICE)&&GetTerrainStandingOn()==Terrain::ICE)finalTimeToMaxSpd*=3;
 	else if(!HasPowerup(Powerup::SWAMP)&&GetTerrainStandingOn()==Terrain::SWAMP)finalTimeToMaxSpd*=1.25;
-	if(state==FLYING)finalTimeToMaxSpd*=30.f;
+	if(hamsterJet.has_value()){
+		if(hamsterJet.value().GetState()==HamsterJet::LANDING)finalTimeToMaxSpd*=5.f;
+		else if(state==FLYING)finalTimeToMaxSpd*=30.f;
+	}
 	return finalTimeToMaxSpd;
 }
 const float Hamster::GetMaxSpeed()const{
@@ -295,19 +356,28 @@ const float Hamster::GetMaxSpeed()const{
 		case Terrain::OCEAN:{
 			finalMaxSpd*=0.10f;
 		}break;
+		case Terrain::LAVA:{
+			finalMaxSpd*=0.6f;
+		}break;
 		case Terrain::FOREST:{
 			if(!HasPowerup(Powerup::FOREST))finalMaxSpd*=0.50f;
 		}break;
 	}
 	if(HasPowerup(Powerup::WHEEL))finalMaxSpd*=1.5f;
-	if(state==FLYING)finalMaxSpd*=8.f;
+	if(hamsterJet.has_value()){
+		if(hamsterJet.value().GetState()==HamsterJet::LANDING)finalMaxSpd*=1.5f;
+		else if(state==FLYING)finalMaxSpd*=8.f;
+	}
 	return finalMaxSpd;
 }
 const float Hamster::GetFriction()const{
 	float finalFriction{DEFAULT_FRICTION};
 	if(!HasPowerup(Powerup::ICE)&&GetTerrainStandingOn()==Terrain::ICE)finalFriction*=0.1f;
 	else if(!HasPowerup(Powerup::SWAMP)&&GetTerrainStandingOn()==Terrain::SWAMP)finalFriction*=0.6f;
-	if(state==FLYING)finalFriction*=8.f;
+	if(hamsterJet.has_value()){
+		if(hamsterJet.value().GetState()==HamsterJet::LANDING)finalFriction*=1.5f;
+		else if(state==FLYING)finalFriction*=8.f;
+	}
 	return finalFriction;
 }
 const float Hamster::GetTurnSpeed()const{
@@ -332,8 +402,8 @@ void Hamster::RemoveAllPowerups(){
 	powerups.clear();
 }
 
-const bool Hamster::StandingOnLethalTerrain()const{
-	return GetTerrainStandingOn()==Terrain::LAVA||GetTerrainStandingOn()==Terrain::OCEAN||GetTerrainStandingOn()==Terrain::SWAMP;
+const bool Hamster::IsLethalTerrain(const vf2d pos)const{
+	return HamsterGame::Game().GetTerrainTypeAtPos(pos)==Terrain::LAVA||HamsterGame::Game().GetTerrainTypeAtPos(pos)==Terrain::OCEAN||HamsterGame::Game().GetTerrainTypeAtPos(pos)==Terrain::SWAMP||HamsterGame::Game().GetTerrainTypeAtPos(pos)==Terrain::VOID;
 }
 
 const bool Hamster::IsDrowning()const{

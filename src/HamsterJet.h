@@ -43,6 +43,7 @@ All rights reserved.
 class Hamster;
 
 class HamsterJet{
+public:
 	enum State{
 		SWOOP_DOWN,
 		RISE_UP,
@@ -50,6 +51,7 @@ class HamsterJet{
 		LANDING,
 		COMPLETE_LANDING,
 	};
+private:
 	enum JetDirection{
 		TOP_LEFT,
 		BOTTOM_LEFT,
@@ -65,6 +67,7 @@ class HamsterJet{
 	vf2d hamsterOriginalPos;
 	vf2d originalPos;
 	vf2d targetPos;
+	float fallSpd{1.f};
 	float easeInTimer{};
 	float z;
 	float targetZ{};
@@ -79,4 +82,5 @@ public:
 	void Update(const float fElapsedTime);
 	void Draw();
 	void HandleJetControls();
+	const State GetState()const;
 };

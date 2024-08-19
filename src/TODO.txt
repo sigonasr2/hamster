@@ -92,5 +92,9 @@ Hamsters from all around Hamster planet have been recruited to scavenge for
 
 ============================
 
+Settings
+========
+Keybind Rebinds
+
 ============================
 olcPGEX_ViewPort - Submit a PR where the offset is subtracted instead of added to determine clip region cutoffs.

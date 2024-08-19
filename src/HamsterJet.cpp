@@ -90,6 +90,32 @@ void HamsterJet::Update(const float fElapsedTime){
 			HandleJetControls();
 			pos=hamster.GetPos();
 		}break;
+		case LANDING:{
+			jetState[TOP_LEFT]=jetState[BOTTOM_LEFT]=jetState[BOTTOM_RIGHT]=jetState[TOP_RIGHT]=OFF;
+			HandleJetControls();
+			pos=hamster.GetPos();
+			hamster.SetZ(hamster.GetZ()-fallSpd*fElapsedTime);
+			z=hamster.GetZ();
+			if(hamster.GetZ()<=0.f){
+				hamster.SetZ(0.f);
+				state=COMPLETE_LANDING;
+				hamster.state=Hamster::NORMAL;
+				HamsterGame::Game().SetZoom(1.f);
+				timer=3.f;
+				originalPos=hamster.GetPos();
+				targetPos={hamster.GetPos().x+128.f,hamster.GetPos().y+32.f};
+			}
+		}break;
+		case COMPLETE_LANDING:{
+			z=util::lerp(3.f,0.f,std::pow(timer/3.f,2));
+			if(timer<=0.f){
+				hamster.hamsterJet.reset();
+				return;
+			}else{
+				jetState[TOP_LEFT]=jetState[BOTTOM_LEFT]=jetState[BOTTOM_RIGHT]=jetState[TOP_RIGHT]=ON;
+				pos=targetPos.lerp(originalPos,std::pow(timer/3.f,4));
+			}
+		}break;
 	}
 }
 void HamsterJet::Draw(){
@@ -155,4 +181,8 @@ void HamsterJet::HandleJetControls(){
 		}
 		lastTappedSpace=0.f;
 	}
+}
+
+const HamsterJet::State HamsterJet::GetState()const{
+	return state;
 }

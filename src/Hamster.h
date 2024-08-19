@@ -79,7 +79,7 @@ class Hamster{
 
 	vf2d pos;
 	vf2d vel;
-	vf2d lastSafeLocation{};
+	std::optional<vf2d>lastSafeLocation{};
 	float z{};
 	float lastSafeLocationTimer{};
 	float rot{};
@@ -127,7 +127,7 @@ public:
 	void ObtainPowerup(const Powerup::PowerupType powerup);
 	const bool HasPowerup(const Powerup::PowerupType powerup)const;
 	void RemoveAllPowerups();
-	const bool StandingOnLethalTerrain()const;
+	const bool IsLethalTerrain(const vf2d pos)const;
 	const bool IsDrowning()const;
 	const bool IsBurning()const;
 	const float GetDrownRatio()const;

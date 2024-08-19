@@ -204,13 +204,12 @@ const Terrain::TerrainType HamsterGame::GetTerrainTypeAtPos(const vf2d pos)const
 }
 
 const bool HamsterGame::IsTerrainSolid(const vf2d pos)const{
-	if(pos.x<=0.f||pos.y<=0.f||pos.x>=currentMap.value().GetData().GetMapData().width*16||pos.y>=currentMap.value().GetData().GetMapData().height*16){
-		return true;
-	}
+	if(!IsInBounds(pos))return true;
 	bool tileIsBlank{true};
 	for(const LayerTag&layer:currentMap.value().GetData().GetLayers()){
 		int tileX{int(floor(pos.x)/16)};
 		int tileY{int(floor(pos.y)/16)};
+		if(tileX<=0||tileX>=currentMap.value().GetData().GetMapData().MapSize.x||tileY<=0||tileY>=currentMap.value().GetData().GetMapData().MapSize.y)break;
 		int tileID{layer.tiles[tileY][tileX]-1};
 		if(tileID==-1)continue;
 		tileIsBlank=false;
