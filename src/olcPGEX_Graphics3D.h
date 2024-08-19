@@ -207,8 +207,8 @@ namespace olc
 			void SetTexture(olc::Sprite *texture);
 			//void SetMipMapTexture(olc::GFX3D::MipMap *texture);
 			void SetLightSource(uint32_t nSlot, uint32_t nType, olc::Pixel col, olc::GFX3D::vec3d pos, olc::GFX3D::vec3d dir = { 0.0f, 0.0f, 1.0f, 1.0f }, float fParam = 0.0f);
-			uint32_t Render(std::vector<olc::GFX3D::triangle> &triangles, uint32_t flags = RENDER_CULL_CW | RENDER_TEXTURED | RENDER_DEPTH);
-			uint32_t Render(std::vector<olc::GFX3D::triangle> &triangles, uint32_t flags, int nOffset, int nCount);
+			uint32_t Render(std::vector<olc::GFX3D::triangle> &triangles, Decal*dec,uint32_t flags = RENDER_CULL_CW | RENDER_TEXTURED | RENDER_DEPTH);
+			uint32_t Render(std::vector<olc::GFX3D::triangle> &triangles, Decal* dec, uint32_t flags, int nOffset, int nCount);
 			uint32_t RenderLine(olc::GFX3D::vec3d &p1, olc::GFX3D::vec3d &p2, olc::Pixel col = olc::WHITE);
 			uint32_t RenderCircleXZ(olc::GFX3D::vec3d &p1, float r, olc::Pixel col = olc::WHITE);
 
@@ -242,20 +242,17 @@ namespace olc
 
 		 static void ConfigureDisplay();
 		 static void ClearDepth();
-		 static void AddTriangleToScene(olc::GFX3D::triangle &tri);
-		 static void RenderScene();
 
 		 static void DrawTriangleFlat(olc::GFX3D::triangle &tri);
 		 static void DrawTriangleWire(olc::GFX3D::triangle &tri, olc::Pixel col = olc::WHITE);
-		 static void DrawTriangleTex(olc::GFX3D::triangle &tri, olc::Sprite* spr);
-		 static void TexturedTriangle(int x1, int y1, float u1, float v1, float w1,
-			int x2, int y2, float u2, float v2, float w2,
-			int x3, int y3, float u3, float v3, float w3, olc::Sprite* spr);
+		 static void TexturedTriangle(float x1, float y1,float z1, float u1, float v1, float w1,
+			float x2, float y2,float z2, float u2, float v2, float w2,
+			float x3, float y3,float z3, float u3, float v3, float w3, olc::Decal* spr);
 
-		 static void RasterTriangle(int x1, int y1, float u1, float v1, float w1, olc::Pixel c1,
-			 int x2, int y2, float u2, float v2, float w2, olc::Pixel c2,
-			 int x3, int y3, float u3, float v3, float w3, olc::Pixel c3,
-			 olc::Sprite* spr,
+		 static void RasterTriangle(float x1, float y1,float z1, float u1, float v1, float w1, olc::Pixel c1,
+			 float x2, float y2,float z2, float u2, float v2, float w2, olc::Pixel c2,
+			 float x3, float y3,float z3, float u3, float v3, float w3, olc::Pixel c3,
+			 olc::Decal* dec,
 			 uint32_t nFlags);
 
 		// Draws a sprite with the transform applied
@@ -659,193 +656,22 @@ namespace olc
 
 	void GFX3D::DrawTriangleFlat(olc::GFX3D::triangle &tri)
 	{
-		pge->FillTriangle((int32_t)tri.p[0].x, (int32_t)tri.p[0].y, (int32_t)tri.p[1].x, (int32_t)tri.p[1].y, (int32_t)tri.p[2].x, (int32_t)tri.p[2].y, tri.col[0]);
+		pge->FillTriangleDecal({tri.p[0].x, tri.p[0].y}, {tri.p[1].x, tri.p[1].y}, {tri.p[2].x, tri.p[2].y}, tri.col[0]);
 	}
 
 	void GFX3D::DrawTriangleWire(olc::GFX3D::triangle &tri, olc::Pixel col)
 	{
-		pge->DrawTriangle((int32_t)tri.p[0].x, (int32_t)tri.p[0].y, (int32_t)tri.p[1].x, (int32_t)tri.p[1].y, (int32_t)tri.p[2].x, (int32_t)tri.p[2].y, col);
+		pge->SetDecalMode(DecalMode::WIREFRAME);
+		pge->FillTriangleDecal({tri.p[0].x, tri.p[0].y}, {tri.p[1].x, tri.p[1].y}, {tri.p[2].x, tri.p[2].y}, col);
+		pge->SetDecalMode(DecalMode::NORMAL);
 	}
 
-	void GFX3D::TexturedTriangle(int x1, int y1, float u1, float v1, float w1,
-		int x2, int y2, float u2, float v2, float w2,
-		int x3, int y3, float u3, float v3, float w3, olc::Sprite* spr)
+	void GFX3D::TexturedTriangle(float x1, float y1,float z1, float u1, float v1, float w1,
+		float x2, float y2,float z2, float u2, float v2, float w2,
+		float x3, float y3,float z3, float u3, float v3, float w3, olc::Decal* dec)
 		
 	{
-		if (y2 < y1)
-		{
-			std::swap(y1, y2);
-			std::swap(x1, x2);
-			std::swap(u1, u2);
-			std::swap(v1, v2);
-			std::swap(w1, w2);
-		}
-
-		if (y3 < y1)
-		{
-			std::swap(y1, y3);
-			std::swap(x1, x3);
-			std::swap(u1, u3);
-			std::swap(v1, v3);
-			std::swap(w1, w3);
-		}
-
-		if (y3 < y2)
-		{
-			std::swap(y2, y3);
-			std::swap(x2, x3);
-			std::swap(u2, u3);
-			std::swap(v2, v3);
-			std::swap(w2, w3);
-		}
-
-		int dy1 = y2 - y1;
-		int dx1 = x2 - x1;
-		float dv1 = v2 - v1;
-		float du1 = u2 - u1;
-		float dw1 = w2 - w1;
-
-		int dy2 = y3 - y1;
-		int dx2 = x3 - x1;
-		float dv2 = v3 - v1;
-		float du2 = u3 - u1;
-		float dw2 = w3 - w1;
-
-		float tex_u, tex_v, tex_w;
-
-		float dax_step = 0, dbx_step = 0,
-			du1_step = 0, dv1_step = 0,
-			du2_step = 0, dv2_step = 0,
-			dw1_step = 0, dw2_step = 0;
-
-		if (dy1) dax_step = dx1 / (float)abs(dy1);
-		if (dy2) dbx_step = dx2 / (float)abs(dy2);
-
-		if (dy1) du1_step = du1 / (float)abs(dy1);
-		if (dy1) dv1_step = dv1 / (float)abs(dy1);
-		if (dy1) dw1_step = dw1 / (float)abs(dy1);
-
-		if (dy2) du2_step = du2 / (float)abs(dy2);
-		if (dy2) dv2_step = dv2 / (float)abs(dy2);
-		if (dy2) dw2_step = dw2 / (float)abs(dy2);
-
-		if (dy1)
-		{
-			for (int i = y1; i <= y2; i++)
-			{
-				int ax = int(x1 + (float)(i - y1) * dax_step);
-				int bx = int(x1 + (float)(i - y1) * dbx_step);
-
-				float tex_su = u1 + (float)(i - y1) * du1_step;
-				float tex_sv = v1 + (float)(i - y1) * dv1_step;
-				float tex_sw = w1 + (float)(i - y1) * dw1_step;
-
-				float tex_eu = u1 + (float)(i - y1) * du2_step;
-				float tex_ev = v1 + (float)(i - y1) * dv2_step;
-				float tex_ew = w1 + (float)(i - y1) * dw2_step;
-
-				if (ax > bx)
-				{
-					std::swap(ax, bx);
-					std::swap(tex_su, tex_eu);
-					std::swap(tex_sv, tex_ev);
-					std::swap(tex_sw, tex_ew);
-				}
-
-				tex_u = tex_su;
-				tex_v = tex_sv;
-				tex_w = tex_sw;
-
-				float tstep = 1.0f / ((float)(bx - ax));
-				float t = 0.0f;
-
-				for (int j = ax; j < bx; j++)
-				{
-					tex_u = (1.0f - t) * tex_su + t * tex_eu;
-					tex_v = (1.0f - t) * tex_sv + t * tex_ev;
-					tex_w = (1.0f - t) * tex_sw + t * tex_ew;
-					if (tex_w > m_DepthBuffer[i*pge->ScreenWidth() + j])
-					{
-						/*if (bMipMap)
-							pge->Draw(j, i, ((olc::GFX3D::MipMap*)spr)->Sample(tex_u / tex_w, tex_v / tex_w, tex_w));
-						else*/
-						if(pge->Draw(j, i, spr != nullptr ? spr->Sample(tex_u / tex_w, tex_v / tex_w) : olc::GREY))
-							m_DepthBuffer[i*pge->ScreenWidth() + j] = tex_w;
-					}
-					t += tstep;
-				}
-
-			}
-		}
-
-		dy1 = y3 - y2;
-		dx1 = x3 - x2;
-		dv1 = v3 - v2;
-		du1 = u3 - u2;
-		dw1 = w3 - w2;
-
-		if (dy1) dax_step = dx1 / (float)abs(dy1);
-		if (dy2) dbx_step = dx2 / (float)abs(dy2);
-
-		du1_step = 0, dv1_step = 0;
-		if (dy1) du1_step = du1 / (float)abs(dy1);
-		if (dy1) dv1_step = dv1 / (float)abs(dy1);
-		if (dy1) dw1_step = dw1 / (float)abs(dy1);
-
-		if (dy1)
-		{
-			for (int i = y2; i <= y3; i++)
-			{
-				int ax = int(x2 + (float)(i - y2) * dax_step);
-				int bx = int(x1 + (float)(i - y1) * dbx_step);
-
-				float tex_su = u2 + (float)(i - y2) * du1_step;
-				float tex_sv = v2 + (float)(i - y2) * dv1_step;
-				float tex_sw = w2 + (float)(i - y2) * dw1_step;
-
-				float tex_eu = u1 + (float)(i - y1) * du2_step;
-				float tex_ev = v1 + (float)(i - y1) * dv2_step;
-				float tex_ew = w1 + (float)(i - y1) * dw2_step;
-
-				if (ax > bx)
-				{
-					std::swap(ax, bx);
-					std::swap(tex_su, tex_eu);
-					std::swap(tex_sv, tex_ev);
-					std::swap(tex_sw, tex_ew);
-				}
-
-				tex_u = tex_su;
-				tex_v = tex_sv;
-				tex_w = tex_sw;
-
-				float tstep = 1.0f / ((float)(bx - ax));
-				float t = 0.0f;
-
-				for (int j = ax; j < bx; j++)
-				{
-					tex_u = (1.0f - t) * tex_su + t * tex_eu;
-					tex_v = (1.0f - t) * tex_sv + t * tex_ev;
-					tex_w = (1.0f - t) * tex_sw + t * tex_ew;
-
-					if (tex_w > m_DepthBuffer[i*pge->ScreenWidth() + j])
-					{						
-						/*if(bMipMap)
-							pge->Draw(j, i, ((olc::GFX3D::MipMap*)spr)->Sample(tex_u / tex_w, tex_v / tex_w, tex_w));
-						else*/
-						if(pge->Draw(j, i, spr != nullptr ? spr->Sample(tex_u / tex_w, tex_v / tex_w) : olc::GREY))
-							m_DepthBuffer[i*pge->ScreenWidth() + j] = tex_w;
-					}
-					t += tstep;
-				}
-			}
-		}
-	}
-
-
-	void GFX3D::DrawTriangleTex(olc::GFX3D::triangle &tri, olc::Sprite* spr)
-	{
-	
+		pge->FillTexturedTriangleDecal(dec,{x1,y1},{x2,y2},{x3,y3},z1,z2,z3,{u1,v1},{u2,v2},{u3,v3},w1,w2,w3,WHITE,WHITE,WHITE);
 	}
 
 	float* GFX3D::m_DepthBuffer = nullptr;
@@ -1022,9 +848,9 @@ namespace olc
 		}
 	}
 
-	uint32_t GFX3D::PipeLine::Render(std::vector<olc::GFX3D::triangle> &triangles, uint32_t flags)
+	uint32_t GFX3D::PipeLine::Render(std::vector<olc::GFX3D::triangle> &triangles, Decal*dec,uint32_t flags)
 	{
-		return Render(triangles, flags, 0, triangles.size());
+		return Render(triangles, dec,flags, 0, triangles.size());
 	}
 
 	uint32_t GFX3D::PipeLine::RenderLine(olc::GFX3D::vec3d &p1, olc::GFX3D::vec3d &p2, olc::Pixel col)
@@ -1108,7 +934,7 @@ namespace olc
 		return 0;
 	}
 
-	uint32_t GFX3D::PipeLine::Render(std::vector<olc::GFX3D::triangle> &triangles, uint32_t flags, int nOffset, int nCount)
+	uint32_t GFX3D::PipeLine::Render(std::vector<olc::GFX3D::triangle> &triangles, Decal* dec, uint32_t flags, int nOffset, int nCount)
 	{
 		// Calculate Transformation Matrix
 		mat4x4 matWorldView = Math::Mat_MultiplyMatrix(matWorld, matView);
@@ -1353,10 +1179,10 @@ namespace olc
 					else
 					{
 						RasterTriangle(
-							(int)triRaster.p[0].x,(int)triRaster.p[0].y, triRaster.t[0].x, triRaster.t[0].y, triRaster.t[0].z, triRaster.col[0],
-							(int)triRaster.p[1].x,(int)triRaster.p[1].y, triRaster.t[1].x, triRaster.t[1].y, triRaster.t[1].z, triRaster.col[1],
-							(int)triRaster.p[2].x,(int)triRaster.p[2].y, triRaster.t[2].x, triRaster.t[2].y, triRaster.t[2].z, triRaster.col[2],
-							sprTexture, flags);
+							triRaster.p[0].x,triRaster.p[0].y,triRaster.p[0].z, triRaster.t[0].x, triRaster.t[0].y, triRaster.t[0].z, triRaster.col[0],
+							triRaster.p[1].x,triRaster.p[1].y,triRaster.p[1].z, triRaster.t[1].x, triRaster.t[1].y, triRaster.t[1].z, triRaster.col[1],
+							triRaster.p[2].x,triRaster.p[2].y,triRaster.p[2].z, triRaster.t[2].x, triRaster.t[2].y, triRaster.t[2].z, triRaster.col[2],
+							dec, flags);
 						
 					}
 
@@ -1371,291 +1197,13 @@ namespace olc
 		return nTriangleDrawnCount;
 	}
 
-	void GFX3D::RasterTriangle(int x1, int y1, float u1, float v1, float w1, olc::Pixel c1,
-							   int x2, int y2, float u2, float v2, float w2, olc::Pixel c2,
-							   int x3, int y3, float u3, float v3, float w3, olc::Pixel c3,
-							   olc::Sprite* spr,
+	void GFX3D::RasterTriangle(float x1, float y1,float z1, float u1, float v1, float w1, olc::Pixel c1,
+							   float x2, float y2,float z2, float u2, float v2, float w2, olc::Pixel c2,
+							   float x3, float y3,float z3, float u3, float v3, float w3, olc::Pixel c3,
+							   olc::Decal* dec,
 							   uint32_t nFlags)
-
 	{
-		if (y2 < y1)
-		{
-			std::swap(y1, y2); std::swap(x1, x2); std::swap(u1, u2); std::swap(v1, v2);	std::swap(w1, w2); std::swap(c1, c2);
-		}
-
-		if (y3 < y1)
-		{
-			std::swap(y1, y3); std::swap(x1, x3); std::swap(u1, u3); std::swap(v1, v3); std::swap(w1, w3); std::swap(c1, c3);
-		}
-
-		if (y3 < y2)
-		{
-			std::swap(y2, y3); std::swap(x2, x3); std::swap(u2, u3); std::swap(v2, v3); std::swap(w2, w3); std::swap(c2, c3);
-		}
-
-		int dy1 = y2 - y1;
-		int dx1 = x2 - x1;
-		float dv1 = v2 - v1;
-		float du1 = u2 - u1;
-		float dw1 = w2 - w1;
-		int dcr1 = c2.r - c1.r;
-		int dcg1 = c2.g - c1.g;
-		int dcb1 = c2.b - c1.b;
-		int dca1 = c2.a - c1.a;
-
-		int dy2 = y3 - y1;
-		int dx2 = x3 - x1;
-		float dv2 = v3 - v1;
-		float du2 = u3 - u1;
-		float dw2 = w3 - w1;
-		int dcr2 = c3.r - c1.r;
-		int dcg2 = c3.g - c1.g;
-		int dcb2 = c3.b - c1.b;
-		int dca2 = c3.a - c1.a;
-
-		float tex_u, tex_v, tex_w;
-		float col_r, col_g, col_b, col_a;
-
-		float dax_step = 0, dbx_step = 0,
-			du1_step = 0, dv1_step = 0,
-			du2_step = 0, dv2_step = 0,
-			dw1_step = 0, dw2_step = 0,
-			dcr1_step = 0, dcr2_step = 0,
-			dcg1_step = 0, dcg2_step = 0,
-			dcb1_step = 0, dcb2_step = 0,
-			dca1_step = 0, dca2_step = 0;
-
-		if (dy1) dax_step = dx1 / (float)abs(dy1);
-		if (dy2) dbx_step = dx2 / (float)abs(dy2);
-
-		if (dy1) du1_step = du1 / (float)abs(dy1);
-		if (dy1) dv1_step = dv1 / (float)abs(dy1);
-		if (dy1) dw1_step = dw1 / (float)abs(dy1);
-
-		if (dy2) du2_step = du2 / (float)abs(dy2);
-		if (dy2) dv2_step = dv2 / (float)abs(dy2);
-		if (dy2) dw2_step = dw2 / (float)abs(dy2);
-
-		if (dy1) dcr1_step = dcr1 / (float)abs(dy1);
-		if (dy1) dcg1_step = dcg1 / (float)abs(dy1);
-		if (dy1) dcb1_step = dcb1 / (float)abs(dy1);
-		if (dy1) dca1_step = dca1 / (float)abs(dy1);
-
-		if (dy2) dcr2_step = dcr2 / (float)abs(dy2);
-		if (dy2) dcg2_step = dcg2 / (float)abs(dy2);
-		if (dy2) dcb2_step = dcb2 / (float)abs(dy2);
-		if (dy2) dca2_step = dca2 / (float)abs(dy2);
-
-		float pixel_r = 0.0f;
-		float pixel_g = 0.0f;
-		float pixel_b = 0.0f;
-		float pixel_a = 1.0f;
-
-		if (dy1)
-		{
-			for (int i = y1; i <= y2; i++)
-			{
-				int ax = int(x1 + (float)(i - y1) * dax_step);
-				int bx = int(x1 + (float)(i - y1) * dbx_step);
-
-				float tex_su = u1 + (float)(i - y1) * du1_step;
-				float tex_sv = v1 + (float)(i - y1) * dv1_step;
-				float tex_sw = w1 + (float)(i - y1) * dw1_step;
-
-				float tex_eu = u1 + (float)(i - y1) * du2_step;
-				float tex_ev = v1 + (float)(i - y1) * dv2_step;
-				float tex_ew = w1 + (float)(i - y1) * dw2_step;
-
-				float col_sr = c1.r + (float)(i - y1) * dcr1_step;
-				float col_sg = c1.g + (float)(i - y1) * dcg1_step;
-				float col_sb = c1.b + (float)(i - y1) * dcb1_step;
-				float col_sa = c1.a + (float)(i - y1) * dca1_step;
-
-				float col_er = c1.r + (float)(i - y1) * dcr2_step;
-				float col_eg = c1.g + (float)(i - y1) * dcg2_step;
-				float col_eb = c1.b + (float)(i - y1) * dcb2_step;
-				float col_ea = c1.a + (float)(i - y1) * dca2_step;
-
-				if (ax > bx)
-				{
-					std::swap(ax, bx);
-					std::swap(tex_su, tex_eu);
-					std::swap(tex_sv, tex_ev);
-					std::swap(tex_sw, tex_ew);
-					std::swap(col_sr, col_er);
-					std::swap(col_sg, col_eg);
-					std::swap(col_sb, col_eb);
-					std::swap(col_sa, col_ea);
-				}
-
-				tex_u = tex_su;
-				tex_v = tex_sv;
-				tex_w = tex_sw;
-				col_r = col_sr;
-				col_g = col_sg;
-				col_b = col_sb;
-				col_a = col_sa;
-
-				float tstep = 1.0f / ((float)(bx - ax));
-				float t = 0.0f;
-
-				for (int j = ax; j < bx; j++)
-				{
-					tex_u = (1.0f - t) * tex_su + t * tex_eu;
-					tex_v = (1.0f - t) * tex_sv + t * tex_ev;
-					tex_w = (1.0f - t) * tex_sw + t * tex_ew;
-					col_r = (1.0f - t) * col_sr + t * col_er;
-					col_g = (1.0f - t) * col_sg + t * col_eg;
-					col_b = (1.0f - t) * col_sb + t * col_eb;
-					col_a = (1.0f - t) * col_sa + t * col_ea;
-
-					pixel_r = col_r;
-					pixel_g = col_g;
-					pixel_b = col_b;
-					pixel_a = col_a;
-
-					if (nFlags & GFX3D::RENDER_TEXTURED)
-					{
-						if (spr != nullptr)
-						{
-							olc::Pixel sample = spr->Sample(tex_u / tex_w, tex_v / tex_w);
-							pixel_r *= sample.r / 255.0f;
-							pixel_g *= sample.g / 255.0f;
-							pixel_b *= sample.b / 255.0f;
-							pixel_a *= sample.a / 255.0f;
-						}
-					}
-
-					if (nFlags & GFX3D::RENDER_DEPTH)
-					{
-						if (tex_w > m_DepthBuffer[i*pge->ScreenWidth() + j])
-							if (pge->Draw(j, i, olc::Pixel(uint8_t(pixel_r * 1.0f), uint8_t(pixel_g * 1.0f), uint8_t(pixel_b * 1.0f), uint8_t(pixel_a * 1.0f))))
-								m_DepthBuffer[i*pge->ScreenWidth() + j] = tex_w;
-					}
-					else
-					{
-						pge->Draw(j, i, olc::Pixel(uint8_t(pixel_r * 1.0f), uint8_t(pixel_g * 1.0f), uint8_t(pixel_b * 1.0f), uint8_t(pixel_a * 1.0f)));
-					}
-				
-					t += tstep;
-				}
-			}
-		}
-
-		dy1 = y3 - y2;
-		dx1 = x3 - x2;
-		dv1 = v3 - v2;
-		du1 = u3 - u2;
-		dw1 = w3 - w2;
-		dcr1 = c3.r - c2.r;
-		dcg1 = c3.g - c2.g;
-		dcb1 = c3.b - c2.b;
-		dca1 = c3.a - c2.a;
-
-		if (dy1) dax_step = dx1 / (float)abs(dy1);
-		if (dy2) dbx_step = dx2 / (float)abs(dy2);
-
-		du1_step = 0; dv1_step = 0;
-		if (dy1) du1_step = du1 / (float)abs(dy1);
-		if (dy1) dv1_step = dv1 / (float)abs(dy1);
-		if (dy1) dw1_step = dw1 / (float)abs(dy1);
-
-		dcr1_step = 0; dcg1_step = 0; dcb1_step = 0; dca1_step = 0;
-		if (dy1) dcr1_step = dcr1 / (float)abs(dy1);
-		if (dy1) dcg1_step = dcg1 / (float)abs(dy1);
-		if (dy1) dcb1_step = dcb1 / (float)abs(dy1);
-		if (dy1) dca1_step = dca1 / (float)abs(dy1);
-
-		if (dy1)
-		{
-			for (int i = y2; i <= y3; i++)
-			{
-				int ax = int(x2 + (float)(i - y2) * dax_step);
-				int bx = int(x1 + (float)(i - y1) * dbx_step);
-
-				float tex_su = u2 + (float)(i - y2) * du1_step;
-				float tex_sv = v2 + (float)(i - y2) * dv1_step;
-				float tex_sw = w2 + (float)(i - y2) * dw1_step;
-
-				float tex_eu = u1 + (float)(i - y1) * du2_step;
-				float tex_ev = v1 + (float)(i - y1) * dv2_step;
-				float tex_ew = w1 + (float)(i - y1) * dw2_step;
-
-				float col_sr = c2.r + (float)(i - y2) * dcr1_step;
-				float col_sg = c2.g + (float)(i - y2) * dcg1_step;
-				float col_sb = c2.b + (float)(i - y2) * dcb1_step;
-				float col_sa = c2.a + (float)(i - y2) * dca1_step;
-
-				float col_er = c1.r + (float)(i - y1) * dcr2_step;
-				float col_eg = c1.g + (float)(i - y1) * dcg2_step;
-				float col_eb = c1.b + (float)(i - y1) * dcb2_step;
-				float col_ea = c1.a + (float)(i - y1) * dca2_step;
-
-				if (ax > bx)
-				{
-					std::swap(ax, bx);
-					std::swap(tex_su, tex_eu);
-					std::swap(tex_sv, tex_ev);
-					std::swap(tex_sw, tex_ew);
-					std::swap(col_sr, col_er);
-					std::swap(col_sg, col_eg);
-					std::swap(col_sb, col_eb);
-					std::swap(col_sa, col_ea);
-				}
-
-				tex_u = tex_su;
-				tex_v = tex_sv;
-				tex_w = tex_sw;
-				col_r = col_sr;
-				col_g = col_sg;
-				col_b = col_sb;
-				col_a = col_sa;
-
-				float tstep = 1.0f / ((float)(bx - ax));
-				float t = 0.0f;
-
-				for (int j = ax; j < bx; j++)
-				{
-					tex_u = (1.0f - t) * tex_su + t * tex_eu;
-					tex_v = (1.0f - t) * tex_sv + t * tex_ev;
-					tex_w = (1.0f - t) * tex_sw + t * tex_ew;
-					col_r = (1.0f - t) * col_sr + t * col_er;
-					col_g = (1.0f - t) * col_sg + t * col_eg;
-					col_b = (1.0f - t) * col_sb + t * col_eb;
-					col_a = (1.0f - t) * col_sa + t * col_ea;
-
-					pixel_r = col_r;
-					pixel_g = col_g;
-					pixel_b = col_b;
-					pixel_a = col_a;
-
-					if (nFlags & GFX3D::RENDER_TEXTURED)
-					{
-						if (spr != nullptr)
-						{
-							olc::Pixel sample = spr->Sample(tex_u / tex_w, tex_v / tex_w);
-							pixel_r *= sample.r / 255.0f;
-							pixel_g *= sample.g / 255.0f;
-							pixel_b *= sample.b / 255.0f;
-							pixel_a *= sample.a / 255.0f;
-						}
-					}
-
-					if (nFlags & GFX3D::RENDER_DEPTH)
-					{
-						if (tex_w > m_DepthBuffer[i*pge->ScreenWidth() + j])
-							if (pge->Draw(j, i, olc::Pixel(uint8_t(pixel_r * 1.0f), uint8_t(pixel_g * 1.0f), uint8_t(pixel_b * 1.0f), uint8_t(pixel_a * 1.0f))))
-								m_DepthBuffer[i*pge->ScreenWidth() + j] = tex_w;
-					}
-					else
-					{
-						pge->Draw(j, i, olc::Pixel(uint8_t(pixel_r * 1.0f), uint8_t(pixel_g * 1.0f), uint8_t(pixel_b * 1.0f), uint8_t(pixel_a * 1.0f)));
-					}
-
-					t += tstep;
-				}
-			}
-		}
+		pge->FillTexturedTriangleDecal(dec,{x1,y1},{x2,y2},{x3,y3},z1,z2,z3,{u1,v1},{u2,v2},{u3,v3},w1,w2,w3,c1,c2,c3);
 	}
 
 

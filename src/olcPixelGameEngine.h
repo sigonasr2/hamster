@@ -1100,6 +1100,8 @@ namespace olc
 		void FillTriangle(const olc::vi2d& pos1, const olc::vi2d& pos2, const olc::vi2d& pos3, Pixel p = olc::WHITE);
 		// Fill a textured and coloured triangle
 		void FillTexturedTriangle(std::vector<olc::vf2d> vPoints, std::vector<olc::vf2d> vTex, std::vector<olc::Pixel> vColour, olc::Sprite* sprTex);
+		void FillTexturedTriangleDecal(Decal*decal,const olc::vf2d& p0, const olc::vf2d& p1, const olc::vf2d& p2, const olc::vf2d& uv0, const olc::vf2d& uv1, const olc::vf2d& uv2, const float& w0, const float& w1, const float& w2, const olc::Pixel col0, const olc::Pixel col1, const olc::Pixel col2,const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
+		void FillTexturedTriangleDecal(Decal*decal,const olc::vf2d& p0, const olc::vf2d& p1, const olc::vf2d& p2,const float& z0, const float& z1, const float& z2, const olc::vf2d& uv0, const olc::vf2d& uv1, const olc::vf2d& uv2, const float& w0, const float& w1, const float& w2, const olc::Pixel col0, const olc::Pixel col1, const olc::Pixel col2,const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
 		void FillTexturedPolygon(const std::vector<olc::vf2d>& vPoints, const std::vector<olc::vf2d>& vTex, const std::vector<olc::Pixel>& vColour, olc::Sprite* sprTex, olc::DecalStructure structure = olc::DecalStructure::LIST);
 		// Draws an entire sprite at location (x,y)
 		void DrawSprite(int32_t x, int32_t y, Sprite* sprite, uint32_t scale = 1, uint8_t flip = olc::Sprite::NONE);
@@ -1127,6 +1129,8 @@ namespace olc
 		void DrawPartialDecal(const olc::vf2d& pos, const olc::vf2d& size, olc::Decal* decal, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint = olc::WHITE,const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
 		// Draws fully user controlled 4 vertices, pos(pixels), uv(pixels), colours
 		void DrawExplicitDecal(olc::Decal* decal, const olc::vf2d* pos, const olc::vf2d* uv, const olc::Pixel* col, uint32_t elements = 4,const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
+		void DrawExplicitDecal(olc::Decal* decal, const olc::vf2d* pos, const olc::vf2d* uv, const olc::Pixel* col, const float* w, uint32_t elements,const GFX3DTransform transform);
+		void DrawExplicitDecal(olc::Decal* decal, const olc::vf2d* pos,const float* z, const olc::vf2d* uv, const olc::Pixel* col, const float* w, uint32_t elements,const GFX3DTransform transform);
 		// Draws a decal with 4 arbitrary points, warping the texture to look "correct"
 		void DrawWarpedDecal(olc::Decal* decal, const olc::vf2d(&pos)[4], const olc::Pixel& tint = olc::WHITE,const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
 		void DrawWarpedDecal(olc::Decal* decal, const olc::vf2d* pos, const olc::Pixel& tint = olc::WHITE,const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
@@ -1146,6 +1150,7 @@ namespace olc
 		void FillRectDecal(const olc::vf2d& pos, const olc::vf2d& size, const olc::Pixel col = olc::WHITE,const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
 		// Draws a corner shaded rectangle as a decal
 		void GradientFillRectDecal(const olc::vf2d& pos, const olc::vf2d& size, const olc::Pixel colTL, const olc::Pixel colBL, const olc::Pixel colBR, const olc::Pixel colTR,const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
+		void FillTriangleDecal(const olc::vf2d& p0, const olc::vf2d& p1, const olc::vf2d& p2, const olc::Pixel col,const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
 		// Draws an arbitrary convex textured polygon using GPU
 		void DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<olc::vf2d>& uv, const olc::Pixel tint = olc::WHITE,const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
 		void DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<float>& depth, const std::vector<olc::vf2d>& uv, const olc::Pixel tint = olc::WHITE,const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
@@ -2932,19 +2937,38 @@ namespace olc
 
 	void PixelGameEngine::DrawExplicitDecal(olc::Decal* decal, const olc::vf2d* pos, const olc::vf2d* uv, const olc::Pixel* col, uint32_t elements,const GFX3DTransform transform)
 	{
+		std::vector<float>ws;
+		ws.resize(elements,1);
+		DrawExplicitDecal(decal,pos,uv,col,ws.data(),elements,transform);
+	}
+
+	void PixelGameEngine::DrawExplicitDecal(olc::Decal* decal, const olc::vf2d* pos, const olc::vf2d* uv, const olc::Pixel* col, const float* w, uint32_t elements,const GFX3DTransform transform)
+	{
+		std::vector<float>ws;
+		ws.resize(elements,1);
+		std::vector<float>z;
+		z.resize(elements,0.f);
+		DrawExplicitDecal(decal,pos,z.data(),uv,col,ws.data(),elements,transform);
+	}
+
+	void PixelGameEngine::DrawExplicitDecal(olc::Decal* decal, const olc::vf2d* pos, const float* z, const olc::vf2d* uv, const olc::Pixel* col, const float* w, uint32_t elements,const GFX3DTransform transform)
+	{
 		DecalInstance di;
 		di.decal = decal;
 		di.pos.resize(elements);
 		di.uv.resize(elements);
 		di.w.resize(elements);
+		di.z.resize(elements);
 		di.tint.resize(elements);
 		di.points = elements;
+		di.depth=true;
 		for (uint32_t i = 0; i < elements; i++)
 		{
 			di.pos[i] = { (pos[i].x * vInvScreenSize.x) * 2.0f - 1.0f, ((pos[i].y * vInvScreenSize.y) * 2.0f - 1.0f) * -1.0f };
 			di.uv[i] = uv[i];
 			di.tint[i] = col[i];
-			di.w[i] = 1.0f;
+			di.w[i] = w[i];
+			di.z[i] = z[i];
 		}
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
@@ -3048,6 +3072,7 @@ namespace olc
 		di.transform=transform;
 		vLayers[nTargetLayer].vecDecalInstance.push_back(di);
 	}
+
 
 #ifdef OLC_ENABLE_EXPERIMENTAL
 	// Lightweight 3D
@@ -3173,6 +3198,33 @@ namespace olc
 		std::array<olc::vf2d, 4> uvs = { {{0,0},{0,0},{0,0},{0,0}} };
 		std::array<olc::Pixel, 4> cols = { {colTL, colBL, colBR, colTR} };
 		DrawExplicitDecal(nullptr, points.data(), uvs.data(), cols.data(), 4,transform);
+	}
+
+	void PixelGameEngine::FillTriangleDecal(const olc::vf2d& p0, const olc::vf2d& p1, const olc::vf2d& p2, const olc::Pixel col,const GFX3DTransform transform)
+	{		
+		std::array<olc::vf2d, 4> points = { { p0, p1, p2 } };
+		std::array<olc::vf2d, 4> uvs = { {{0,0},{0,0},{0,0}} };
+		std::array<olc::Pixel, 4> cols = { {col, col, col} };
+		DrawExplicitDecal(nullptr, points.data(), uvs.data(), cols.data(), 3,transform);
+	}
+
+	void PixelGameEngine::FillTexturedTriangleDecal(Decal*decal,const olc::vf2d& p0, const olc::vf2d& p1, const olc::vf2d& p2, const olc::vf2d& uv0, const olc::vf2d& uv1, const olc::vf2d& uv2, const float& w0, const float& w1, const float& w2, const olc::Pixel col0, const olc::Pixel col1, const olc::Pixel col2,const GFX3DTransform transform)
+	{		
+		std::array<olc::vf2d, 4> points = { { p0, p1, p2 } };
+		std::array<olc::vf2d, 4> uvs = { {uv0,uv1,uv2} };
+		std::array<olc::Pixel, 4> cols = { {col0, col1, col2} };
+		std::array<float, 4> ws = { {w0,w1,w2} };
+		DrawExplicitDecal(decal, points.data(), uvs.data(), cols.data(), ws.data(),3,transform);
+	}
+
+	void PixelGameEngine::FillTexturedTriangleDecal(Decal*decal,const olc::vf2d& p0, const olc::vf2d& p1, const olc::vf2d& p2,const float& z0, const float& z1, const float& z2, const olc::vf2d& uv0, const olc::vf2d& uv1, const olc::vf2d& uv2, const float& w0, const float& w1, const float& w2, const olc::Pixel col0, const olc::Pixel col1, const olc::Pixel col2,const GFX3DTransform transform)
+	{		
+		std::array<olc::vf2d, 4> points = { { p0, p1, p2 } };
+		std::array<olc::vf2d, 4> uvs = { {uv0,uv1,uv2} };
+		std::array<olc::Pixel, 4> cols = { {col0, col1, col2} };
+		std::array<float, 4> ws = { {w0,w1,w2} };
+		std::array<float, 4> z = { {z0,z1,z2} };
+		DrawExplicitDecal(decal, points.data(), z.data(), uvs.data(), cols.data(), ws.data(),3,transform);
 	}
 
 	void PixelGameEngine::DrawRotatedDecal(const olc::vf2d& pos, olc::Decal* decal, const float fAngle, const olc::vf2d& center, const olc::vf2d& scale, const olc::Pixel& tint,const GFX3DTransform transform)
