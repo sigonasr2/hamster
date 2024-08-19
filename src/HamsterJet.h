@@ -81,6 +81,7 @@ public:
 	HamsterJet(Hamster&hamster);
 	void Update(const float fElapsedTime);
 	void Draw();
+	void DrawOverlay()const;
 	void HandleJetControls();
 	const State GetState()const;
 };

@@ -48,6 +48,8 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("dot.png");
 	_LoadImage("clouds.png");
 	_LoadImage("aimingTarget.png");
+	_LoadImage("fallometer.png");
+	_LoadImage("fallometer_outline.png");
 	UpdateMatrixTexture();
 }
 
@@ -158,7 +160,7 @@ void HamsterGame::DrawGame(){
 	tv.DrawPartialDecal({-3200,-3200},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400},GetGFX("clouds.png").Decal(),cloudOffset*2,currentMap.value().GetData().GetMapData().MapSize*16/2.f,{255,255,255,72});
 	SetZ(0.f);
 	border.Draw();
-
+	Hamster::DrawOverlay();
 	#pragma region Powerup Display
 		for(int y:std::ranges::iota_view(0,4)){
 			for(int x:std::ranges::iota_view(0,2)){

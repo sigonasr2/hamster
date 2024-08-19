@@ -215,6 +215,10 @@ void Hamster::DrawHamsters(TransformedView&tv){
 	}
 }
 
+void Hamster::DrawOverlay(){
+	if(GetPlayer().hamsterJet.has_value())GetPlayer().hamsterJet.value().DrawOverlay();
+}
+
 const Animate2D::Frame&Hamster::GetCurrentAnimation()const{
 	return animations.GetFrame(internalAnimState);
 }
@@ -307,7 +311,7 @@ void Hamster::HandleCollision(){
 		}
 	}
 	for(Powerup&powerup:Powerup::GetPowerups()){
-		if(!HasPowerup(powerup.GetType())&&geom2d::overlaps(geom2d::circle<float>(GetPos(),collisionRadius),geom2d::circle<float>(powerup.GetPos(),20.f))){
+		if(z<=0.1f&&!HasPowerup(powerup.GetType())&&geom2d::overlaps(geom2d::circle<float>(GetPos(),collisionRadius),geom2d::circle<float>(powerup.GetPos(),20.f))){
 			ObtainPowerup(powerup.GetType());
 			powerup.OnPowerupObtain();
 		}

@@ -109,6 +109,7 @@ public:
 	static void UpdateHamsters(const float fElapsedTime);
 	static void LoadHamsters(const vf2d startingLoc);
 	static void DrawHamsters(TransformedView&tv);
+	static void DrawOverlay();
 	const Animate2D::Frame&GetCurrentAnimation()const;
 	const vf2d&GetPos()const;
 	const float&GetZ()const;

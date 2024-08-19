@@ -175,6 +175,12 @@ void HamsterJet::HandleJetControls(){
 		hamster.vel=vf2d{std::min(hamster.GetMaxSpeed(),hamster.vel.polar().x),hamster.vel.polar().y}.cart();
 		hamster.frictionEnabled=false;
 	}
+	if(HamsterGame::Game().GetKey(UP).bHeld){
+		fallSpd=std::min(5.f,fallSpd+5.f*HamsterGame::Game().GetElapsedTime());
+	}
+	if(HamsterGame::Game().GetKey(DOWN).bHeld){
+		fallSpd=std::max(1.f,fallSpd-5.f*HamsterGame::Game().GetElapsedTime());
+	}
 	if(HamsterGame::Game().GetKey(SPACE).bPressed){
 		if(lastTappedSpace<=0.6f){
 			state=LANDING;
@@ -185,4 +191,14 @@ void HamsterJet::HandleJetControls(){
 
 const HamsterJet::State HamsterJet::GetState()const{
 	return state;
+}
+
+void HamsterJet::DrawOverlay()const{
+	if(state==LANDING){
+		HamsterGame::Game().DrawDecal(HamsterGame::SCREEN_FRAME.pos,HamsterGame::GetGFX("fallometer_outline.png").Decal());
+		float meterStartY{68.f};
+		float meterEndY{223.f};
+		float meterHeight{meterEndY-meterStartY};
+		HamsterGame::Game().DrawPartialDecal(HamsterGame::SCREEN_FRAME.pos+vf2d{0,222}-vf2d{0,(fallSpd/5.f)*meterHeight},HamsterGame::GetGFX("fallometer.png").Decal(),vf2d{0,223}-vf2d{0,(fallSpd/5.f)*meterHeight},vf2d{float(HamsterGame::GetGFX("fallometer.png").Sprite()->width),(fallSpd/5.f)*meterHeight});
+	}
 }
