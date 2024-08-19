@@ -1057,6 +1057,8 @@ namespace olc
 		void SetLayerTint(uint8_t layer, const olc::Pixel& tint);
 		void SetLayerCustomRenderFunction(uint8_t layer, std::function<void()> f);
 
+		void SetZ(const float z);
+
 		std::vector<LayerDesc>& GetLayers();
 		uint32_t CreateLayer();
 
@@ -1258,6 +1260,7 @@ namespace olc
 		bool        bPixelCohesion = false;
 		DecalMode   nDecalMode = DecalMode::NORMAL;
 		DecalStructure nDecalStructure = DecalStructure::FAN;
+		float z = 0;
 		std::function<olc::Pixel(const int x, const int y, const olc::Pixel&, const olc::Pixel&)> funcPixelMode;
 		std::chrono::time_point<std::chrono::system_clock> m_tp1, m_tp2;
 		std::vector<olc::vi2d> vFontSpacing;
@@ -2872,10 +2875,11 @@ namespace olc
 		olc::vf2d uvbr = uvtl + ((source_size - olc::vf2d(0.02f, 0.02f)) * decal->vUVScale);
 		di.uv = { { uvtl.x, uvtl.y }, { uvtl.x, uvbr.y }, { uvbr.x, uvbr.y }, { uvbr.x, uvtl.y } };
 		di.w = { 1,1,1,1 };
+		di.z={z,z,z,z};
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
 		di.transform=transform;
-		vLayers[nTargetLayer].vecDecalInstance.push_back(di);
+		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
 	}
 
 	void PixelGameEngine::DrawPartialDecal(const olc::vf2d& pos, const olc::vf2d& size, olc::Decal* decal, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint,const GFX3DTransform transform)
@@ -2901,10 +2905,11 @@ namespace olc
 		olc::vf2d uvbr = (source_pos + source_size - olc::vf2d(0.03f, 0.03f)) * decal->vUVScale;
 		di.uv = { { uvtl.x, uvtl.y }, { uvtl.x, uvbr.y }, { uvbr.x, uvbr.y }, { uvbr.x, uvtl.y } };
 		di.w = { 1,1,1,1 };
+		di.z={z,z,z,z};
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
 		di.transform=transform;
-		vLayers[nTargetLayer].vecDecalInstance.push_back(di);
+		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
 	}
 
 
@@ -2932,7 +2937,8 @@ namespace olc
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
 		di.transform=transform;
-		vLayers[nTargetLayer].vecDecalInstance.push_back(di);
+		di.z = {z,z,z,z};
+		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
 	}
 
 	void PixelGameEngine::DrawExplicitDecal(olc::Decal* decal, const olc::vf2d* pos, const olc::vf2d* uv, const olc::Pixel* col, uint32_t elements,const GFX3DTransform transform)
@@ -2947,7 +2953,7 @@ namespace olc
 		std::vector<float>ws;
 		ws.resize(elements,1);
 		std::vector<float>z;
-		z.resize(elements,0.f);
+		z.resize(elements,this->z);
 		DrawExplicitDecal(decal,pos,z.data(),uv,col,ws.data(),elements,transform);
 	}
 
@@ -2973,7 +2979,7 @@ namespace olc
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
 		di.transform=transform;
-		vLayers[nTargetLayer].vecDecalInstance.push_back(di);
+		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
 	}
 
 	void PixelGameEngine::DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<olc::vf2d>& uv, const olc::Pixel tint,const GFX3DTransform transform)
@@ -2984,6 +2990,7 @@ namespace olc
 		di.pos.resize(di.points);
 		di.uv.resize(di.points);
 		di.w.resize(di.points);
+		di.z.resize(di.points,z);
 		di.tint.resize(di.points);
 		for (uint32_t i = 0; i < di.points; i++)
 		{
@@ -2995,7 +3002,7 @@ namespace olc
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
 		di.transform=transform;
-		vLayers[nTargetLayer].vecDecalInstance.push_back(di);
+		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
 	}
 
 	void PixelGameEngine::DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<olc::vf2d>& uv, const std::vector<olc::Pixel> &tint,const GFX3DTransform transform)
@@ -3006,6 +3013,7 @@ namespace olc
 		di.pos.resize(di.points);
 		di.uv.resize(di.points);
 		di.w.resize(di.points);
+		di.z.resize(di.points,z);
 		di.tint.resize(di.points);
 		for (uint32_t i = 0; i < di.points; i++)
 		{
@@ -3017,7 +3025,7 @@ namespace olc
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
 		di.transform=transform;
-		vLayers[nTargetLayer].vecDecalInstance.push_back(di);
+		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
 	}
 
 	void PixelGameEngine::DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<olc::vf2d>& uv, const std::vector<olc::Pixel>& colours, const olc::Pixel tint,const GFX3DTransform transform)
@@ -3037,6 +3045,7 @@ namespace olc
 		di.pos.resize(di.points);
 		di.uv.resize(di.points);
 		di.w.resize(di.points);
+		di.z.resize(di.points,z);
 		di.tint.resize(di.points);
 		for (uint32_t i = 0; i < di.points; i++)
 		{
@@ -3048,7 +3057,7 @@ namespace olc
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
 		di.transform=transform;
-		vLayers[nTargetLayer].vecDecalInstance.push_back(di);
+		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
 	}
 
 	void PixelGameEngine::DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<float>& depth, const std::vector<olc::vf2d>& uv, const std::vector<olc::Pixel>& colours, const olc::Pixel tint,const GFX3DTransform transform)
@@ -3059,6 +3068,7 @@ namespace olc
 		di.pos.resize(di.points);
 		di.uv.resize(di.points);
 		di.w.resize(di.points);
+		di.z.resize(di.points,z);
 		di.tint.resize(di.points);
 		for (uint32_t i = 0; i < di.points; i++)
 		{
@@ -3070,7 +3080,7 @@ namespace olc
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
 		di.transform=transform;
-		vLayers[nTargetLayer].vecDecalInstance.push_back(di);
+		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
 	}
 
 
@@ -3097,7 +3107,7 @@ namespace olc
 		di.mode = nDecalMode;
 		di.structure = DecalStructure::LIST;
 		di.depth = true;
-		vLayers[nTargetLayer].vecDecalInstance.push_back(di);
+		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
 	}
 
 	void PixelGameEngine::LW3D_DrawWarpedDecal(olc::Decal* decal, const std::vector<std::array<float, 3>>& pos, const olc::Pixel& tint)
@@ -3139,7 +3149,7 @@ namespace olc
 			di.mode = nDecalMode;
 			di.structure = nDecalStructure;
 			di.depth = true;
-			vLayers[nTargetLayer].vecDecalInstance.push_back(di);
+			vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
 		}
 	}
 #endif
@@ -3168,7 +3178,7 @@ namespace olc
 		di.w[1] = 1.0f;
 		di.mode = olc::DecalMode::WIREFRAME;
 		di.structure = nDecalStructure;
-		vLayers[nTargetLayer].vecDecalInstance.push_back(di);*/
+		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);*/
 	}
 
 	void PixelGameEngine::DrawRectDecal(const olc::vf2d& pos, const olc::vf2d& size, const olc::Pixel col,const GFX3DTransform transform)
@@ -3234,6 +3244,7 @@ namespace olc
 		di.pos.resize(4);
 		di.uv = { { 0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 0.0f} };
 		di.w = { 1, 1, 1, 1 };
+		di.z={z,z,z,z};
 		di.tint = { tint, tint, tint, tint };
 		di.points = 4;
 		di.pos[0] = (olc::vf2d(0.0f, 0.0f) - center) * scale;
@@ -3251,7 +3262,7 @@ namespace olc
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
 		di.transform=transform;
-		vLayers[nTargetLayer].vecDecalInstance.push_back(di);
+		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
 	}
 
 
@@ -3262,6 +3273,7 @@ namespace olc
 		di.points = 4;
 		di.tint = { tint, tint, tint, tint };
 		di.w = { 1, 1, 1, 1 };
+		di.z={z,z,z,z};
 		di.pos.resize(4);
 		di.pos[0] = (olc::vf2d(0.0f, 0.0f) - center) * scale;
 		di.pos[1] = (olc::vf2d(0.0f, source_size.y) - center) * scale;
@@ -3281,7 +3293,7 @@ namespace olc
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
 		di.transform=transform;
-		vLayers[nTargetLayer].vecDecalInstance.push_back(di);
+		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
 	}
 
 	void PixelGameEngine::DrawPartialWarpedDecal(olc::Decal* decal, const olc::vf2d* pos, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint,const GFX3DTransform transform)
@@ -3291,6 +3303,7 @@ namespace olc
 		di.decal = decal;
 		di.tint = { tint, tint, tint, tint };
 		di.w = { 1, 1, 1, 1 };
+		di.z={z,z,z,z};
 		di.pos.resize(4);
 		di.uv = { { 0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 0.0f} };
 		olc::vf2d center;
@@ -3315,7 +3328,7 @@ namespace olc
 			di.mode = nDecalMode;
 			di.structure = nDecalStructure;
 			di.transform=transform;
-			vLayers[nTargetLayer].vecDecalInstance.push_back(di);
+			vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
 		}
 	}
 
@@ -3328,6 +3341,7 @@ namespace olc
 		di.decal = decal;
 		di.tint = { tint, tint, tint, tint };
 		di.w = { 1, 1, 1, 1 };
+		di.z={z,z,z,z};
 		di.pos.resize(4);
 		di.uv = { { 0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 0.0f} };
 		olc::vf2d center;
@@ -3348,7 +3362,7 @@ namespace olc
 			di.mode = nDecalMode;
 			di.structure = nDecalStructure;
 			di.transform=transform;
-			vLayers[nTargetLayer].vecDecalInstance.push_back(di);
+			vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
 		}
 	}
 
@@ -3601,7 +3615,9 @@ namespace olc
 		funcPixelMode = pixelMode;
 		nPixelMode = Pixel::Mode::CUSTOM;
 	}
-
+	void PixelGameEngine::SetZ(const float z){
+		this->z=z;
+	}
 	void PixelGameEngine::SetPixelBlend(float fBlend)
 	{
 		fBlendFactor = fBlend;
@@ -4565,10 +4581,6 @@ namespace olc
 			else
 				glBindTexture(GL_TEXTURE_2D, decal.decal->id);
 			
-			if (decal.depth)
-			{
-				glEnable(GL_DEPTH_TEST);
-			}
 
 			if (nDecalMode == DecalMode::WIREFRAME)
 				glBegin(GL_LINE_LOOP);
@@ -4605,11 +4617,6 @@ namespace olc
 			}
 
 			glEnd();
-
-			if (decal.depth)
-			{
-				glDisable(GL_DEPTH_TEST);
-			}
 		
 		}
 

@@ -143,9 +143,11 @@ void Hamster::DrawHamsters(TransformedView&tv){
 		const Animate2D::Frame&img{h.animations.GetState(h.internalAnimState)==HamsterGame::DEFAULT?anim.GetFrame(h.distanceTravelled/100.f):h.GetCurrentAnimation()};
 		const Animate2D::Frame&wheelTopImg{wheelTopAnim.GetFrame(h.distanceTravelled/80.f)};
 		const Animate2D::Frame&wheelBottomImg{wheelBottomAnim.GetFrame(h.distanceTravelled/80.f)};
+		HamsterGame::Game().SetZ(h.z);
 		if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos,wheelBottomImg.GetSourceImage()->Decal(),h.rot,wheelBottomImg.GetSourceRect().size/2,wheelBottomImg.GetSourceRect().pos,wheelBottomImg.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
 		tv.DrawPartialRotatedDecal(h.pos,img.GetSourceImage()->Decal(),h.rot,img.GetSourceRect().size/2,img.GetSourceRect().pos,img.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
 		if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos,wheelTopImg.GetSourceImage()->Decal(),h.rot,wheelTopImg.GetSourceRect().size/2,wheelTopImg.GetSourceRect().pos,wheelTopImg.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,{255,255,255,192},h.imgScale));
+		HamsterGame::Game().SetZ(0.f);
 	}
 }
 
@@ -176,13 +178,11 @@ void Hamster::HandlePlayerControls(){
 	if(HamsterGame::Game().GetKey(A).bHeld){
 		aimingDir+=vf2d{-1,0};
 	}
-	if(HamsterGame::Game().GetKey(PGUP).bPressed){
-		HamsterGame::Game().tv.ZoomAtScreenPos(0.95f,HamsterGame::Game().tv.WorldToScreen(GetPos()));
-		z+=HamsterGame::Game().GetElapsedTime();
+	if(HamsterGame::Game().GetKey(PGUP).bHeld){
+		z+=0.25f*HamsterGame::Game().GetElapsedTime();
 	}
-	if(HamsterGame::Game().GetKey(PGDN).bPressed){
-		z=std::max(0.f,z-HamsterGame::Game().GetElapsedTime());
-		HamsterGame::Game().tv.ZoomAtScreenPos(1.05f,HamsterGame::Game().tv.WorldToScreen(GetPos()));
+	if(HamsterGame::Game().GetKey(PGDN).bHeld){
+		z=std::max(0.f,z-0.25f*HamsterGame::Game().GetElapsedTime());
 	}
 	if(aimingDir!=vf2d{}){
 		targetRot=aimingDir.norm().polar().y;

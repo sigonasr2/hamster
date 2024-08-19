@@ -149,7 +149,7 @@ namespace olc
 		public:
 			Math();
 		public:
-			static vec3d  Mat_MultiplyVector(mat4x4 &m, vec3d &i);
+			static vec3d  Mat_MultiplyVector(mat4x4 &m, const vec3d &i);
 			static mat4x4 Mat_MultiplyMatrix(mat4x4 &m1, mat4x4 &m2);
 			static mat4x4 Mat_MakeIdentity();
 			static mat4x4 Mat_MakeRotationX(float fAngleRad);
@@ -207,8 +207,8 @@ namespace olc
 			void SetTexture(olc::Sprite *texture);
 			//void SetMipMapTexture(olc::GFX3D::MipMap *texture);
 			void SetLightSource(uint32_t nSlot, uint32_t nType, olc::Pixel col, olc::GFX3D::vec3d pos, olc::GFX3D::vec3d dir = { 0.0f, 0.0f, 1.0f, 1.0f }, float fParam = 0.0f);
-			uint32_t Render(std::vector<olc::GFX3D::triangle> &triangles, Decal*dec,uint32_t flags = RENDER_CULL_CW | RENDER_TEXTURED | RENDER_DEPTH);
-			uint32_t Render(std::vector<olc::GFX3D::triangle> &triangles, Decal* dec, uint32_t flags, int nOffset, int nCount);
+			uint32_t Render(const std::vector<olc::GFX3D::triangle> &triangles, Decal*dec,uint32_t flags = RENDER_WIRE | RENDER_DEPTH);
+			uint32_t Render(const std::vector<olc::GFX3D::triangle> &triangles, Decal* dec, uint32_t flags, int nOffset, int nCount);
 			uint32_t RenderLine(olc::GFX3D::vec3d &p1, olc::GFX3D::vec3d &p2, olc::Pixel col = olc::WHITE);
 			uint32_t RenderCircleXZ(olc::GFX3D::vec3d &p1, float r, olc::Pixel col = olc::WHITE);
 
@@ -276,7 +276,7 @@ namespace olc
 
 	}
 
-	olc::GFX3D::vec3d olc::GFX3D::Math::Mat_MultiplyVector(olc::GFX3D::mat4x4 &m, olc::GFX3D::vec3d &i)
+	olc::GFX3D::vec3d olc::GFX3D::Math::Mat_MultiplyVector(olc::GFX3D::mat4x4 &m, const olc::GFX3D::vec3d &i)
 	{
 		vec3d v;
 		v.x = i.x * m.m[0][0] + i.y * m.m[1][0] + i.z * m.m[2][0] + i.w * m.m[3][0];
@@ -848,7 +848,7 @@ namespace olc
 		}
 	}
 
-	uint32_t GFX3D::PipeLine::Render(std::vector<olc::GFX3D::triangle> &triangles, Decal*dec,uint32_t flags)
+	uint32_t GFX3D::PipeLine::Render(const std::vector<olc::GFX3D::triangle> &triangles, Decal*dec,uint32_t flags)
 	{
 		return Render(triangles, dec,flags, 0, triangles.size());
 	}
@@ -934,7 +934,7 @@ namespace olc
 		return 0;
 	}
 
-	uint32_t GFX3D::PipeLine::Render(std::vector<olc::GFX3D::triangle> &triangles, Decal* dec, uint32_t flags, int nOffset, int nCount)
+	uint32_t GFX3D::PipeLine::Render(const std::vector<olc::GFX3D::triangle> &triangles, Decal* dec, uint32_t flags, int nOffset, int nCount)
 	{
 		// Calculate Transformation Matrix
 		mat4x4 matWorldView = Math::Mat_MultiplyMatrix(matWorld, matView);
@@ -952,7 +952,7 @@ namespace olc
 //#pragma omp parallel for schedule(static)
 		for(int tx = nOffset; tx < nOffset+nCount; tx++)
 		{
-			GFX3D::triangle &tri = triangles[tx];
+			const GFX3D::triangle &tri = triangles.at(tx);
 			GFX3D::triangle triTransformed;
 
 			// Just copy through texture coordinates

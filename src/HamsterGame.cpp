@@ -28,7 +28,7 @@ bool HamsterGame::OnUserCreate(){
 
 	border.ChangeBorder(Border::DEFAULT);
 
-	renderer.SetProjection(90.0f, (float)SCREEN_FRAME.size.y/(float)SCREEN_FRAME.size.x, 0.1f, 1000.0f, 0.0f, 0.0f, SCREEN_FRAME.size.x, SCREEN_FRAME.size.y);
+	renderer.SetProjection(90.0f, (float)SCREEN_FRAME.size.x/(float)SCREEN_FRAME.size.y, 0.1f, 1000.0f, 0, SCREEN_FRAME.pos.y, 512, SCREEN_FRAME.size.y);
 	return true;
 }
 
@@ -135,7 +135,7 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 }
 
 void HamsterGame::DrawGame(){
-	tv.DrawPartialDecal({-3200,-3200},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{3200,3200},animatedWaterTile.Decal(),{0,0},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{3200,3200});
+	tv.DrawPartialDecal({-3200,-3200},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400},animatedWaterTile.Decal(),{0,0},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{3200,3200});
 	DrawLevelTiles();
 	Powerup::DrawPowerups(tv);
 	Hamster::DrawHamsters(tv);
@@ -222,6 +222,9 @@ void HamsterGame::DrawLevelTiles(){
 
 bool HamsterGame::OnUserUpdate(float fElapsedTime){
 	runTime+=fElapsedTime;
+
+	vEye.z+=(Hamster::GetPlayer().GetZ()+1.f-vEye.z)*fLazyFollowRate*fElapsedTime;
+
 	UpdateGame(fElapsedTime);
 	DrawGame();
 	return true;
@@ -319,6 +322,49 @@ void HamsterGame::UpdateWaterTexture(){
 }
 
 void HamsterGame::Apply3DTransform(std::vector<DecalInstance>&decals){
+	std::vector<DecalInstance>oldDecals;
+	std::vector<DecalInstance>foregroundDecals;
+	oldDecals.reserve(decals.size());
+	std::copy(decals.begin(),decals.end(),std::back_inserter(oldDecals));
+	decals.clear();
+	GFX3D::vec3d vLookTarget = GFX3D::Math::Vec_Add(vEye, vLookDir);
+	
+	GFX3D::ClearDepth();
+
+	renderer.SetCamera(vEye, vLookTarget, vUp);
+	
+	GFX3D::mat4x4 matRotateX=GFX3D::Math::Mat_MakeRotationX(0.f);
+	GFX3D::mat4x4 matRotateZ=GFX3D::Math::Mat_MakeRotationZ(0.f);
+
+	GFX3D::mat4x4 matWorld=GFX3D::Math::Mat_MultiplyMatrix(matRotateX,matRotateZ);
+	
+	renderer.SetTransform(matWorld);
+
+	for(DecalInstance&decal:oldDecals){
+		if(decal.transform==GFX3DTransform::NO_TRANSFORM)foregroundDecals.emplace_back(decal);
+		else
+		if(decal.points==3){
+			GFX3D::triangle tri{{{decal.pos[0].x,decal.pos[0].y,decal.z[0],1.f},{decal.pos[1].x,decal.pos[1].y,decal.z[1],1.f},{decal.pos[2].x,decal.pos[2].y,decal.z[2],1.f}},{{decal.uv[0].x,decal.uv[0].y,0.f},{decal.uv[1].x,decal.uv[1].y,0.f},{decal.uv[2].x,decal.uv[2].y,0.f}},{decal.tint[0],decal.tint[1],decal.tint[2]}};
+			renderer.Render({tri},decal.decal);
+		}else if(decal.points==4){
+			GFX3D::triangle tri{{{decal.pos[0].x,decal.pos[0].y,decal.z[0],1.f},{decal.pos[1].x,decal.pos[1].y,decal.z[1],1.f},{decal.pos[2].x,decal.pos[2].y,decal.z[2],1.f}},{{decal.uv[0].x,decal.uv[0].y,0.f},{decal.uv[1].x,decal.uv[1].y,0.f},{decal.uv[2].x,decal.uv[2].y,0.f}},{decal.tint[0],decal.tint[1],decal.tint[2]}};
+			GFX3D::triangle tri2{{{decal.pos[0].x,decal.pos[0].y,decal.z[0],1.f},{decal.pos[2].x,decal.pos[2].y,decal.z[2],1.f},{decal.pos[3].x,decal.pos[3].y,decal.z[3],1.f}},{{decal.uv[0].x,decal.uv[0].y,0.f},{decal.uv[2].x,decal.uv[2].y,0.f},{decal.uv[3].x,decal.uv[3].y,0.f}},{decal.tint[0],decal.tint[2],decal.tint[3]}};
+			renderer.Render({tri,tri2},decal.decal,GFX3D::RENDER_TEXTURED|GFX3D::RENDER_DEPTH);
+		}else{
+			std::vector<GFX3D::triangle>tris;
+			tris.reserve(decal.points/3);
+			if(decal.structure!=DecalStructure::LIST)throw std::runtime_error{std::format("WARNING! Using triangle structure type {} is unsupported! Please only use DecalStructure::LIST!!",int(decal.structure))};
+			if(decal.points%3!=0)throw std::runtime_error{std::format("WARNING! Number of decal structure points is not a multiple of 3! Points provided: {}. THIS SHOULD NOT BE HAPPENING!",decal.points)};
+			for(int i{0};i<decal.points;i+=3){
+				GFX3D::triangle tri{{{decal.pos[i+0].x,decal.pos[i+0].y,decal.z[i+0],1.f},{decal.pos[i+1].x,decal.pos[i+1].y,decal.z[i+1],1.f},{decal.pos[i+2].x,decal.pos[i+2].y,decal.z[i+2],1.f}},{{decal.uv[i+0].x,decal.uv[i+0].y,0.f},{decal.uv[i+1].x,decal.uv[i+1].y,0.f},{decal.uv[i+2].x,decal.uv[i+2].y,0.f}},{decal.tint[i+0],decal.tint[i+1],decal.tint[i+2]}};
+				tris.emplace_back(tri);
+			}
+			renderer.Render(tris,decal.decal);
+		}
+	}
+
+	std::sort(decals.begin(),decals.end(),[](const DecalInstance&d1,const DecalInstance&d2){return d1.z[0]>d2.z[0];});
+	std::copy(foregroundDecals.begin(),foregroundDecals.end(),std::back_inserter(decals));
 }
 
 int main()

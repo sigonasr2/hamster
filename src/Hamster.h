@@ -77,7 +77,7 @@ class Hamster{
 	vf2d pos;
 	vf2d vel;
 	vf2d lastSafeLocation{};
-	float z;
+	float z{};
 	float lastSafeLocationTimer{};
 	float rot{};
 	float targetRot{};

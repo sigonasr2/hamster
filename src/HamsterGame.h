@@ -106,7 +106,8 @@ private:
 	GFX3D::PipeLine renderer;
 	virtual void Apply3DTransform(std::vector<DecalInstance>&decals)override final;
 	
-	const GFX3D::vec3d vUp = {0,1,0};
-	GFX3D::vec3d vEye = {0,0,-4};
-	const GFX3D::vec3d vLookDir = {0,0,1};
+	GFX3D::vec3d vUp{0,-1,0};
+	GFX3D::vec3d vEye{0.f,0,1};
+	GFX3D::vec3d vLookDir{0,0,-1};
+	const float fLazyFollowRate{4.0f};
 };
