@@ -42,6 +42,8 @@ All rights reserved.
 #include "olcUTIL_Animate2D.h"
 #include "Terrain.h"
 #include <unordered_set>
+#include "HamsterJet.h"
+#include "HamsterGame.h"
 
 class Hamster{
 	enum PlayerControlled{
@@ -97,6 +99,8 @@ class Hamster{
 	static std::optional<Hamster*>playerHamster;
 	HamsterState state{NORMAL};
 	std::unordered_set<Powerup::PowerupType>powerups;
+	std::optional<HamsterJet>hamsterJet;
+	float lastTappedSpace{0.f};
 public:
 	Hamster(const vf2d spawnPos,const std::string_view img,const PlayerControlled IsPlayerControlled=NPC);
 	static const Hamster&GetPlayer();
@@ -127,4 +131,6 @@ public:
 	const float GetDrownRatio()const;
 	const float GetBurnRatio()const;
 	void SetPos(const vf2d pos);
+	void SetZ(const float z);
+	static void OnUserDestroy();
 };

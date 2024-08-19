@@ -34,7 +34,7 @@ bool HamsterGame::OnUserCreate(){
 
 void HamsterGame::_LoadImage(const std::string_view img){
 	GFX.insert({ASSETS_DIR+std::string(img),Renderable{}});
-	rcode result{GFX[ASSETS_DIR+std::string(img)].Load(ASSETS_DIR+std::string(img))};
+	rcode result{GFX[ASSETS_DIR+std::string(img)].Load(ASSETS_DIR+std::string(img),nullptr,false,false)};
 	if(result!=OK)throw std::runtime_error{std::format("Failed to Load Image {}. OLC Rcode: {}",img,int(result))};
 }
 
@@ -45,6 +45,8 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("drownmeter.png");
 	_LoadImage("burnmeter.png");
 	_LoadImage("hamster_jet.png");
+	_LoadImage("dot.png");
+	_LoadImage("clouds.png");
 	UpdateMatrixTexture();
 }
 
@@ -76,7 +78,7 @@ void HamsterGame::LoadAnimations(){
 	for(vf2d&sourcePos:std::vector<vf2d>{{192+16*0,800},{192+16*1,800},{192+16*2,800},{192+16*3,800},{192+16*4,800},{192+16*5,800},{192+16*6,800},{192+16*7,800},{192+16*8,800}}){
 		lavaAnimFrames.AddFrame(Animate2D::Frame{&GetGFX("gametiles.png"),{sourcePos,{16,16}}});
 	}
-	LoadAnimation(JET_LIGHTS,"hamster_jet.png",{{0,48},{48,48}},0.3f);
+	LoadAnimation(JET_LIGHTS,"hamster_jet.png",{{0,48},{48,48}},0.3f,Animate2D::Style::Repeat,{48,48});
 
 
 	animatedWaterTile.Create(16,16,false,false);
@@ -87,6 +89,10 @@ void HamsterGame::LoadLevel(const std::string_view mapName){
 	const vf2d levelSpawnLoc{50,50}; //TEMPORARY
 
 	currentMap=TMXParser{ASSETS_DIR+std::string(mapName)};
+	cloudSpd.x=util::random_range(-12.f,12.f);
+	cloudSpd.y=util::random_range(-0.3f,0.3f);
+	cloudOffset.x=util::random();
+	cloudOffset.y=util::random();
 
 	Hamster::LoadHamsters(levelSpawnLoc);
 	camera.SetTarget(Hamster::GetPlayer().GetPos());
@@ -126,6 +132,7 @@ void HamsterGame::LoadLevel(const std::string_view mapName){
 void HamsterGame::UpdateGame(const float fElapsedTime){
 	UpdateMatrixTexture();
 	UpdateWaterTexture();
+	cloudOffset+=cloudSpd*fElapsedTime;
 	camera.SetViewSize(tv.GetWorldVisibleArea());
 	camera.Update(fElapsedTime);
 	tv.SetWorldOffset(tv.ScaleToWorld(-SCREEN_FRAME.pos)+camera.GetViewPosition());
@@ -135,10 +142,19 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 }
 
 void HamsterGame::DrawGame(){
-	tv.DrawPartialDecal({-3200,-3200},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400},animatedWaterTile.Decal(),{0,0},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{3200,3200});
+	tv.DrawPartialDecal({-3200,-3200},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400},animatedWaterTile.Decal(),{0,0},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400});
 	DrawLevelTiles();
 	Powerup::DrawPowerups(tv);
 	Hamster::DrawHamsters(tv);
+	SetZ(3.f);
+	tv.DrawPartialDecal({-3200,-3200},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400},GetGFX("dot.png").Decal(),{0,0},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400},{226,228,255,32});
+	SetZ(7.f);
+	tv.DrawPartialDecal({-3200,-3200},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400},GetGFX("dot.png").Decal(),{0,0},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400},{178,242,255,64});
+	SetZ(2.f);
+	tv.DrawPartialDecal({-3200,-3200},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400},GetGFX("clouds.png").Decal(),cloudOffset,currentMap.value().GetData().GetMapData().MapSize*16/2.f,{255,255,255,64});
+	SetZ(6.f);
+	tv.DrawPartialDecal({-3200,-3200},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400},GetGFX("clouds.png").Decal(),cloudOffset*2,currentMap.value().GetData().GetMapData().MapSize*16/2.f,{255,255,255,72});
+	SetZ(0.f);
 	border.Draw();
 
 	#pragma region Powerup Display
@@ -186,7 +202,9 @@ const Terrain::TerrainType HamsterGame::GetTerrainTypeAtPos(const vf2d pos)const
 }
 
 const bool HamsterGame::IsTerrainSolid(const vf2d pos)const{
-	if(pos.x<=0.f||pos.y<=0.f||pos.x>=currentMap.value().GetData().GetMapData().width*16||pos.y>=currentMap.value().GetData().GetMapData().height*16)return true;
+	if(pos.x<=0.f||pos.y<=0.f||pos.x>=currentMap.value().GetData().GetMapData().width*16||pos.y>=currentMap.value().GetData().GetMapData().height*16){
+		return true;
+	}
 	bool tileIsBlank{true};
 	for(const LayerTag&layer:currentMap.value().GetData().GetLayers()){
 		int tileX{int(floor(pos.x)/16)};
@@ -223,7 +241,7 @@ void HamsterGame::DrawLevelTiles(){
 bool HamsterGame::OnUserUpdate(float fElapsedTime){
 	runTime+=fElapsedTime;
 
-	vEye.z+=(Hamster::GetPlayer().GetZ()+1.f-vEye.z)*fLazyFollowRate*fElapsedTime;
+	vEye.z+=(Hamster::GetPlayer().GetZ()+zoom-vEye.z)*fLazyFollowRate*fElapsedTime;
 
 	UpdateGame(fElapsedTime);
 	DrawGame();
@@ -240,6 +258,7 @@ const Animate2D::Animation<HamsterGame::AnimationState>&HamsterGame::GetAnimatio
 }
 
 bool HamsterGame::OnUserDestroy(){
+	Hamster::OnUserDestroy();
 	ANIMATIONS.clear();
 	GFX.clear();
 	return true;
@@ -258,6 +277,7 @@ void HamsterGame::UpdateMatrixTexture(){
 	Renderable&texture{(*result.first).second};
 	if(result.second){
 		texture.Create(64,64,false,false);
+		texture.Sprite()->SetSampleMode(Sprite::PERIODIC);
 	}
 
 	const std::array<char,10>matrixLetters{'0','1','2','3','4','5','6','7','8','9'};
@@ -367,6 +387,17 @@ void HamsterGame::Apply3DTransform(std::vector<DecalInstance>&decals){
 	std::copy(foregroundDecals.begin(),foregroundDecals.end(),std::back_inserter(decals));
 }
 
+const Animate2D::FrameSequence&HamsterGame::GetAnimation(const std::string_view img,const AnimationState state){
+	return GetAnimations(img).GetFrames(state);
+}
+
+void HamsterGame::SetZoom(const float zoom){
+	this->zoom=zoom;
+}
+const float HamsterGame::GetZoom()const{
+	return zoom;
+}
+
 int main()
 {
 	HamsterGame game;
@@ -375,4 +406,3 @@ int main()
 
 	return 0;
 }
-

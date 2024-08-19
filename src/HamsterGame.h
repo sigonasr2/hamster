@@ -75,11 +75,14 @@ public:
 
 	static const Renderable&GetGFX(const std::string_view img);
 	static const Animate2D::Animation<HamsterGame::AnimationState>&GetAnimations(const std::string_view img);
+	static const Animate2D::FrameSequence&GetAnimation(const std::string_view img,const AnimationState state);
 	static HamsterGame&Game();
 	static std::unordered_map<uint32_t,Animate2D::FrameSequence>ANIMATED_TILE_IDS;
 	const double GetRuntime()const;
 	const Terrain::TerrainType GetTerrainTypeAtPos(const vf2d pos)const;
 	const bool IsTerrainSolid(const vf2d pos)const;
+	void SetZoom(const float zoom);
+	const float GetZoom()const;
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -105,9 +108,12 @@ private:
 	void UpdateWaterTexture();
 	GFX3D::PipeLine renderer;
 	virtual void Apply3DTransform(std::vector<DecalInstance>&decals)override final;
+	float zoom{1.f}; //Increase to zoom out, decrease to zoom in (this is the overhead distance from the player).
 	
 	GFX3D::vec3d vUp{0,-1,0};
 	GFX3D::vec3d vEye{0.f,0,1};
 	GFX3D::vec3d vLookDir{0,0,-1};
 	const float fLazyFollowRate{4.0f};
+	vf2d cloudSpd{};
+	vf2d cloudOffset{};
 };

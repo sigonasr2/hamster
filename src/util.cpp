@@ -47,3 +47,7 @@ void olc::util::turn_towards_direction(float&angle,float target,float rate)
     if(diff>0&&newAngleDiff<0||
         diff<0&&newAngleDiff>0)angle=fmod(target,2*geom2d::pi); //We have crossed the angle difference threshold and can safely say we reached it.
 }
+
+float olc::util::lerp(float n1,float n2,double t){
+	return float(n1*(1-t)+n2*t);
+}

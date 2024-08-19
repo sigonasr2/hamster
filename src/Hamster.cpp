@@ -104,20 +104,25 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 					h.state=WAIT;
 				}
 			}break;
+			case FLYING:{
+				h.hamsterJet.value().Update(fElapsedTime);
+			};
 		}
-		if((h.GetTerrainStandingOn()==Terrain::OCEAN||!h.HasPowerup(Powerup::SWAMP)&&h.GetTerrainStandingOn()==Terrain::SWAMP)&&h.state!=DROWNING&&h.state!=WAIT)h.drownTimer+=fElapsedTime;
-		else if((!h.HasPowerup(Powerup::LAVA)&&h.GetTerrainStandingOn()==Terrain::LAVA)&&h.state!=BURNING&&h.state!=WAIT)h.burnTimer+=fElapsedTime;
-		else if(h.lastSafeLocationTimer<=0.f&&h.state==NORMAL&&!h.StandingOnLethalTerrain()){
-			h.lastSafeLocationTimer=0.5f;
-			h.drownTimer=0.f;
-			h.burnTimer=0.f;
-			h.lastSafeLocation=h.GetPos();
-		}
-		if(h.drownTimer>=h.DEFAULT_DROWN_TIME&&h.state!=DROWNING&&h.state!=WAIT){
-			h.state=DROWNING;
-		}
-		if(h.burnTimer>=h.DEFAULT_BURN_TIME&&h.state!=BURNING&&h.state!=WAIT){
-			h.state=BURNING;
+		if(h.state!=FLYING){
+			if((h.GetTerrainStandingOn()==Terrain::OCEAN||!h.HasPowerup(Powerup::SWAMP)&&h.GetTerrainStandingOn()==Terrain::SWAMP)&&h.state!=DROWNING&&h.state!=WAIT)h.drownTimer+=fElapsedTime;
+			else if((!h.HasPowerup(Powerup::LAVA)&&h.GetTerrainStandingOn()==Terrain::LAVA)&&h.state!=BURNING&&h.state!=WAIT)h.burnTimer+=fElapsedTime;
+			else if(h.lastSafeLocationTimer<=0.f&&h.state==NORMAL&&!h.StandingOnLethalTerrain()){
+				h.lastSafeLocationTimer=0.5f;
+				h.drownTimer=0.f;
+				h.burnTimer=0.f;
+				h.lastSafeLocation=h.GetPos();
+			}
+			if(h.drownTimer>=h.DEFAULT_DROWN_TIME&&h.state!=DROWNING&&h.state!=WAIT){
+				h.state=DROWNING;
+			}
+			if(h.burnTimer>=h.DEFAULT_BURN_TIME&&h.state!=BURNING&&h.state!=WAIT){
+				h.state=BURNING;
+			}
 		}
 		h.TurnTowardsTargetDirection();
 		h.MoveHamster();
@@ -143,6 +148,7 @@ void Hamster::DrawHamsters(TransformedView&tv){
 		const Animate2D::Frame&img{h.animations.GetState(h.internalAnimState)==HamsterGame::DEFAULT?anim.GetFrame(h.distanceTravelled/100.f):h.GetCurrentAnimation()};
 		const Animate2D::Frame&wheelTopImg{wheelTopAnim.GetFrame(h.distanceTravelled/80.f)};
 		const Animate2D::Frame&wheelBottomImg{wheelBottomAnim.GetFrame(h.distanceTravelled/80.f)};
+		if(h.state==FLYING)h.hamsterJet.value().Draw();
 		HamsterGame::Game().SetZ(h.z);
 		if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos,wheelBottomImg.GetSourceImage()->Decal(),h.rot,wheelBottomImg.GetSourceRect().size/2,wheelBottomImg.GetSourceRect().pos,wheelBottomImg.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
 		tv.DrawPartialRotatedDecal(h.pos,img.GetSourceImage()->Decal(),h.rot,img.GetSourceRect().size/2,img.GetSourceRect().pos,img.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
@@ -165,6 +171,7 @@ const vf2d&Hamster::GetPos()const{
 }
 
 void Hamster::HandlePlayerControls(){
+	lastTappedSpace+=HamsterGame::Game().GetElapsedTime();
 	vf2d aimingDir{};
 	if(HamsterGame::Game().GetKey(W).bHeld){
 		aimingDir+=vf2d{0,-1};
@@ -178,18 +185,19 @@ void Hamster::HandlePlayerControls(){
 	if(HamsterGame::Game().GetKey(A).bHeld){
 		aimingDir+=vf2d{-1,0};
 	}
-	if(HamsterGame::Game().GetKey(PGUP).bHeld){
-		z+=0.25f*HamsterGame::Game().GetElapsedTime();
-	}
-	if(HamsterGame::Game().GetKey(PGDN).bHeld){
-		z=std::max(0.f,z-0.25f*HamsterGame::Game().GetElapsedTime());
-	}
 	if(aimingDir!=vf2d{}){
 		targetRot=aimingDir.norm().polar().y;
 		const vf2d currentVel{vel};
 		vel+=vf2d{currentVel.polar().x+(GetMaxSpeed()*HamsterGame::Game().GetElapsedTime())/GetTimeToMaxSpeed(),rot}.cart();
 		vel=vf2d{std::min(GetMaxSpeed(),vel.polar().x),vel.polar().y}.cart();
 		frictionEnabled=false;
+	}
+	if(HamsterGame::Game().GetKey(SPACE).bPressed){
+		if(lastTappedSpace<=0.6f&&HasPowerup(Powerup::JET)){
+			state=FLYING;
+			hamsterJet.emplace(*this);
+		}
+		lastTappedSpace=0.f;
 	}
 }
 
@@ -213,7 +221,7 @@ void Hamster::MoveHamster(){
 void Hamster::HandleCollision(){
 	for(Hamster&h:HAMSTER_LIST){
 		if(this==&h)continue;
-		if(geom2d::overlaps(geom2d::circle<float>(GetPos(),GetRadius()),geom2d::circle<float>(h.GetPos(),h.GetRadius()))){
+		if(abs(z-h.z)<=0.1f&&geom2d::overlaps(geom2d::circle<float>(GetPos(),GetRadius()),geom2d::circle<float>(h.GetPos(),h.GetRadius()))){
 			if(geom2d::line<float>(GetPos(),h.GetPos()).length()==0.f){ //Push these two in random directions, they are on top of each other!
 				float randDir{util::random(2*geom2d::pi)};
 				vf2d collisionResolve1{GetPos()+vf2d{GetRadius(),randDir}.cart()};
@@ -340,9 +348,19 @@ const float&Hamster::GetZ()const{
 }
 
 void Hamster::SetPos(const vf2d pos){
-	if(state!=FLYING){
-		if(!HamsterGame::Game().IsTerrainSolid(vf2d{this->pos.x,pos.y}))this->pos=vf2d{this->pos.x,pos.y};
-		if(!HamsterGame::Game().IsTerrainSolid(vf2d{pos.x,this->pos.y}))this->pos=vf2d{pos.x,this->pos.y};
-		if(!HamsterGame::Game().IsTerrainSolid(vf2d{this->pos.x,pos.y}))this->pos=vf2d{this->pos.x,pos.y};
+	bool movedY{false};
+	if(state==FLYING||!HamsterGame::Game().IsTerrainSolid(vf2d{this->pos.x,pos.y})){
+		this->pos=vf2d{this->pos.x,pos.y};
+		movedY=true;
 	}
+	if(state==FLYING||!HamsterGame::Game().IsTerrainSolid(vf2d{pos.x,this->pos.y}))this->pos=vf2d{pos.x,this->pos.y};
+	if (!movedY&&(state==FLYING||!HamsterGame::Game().IsTerrainSolid(vf2d{this->pos.x,pos.y})))this->pos=vf2d{this->pos.x,pos.y};
+}
+
+void Hamster::SetZ(const float z){
+	this->z=z;
+}
+
+void Hamster::OnUserDestroy(){
+	HAMSTER_LIST.clear();
 }

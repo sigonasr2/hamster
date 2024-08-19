@@ -36,16 +36,33 @@ All rights reserved.
 */
 #pragma endregion
 #pragma once
-#include <random>
 
-namespace olc::util{
-	//Returns 0-range (as a float).
-	float random(float range);
-	//Returns a random float value min(inclusive) to max(exclusive).
-	const float random_range(const float min,const float max);
-	//Returns 0-32767 (as an int).
-	int random();
-	float angle_difference(float angle_1, float angle_2);
-	void turn_towards_direction(float&angle,float target,float rate);
-	float lerp(float n1,float n2,double t);
+#include "olcUTIL_Geometry2D.h"
+#include "SpecialRenderable.h"
+
+class Hamster;
+
+class HamsterJet{
+	enum State{
+		SWOOP_DOWN,
+		RISE_UP,
+		PLAYER_CONTROL,
+		LANDING,
+		COMPLETE_LANDING,
+	};
+	Hamster&hamster;
+	vf2d pos;
+	vf2d hamsterOriginalPos;
+	vf2d originalPos;
+	vf2d targetPos;
+	float z;
+	float targetZ{};
+	State state;
+	SpecialRenderable jet;
+	SpecialRenderable lights;
+	float timer{};
+public:
+	HamsterJet(Hamster&hamster);
+	void Update(const float fElapsedTime);
+	void Draw();
 };

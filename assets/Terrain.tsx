@@ -597,7 +597,12 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="1"/>
   </properties>
  </tile>
- <tile id="101" type="TileProps" probability="20"/>
+ <tile id="101" type="TileProps" probability="20">
+  <properties>
+   <property name="Solid" type="bool" value="false"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="1"/>
+  </properties>
+ </tile>
  <tile id="102" type="TileProps">
   <properties>
    <property name="Solid" type="bool" value="true"/>

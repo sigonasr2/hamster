@@ -147,6 +147,7 @@ class TSXParser{
         } else
         if (newTag.tag=="tile"){
             previousTag.emplace_back(newTag.tag);
+            previousTagID.clear();
             previousTagID.emplace_back(newTag.GetInteger("id"));
         } else
         if(newTag.tag=="frame"){

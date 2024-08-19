@@ -51,4 +51,7 @@ public:
 	void Initialize(std::string_view imgName,const Pixel overrideCol,const Pixel matrixCol);
 	void Update(const float fElapsedTime);
 	const Renderable&Get()const;
+	Decal*Decal()const;
+	Sprite*Sprite()const;
+	void ChangeMatrixColor(const Pixel newMatrixCol);
 };

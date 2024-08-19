@@ -63,19 +63,35 @@ void SpecialRenderable::Initialize(std::string_view imgName,const Pixel override
 void SpecialRenderable::Update(const float fElapsedTime){
 	if(!IsInitialized)throw std::runtime_error{std::format("SpecialRenderable for {} is not properly initialized!",originalImgName)};
 	lastPixelsUpdateTimer-=fElapsedTime;
+	HamsterGame::Game().SetDrawTarget(modifiedImg.Sprite());
+	HamsterGame::Game().SetPixelMode(Pixel::ALPHA);
+	HamsterGame::Game().SetPixelBlend(0.5f);
 	if(lastPixelsUpdateTimer<=0.f){
 		lastPixelsUpdateTimer+=0.1f;
 		for(int y:std::ranges::iota_view(0,modifiedImg.Sprite()->height)){
 			for(int x:std::ranges::iota_view(0,modifiedImg.Sprite()->width)){
 				if(HamsterGame::GetGFX(originalImgName).Sprite()->GetPixel(x,y)==overrideCol){
-					modifiedImg.Sprite()->SetPixel(x,y,PixelLerp(matrixCol,HamsterGame::GetGFX("MATRIX_TEXTURE").Sprite()->GetPixel(x,y),0.5f));
+					modifiedImg.Sprite()->SetPixel(x,y,HamsterGame::GetGFX("MATRIX_TEXTURE").Sprite()->GetPixel(x,y));
+					HamsterGame::Game().Draw({x,y},matrixCol);
 				}
 			}
 		}
 	}
+	HamsterGame::Game().SetDrawTarget(nullptr);
+	HamsterGame::Game().SetPixelMode(Pixel::MASK);
+	HamsterGame::Game().SetPixelBlend(1.f);
 	modifiedImg.Decal()->Update();
 }
 const Renderable&SpecialRenderable::Get()const{
 	if(!IsInitialized)throw std::runtime_error{std::format("SpecialRenderable for {} is not properly initialized!",originalImgName)};
 	return modifiedImg;	
+}
+void SpecialRenderable::ChangeMatrixColor(const Pixel newMatrixCol){
+	matrixCol=newMatrixCol;
+}
+Decal*SpecialRenderable::Decal()const{
+	return modifiedImg.Decal();
+}
+Sprite*SpecialRenderable::Sprite()const{
+	return modifiedImg.Sprite();
 }
