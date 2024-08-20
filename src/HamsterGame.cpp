@@ -33,8 +33,8 @@ bool HamsterGame::OnUserCreate(){
 }
 
 void HamsterGame::_LoadImage(const std::string_view img){
-	GFX.insert({ASSETS_DIR+std::string(img),Renderable{}});
-	rcode result{GFX[ASSETS_DIR+std::string(img)].Load(ASSETS_DIR+std::string(img),nullptr,false,false)};
+	GFX.insert({std::string(img),Renderable{}});
+	rcode result{GFX[std::string(img)].Load(ASSETS_DIR+std::string(img),nullptr,false,false)};
 	if(result!=OK)throw std::runtime_error{std::format("Failed to Load Image {}. OLC Rcode: {}",img,int(result))};
 }
 
@@ -59,12 +59,12 @@ void HamsterGame::LoadGraphics(){
 }
 
 void HamsterGame::LoadAnimations(){
-	auto LoadImageIfRequired=[this](const std::string_view img){if(!GFX.count(ASSETS_DIR+std::string(img)))_LoadImage(img);};
+	auto LoadImageIfRequired=[this](const std::string_view img){if(!GFX.count(std::string(img)))_LoadImage(img);};
 	auto LoadStillAnimation=[this,&LoadImageIfRequired](const AnimationState state,const std::string_view img){
 		Animate2D::FrameSequence stillAnimation{0.f,Animate2D::Style::OneShot};
 		LoadImageIfRequired(img);
 		stillAnimation.AddFrame(Animate2D::Frame{&GetGFX(img),{{},GetGFX(img).Sprite()->Size()}});
-		ANIMATIONS[ASSETS_DIR+std::string(img)].AddState(state,stillAnimation);
+		ANIMATIONS[std::string(img)].AddState(state,stillAnimation);
 	};
 	auto LoadAnimation=[this,&LoadImageIfRequired](const AnimationState state,const std::string_view img,const std::vector<vf2d>frames,const float frameDuration=0.1f,const Animate2D::Style style=Animate2D::Style::Repeat,vf2d frameSize={32,32}){
 		Animate2D::FrameSequence newAnimation{frameDuration,style};
@@ -72,7 +72,7 @@ void HamsterGame::LoadAnimations(){
 		for(const vf2d&framePos:frames){
 			newAnimation.AddFrame(Animate2D::Frame{&GetGFX(img),{framePos,frameSize}});
 		}
-		ANIMATIONS[ASSETS_DIR+std::string(img)].AddState(state,newAnimation);
+		ANIMATIONS[std::string(img)].AddState(state,newAnimation);
 	};
 
 	LoadAnimation(DEFAULT,"hamster.png",{{0,32},{32,32}},0.3f);
@@ -276,12 +276,12 @@ bool HamsterGame::OnUserUpdate(float fElapsedTime){
 }
 
 const Renderable&HamsterGame::GetGFX(const std::string_view img){
-	if(!GFX.count(ASSETS_DIR+std::string(img)))throw std::runtime_error{std::format("Image {} does not exist!",img)};
-	return GFX[ASSETS_DIR+std::string(img)];
+	if(!GFX.count(std::string(img)))throw std::runtime_error{std::format("Image {} does not exist!",img)};
+	return GFX[std::string(img)];
 }
 const Animate2D::Animation<HamsterGame::AnimationState>&HamsterGame::GetAnimations(const std::string_view img){
-	if(!ANIMATIONS.count(ASSETS_DIR+std::string(img)))throw std::runtime_error{std::format("Animations for {} does not exist!",img)};
-	return ANIMATIONS[ASSETS_DIR+std::string(img)];
+	if(!ANIMATIONS.count(std::string(img)))throw std::runtime_error{std::format("Animations for {} does not exist!",img)};
+	return ANIMATIONS[std::string(img)];
 }
 
 bool HamsterGame::OnUserDestroy(){
@@ -300,7 +300,7 @@ const double HamsterGame::GetRuntime()const{
 }
 
 void HamsterGame::UpdateMatrixTexture(){
-	const auto result{GFX.insert({ASSETS_DIR+"MATRIX_TEXTURE",Renderable{}})};
+	const auto result{GFX.insert({"MATRIX_TEXTURE",Renderable{}})};
 	Renderable&texture{(*result.first).second};
 	if(result.second){
 		texture.Create(64,64,false,false);
