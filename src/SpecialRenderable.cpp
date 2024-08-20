@@ -42,7 +42,7 @@ All rights reserved.
 
 SpecialRenderable::SpecialRenderable(){};
 
-void SpecialRenderable::Initialize(std::string_view imgName,const Pixel overrideCol,const Pixel matrixCol){
+void SpecialRenderable::Initialize(const std::string&imgName,const Pixel overrideCol,const Pixel matrixCol){
 	IsInitialized=true;
 	originalImgName=imgName;
 	this->overrideCol=overrideCol;

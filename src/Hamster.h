@@ -111,7 +111,7 @@ class Hamster{
 	float jetFuelDisplayAmt{0.f};
 	float knockoutTimer{0.f};
 public:
-	Hamster(const vf2d spawnPos,const std::string_view img,const PlayerControlled IsPlayerControlled=NPC);
+	Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled=NPC);
 	static const Hamster&GetPlayer();
 	static void UpdateHamsters(const float fElapsedTime);
 	static void LoadHamsters(const vf2d startingLoc);

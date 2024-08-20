@@ -50,7 +50,7 @@ const std::vector<std::string>Hamster::NPC_HAMSTER_IMAGES{
 const std::string Hamster::PLAYER_HAMSTER_IMAGE{"hamster.png"};
 std::optional<Hamster*>Hamster::playerHamster;
 
-Hamster::Hamster(const vf2d spawnPos,const std::string_view img,const PlayerControlled IsPlayerControlled)
+Hamster::Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled)
 :pos(spawnPos),IsPlayerControlled(IsPlayerControlled){
 	animations=HamsterGame::GetAnimations(img);
 	animations.ChangeState(internalAnimState,HamsterGame::DEFAULT);
@@ -116,7 +116,6 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 				}
 			}break;
 		}
-		if(h.hamsterJet.has_value())h.hamsterJet.value().Update(fElapsedTime);
 		if(h.state!=FLYING){
 			if((h.GetTerrainStandingOn()==Terrain::OCEAN||h.GetTerrainStandingOn()==Terrain::VOID||!h.HasPowerup(Powerup::SWAMP)&&h.GetTerrainStandingOn()==Terrain::SWAMP)&&h.state!=DROWNING&&h.state!=WAIT)h.drownTimer+=fElapsedTime;
 			else if((!h.HasPowerup(Powerup::LAVA)&&h.GetTerrainStandingOn()==Terrain::LAVA)&&h.state!=BURNING&&h.state!=WAIT)h.burnTimer+=fElapsedTime;
@@ -133,6 +132,7 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 				h.state=BURNING;
 			}
 		}
+		if(h.hamsterJet.has_value())h.hamsterJet.value().Update(fElapsedTime);
 		h.TurnTowardsTargetDirection();
 		h.MoveHamster();
 		if(h.IsPlayerControlled){
@@ -285,6 +285,7 @@ void Hamster::MoveHamster(){
 			vel=vf2d{std::max(0.f,currentVel.polar().x-GetFriction()*HamsterGame::Game().GetElapsedTime()),currentVel.polar().y}.cart();
 		}
 	#pragma endregion
+	if(hamsterJet.has_value()&&hamsterJet.value().GetState()==HamsterJet::HAMSTER_CONTROL)hamsterJet.value().SetPos(GetPos()); //Hamster Jet lagging behind hack fix.
 }
 
 void Hamster::HandleCollision(){

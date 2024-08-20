@@ -59,14 +59,14 @@ void HamsterGame::LoadGraphics(){
 }
 
 void HamsterGame::LoadAnimations(){
-	auto LoadImageIfRequired=[this](const std::string_view img){if(!GFX.count(std::string(img)))_LoadImage(img);};
-	auto LoadStillAnimation=[this,&LoadImageIfRequired](const AnimationState state,const std::string_view img){
+	auto LoadImageIfRequired=[this](const std::string&img){if(!GFX.count(std::string(img)))_LoadImage(img);};
+	auto LoadStillAnimation=[this,&LoadImageIfRequired](const AnimationState state,const std::string&img){
 		Animate2D::FrameSequence stillAnimation{0.f,Animate2D::Style::OneShot};
 		LoadImageIfRequired(img);
 		stillAnimation.AddFrame(Animate2D::Frame{&GetGFX(img),{{},GetGFX(img).Sprite()->Size()}});
 		ANIMATIONS[std::string(img)].AddState(state,stillAnimation);
 	};
-	auto LoadAnimation=[this,&LoadImageIfRequired](const AnimationState state,const std::string_view img,const std::vector<vf2d>frames,const float frameDuration=0.1f,const Animate2D::Style style=Animate2D::Style::Repeat,vf2d frameSize={32,32}){
+	auto LoadAnimation=[this,&LoadImageIfRequired](const AnimationState state,const std::string&img,const std::vector<vf2d>frames,const float frameDuration=0.1f,const Animate2D::Style style=Animate2D::Style::Repeat,vf2d frameSize={32,32}){
 		Animate2D::FrameSequence newAnimation{frameDuration,style};
 		LoadImageIfRequired(img);
 		for(const vf2d&framePos:frames){
@@ -154,7 +154,9 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 }
 
 void HamsterGame::DrawGame(){
+	SetZ(-0.001f);
 	tv.DrawPartialDecal({-3200,-3200},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400},animatedWaterTile.Decal(),{0,0},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400});
+	SetZ(0.f);
 	DrawLevelTiles();
 	Powerup::DrawPowerups(tv);
 	Hamster::DrawHamsters(tv);
@@ -275,13 +277,13 @@ bool HamsterGame::OnUserUpdate(float fElapsedTime){
 	return true;
 }
 
-const Renderable&HamsterGame::GetGFX(const std::string_view img){
-	if(!GFX.count(std::string(img)))throw std::runtime_error{std::format("Image {} does not exist!",img)};
-	return GFX[std::string(img)];
+const Renderable&HamsterGame::GetGFX(const std::string&img){
+	if(!GFX.count(img))throw std::runtime_error{std::format("Image {} does not exist!",img)};
+	return GFX[img];
 }
-const Animate2D::Animation<HamsterGame::AnimationState>&HamsterGame::GetAnimations(const std::string_view img){
-	if(!ANIMATIONS.count(std::string(img)))throw std::runtime_error{std::format("Animations for {} does not exist!",img)};
-	return ANIMATIONS[std::string(img)];
+const Animate2D::Animation<HamsterGame::AnimationState>&HamsterGame::GetAnimations(const std::string&img){
+	if(!ANIMATIONS.count(img))throw std::runtime_error{std::format("Animations for {} does not exist!",img)};
+	return ANIMATIONS[img];
 }
 
 bool HamsterGame::OnUserDestroy(){
@@ -433,7 +435,7 @@ void HamsterGame::Apply3DTransform(std::vector<DecalInstance>&decals){
 	std::copy(foregroundDecals.begin(),foregroundDecals.end(),std::back_inserter(decals));
 }
 
-const Animate2D::FrameSequence&HamsterGame::GetAnimation(const std::string_view img,const AnimationState state){
+const Animate2D::FrameSequence&HamsterGame::GetAnimation(const std::string&img,const AnimationState state){
 	return GetAnimations(img).GetFrames(state);
 }
 

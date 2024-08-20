@@ -75,7 +75,7 @@ private:
 	SpecialRenderable jet;
 	SpecialRenderable lights;
 	float timer{};
-	std::array<JetState,4>jetState;
+	std::array<JetState,4>jetState{};
 	float lastTappedSpace{};
 public:
 	HamsterJet(Hamster&hamster);
@@ -84,4 +84,5 @@ public:
 	void DrawOverlay()const;
 	void HandleJetControls();
 	const State GetState()const;
+	void SetPos(const vf2d pos);
 };

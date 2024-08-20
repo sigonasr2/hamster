@@ -75,9 +75,9 @@ public:
 	bool OnUserUpdate(float fElapsedTime)override final;
 	bool OnUserDestroy()override final;
 
-	static const Renderable&GetGFX(const std::string_view img);
-	static const Animate2D::Animation<HamsterGame::AnimationState>&GetAnimations(const std::string_view img);
-	static const Animate2D::FrameSequence&GetAnimation(const std::string_view img,const AnimationState state);
+	static const Renderable&GetGFX(const std::string&img);
+	static const Animate2D::Animation<HamsterGame::AnimationState>&GetAnimations(const std::string&img);
+	static const Animate2D::FrameSequence&GetAnimation(const std::string&img,const AnimationState state);
 	static HamsterGame&Game();
 	static std::unordered_map<uint32_t,Animate2D::FrameSequence>ANIMATED_TILE_IDS;
 	const double GetRuntime()const;

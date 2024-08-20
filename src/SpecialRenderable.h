@@ -48,7 +48,7 @@ class SpecialRenderable{
 	bool IsInitialized{false};
 public:
 	SpecialRenderable();
-	void Initialize(std::string_view imgName,const Pixel overrideCol,const Pixel matrixCol);
+	void Initialize(const std::string&imgName,const Pixel overrideCol,const Pixel matrixCol);
 	void Update(const float fElapsedTime);
 	const Renderable&Get()const;
 	Decal*Decal()const;

@@ -88,7 +88,6 @@ void HamsterJet::Update(const float fElapsedTime){
 		case HAMSTER_CONTROL:{
 			jetState[TOP_LEFT]=jetState[BOTTOM_LEFT]=jetState[BOTTOM_RIGHT]=jetState[TOP_RIGHT]=OFF;
 			HandleJetControls();
-			pos=hamster.GetPos();
 		}break;
 		case LANDING:{
 			jetState[TOP_LEFT]=jetState[BOTTOM_LEFT]=jetState[BOTTOM_RIGHT]=jetState[TOP_RIGHT]=OFF;
@@ -212,4 +211,8 @@ void HamsterJet::DrawOverlay()const{
 		float meterHeight{meterEndY-meterStartY};
 		HamsterGame::Game().DrawPartialDecal(HamsterGame::SCREEN_FRAME.pos+vf2d{0,222}-vf2d{0,(fallSpd/5.f)*meterHeight},HamsterGame::GetGFX("fallometer.png").Decal(),vf2d{0,223}-vf2d{0,(fallSpd/5.f)*meterHeight},vf2d{float(HamsterGame::GetGFX("fallometer.png").Sprite()->width),(fallSpd/5.f)*meterHeight});
 	}
+}
+
+void HamsterJet::SetPos(const vf2d pos){
+	this->pos=pos;
 }
