@@ -147,8 +147,8 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 							h.lastSafeLocation=closestTile.value().first*16+8;
 						}
 						#pragma endregion
-						h.SetPos(h.lastSafeLocation.value());
 					}
+					h.SetPos(h.lastSafeLocation.value());
 					h.state=NORMAL;
 					h.RemoveAllPowerups();
 				}
@@ -216,7 +216,10 @@ void Hamster::DrawHamsters(TransformedView&tv){
 }
 
 void Hamster::DrawOverlay(){
-	if(GetPlayer().hamsterJet.has_value())GetPlayer().hamsterJet.value().DrawOverlay();
+	if(GetPlayer().hamsterJet.has_value()){
+		GetPlayer().hamsterJet.value().DrawOverlay();
+		HamsterGame::Game().DrawDecal(vf2d{96.f,0.f}+HamsterGame::SCREEN_FRAME.size,HamsterGame::GetGFX("fuelmeter.png").Decal());
+	}
 }
 
 const Animate2D::Frame&Hamster::GetCurrentAnimation()const{

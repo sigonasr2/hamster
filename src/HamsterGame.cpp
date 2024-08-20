@@ -50,6 +50,8 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("aimingTarget.png");
 	_LoadImage("fallometer.png");
 	_LoadImage("fallometer_outline.png");
+	_LoadImage("fuelmeter.png");
+	_LoadImage("fuelbar.png");
 	UpdateMatrixTexture();
 }
 
@@ -368,21 +370,40 @@ void HamsterGame::Apply3DTransform(std::vector<DecalInstance>&decals){
 		else
 		if(decal.points==3){
 			GFX3D::triangle tri{{{decal.pos[0].x,decal.pos[0].y,decal.z[0],1.f},{decal.pos[1].x,decal.pos[1].y,decal.z[1],1.f},{decal.pos[2].x,decal.pos[2].y,decal.z[2],1.f}},{{decal.uv[0].x,decal.uv[0].y,0.f},{decal.uv[1].x,decal.uv[1].y,0.f},{decal.uv[2].x,decal.uv[2].y,0.f}},{decal.tint[0],decal.tint[1],decal.tint[2]}};
-			renderer.Render({tri},decal.decal);
+			renderer.Render({tri},decal.decal,GFX3D::RENDER_TEXTURED|GFX3D::RENDER_DEPTH);
+			if(decal.z[0]>0.1f||decal.z[1]>0.1f||decal.z[2]>0.1f){
+				tri.col[0]=tri.col[1]=tri.col[2]={0,0,0,uint8_t(util::lerp(0,160,(1/std::pow(decal.z[0]/10.f+1,4))))};
+				tri.p[0].z=tri.p[1].z=tri.p[2].z=0.1f;
+				renderer.Render({tri},decal.decal,GFX3D::RENDER_TEXTURED|GFX3D::RENDER_DEPTH);
+			}
 		}else if(decal.points==4){
 			GFX3D::triangle tri{{{decal.pos[0].x,decal.pos[0].y,decal.z[0],1.f},{decal.pos[1].x,decal.pos[1].y,decal.z[1],1.f},{decal.pos[2].x,decal.pos[2].y,decal.z[2],1.f}},{{decal.uv[0].x,decal.uv[0].y,0.f},{decal.uv[1].x,decal.uv[1].y,0.f},{decal.uv[2].x,decal.uv[2].y,0.f}},{decal.tint[0],decal.tint[1],decal.tint[2]}};
 			GFX3D::triangle tri2{{{decal.pos[0].x,decal.pos[0].y,decal.z[0],1.f},{decal.pos[2].x,decal.pos[2].y,decal.z[2],1.f},{decal.pos[3].x,decal.pos[3].y,decal.z[3],1.f}},{{decal.uv[0].x,decal.uv[0].y,0.f},{decal.uv[2].x,decal.uv[2].y,0.f},{decal.uv[3].x,decal.uv[3].y,0.f}},{decal.tint[0],decal.tint[2],decal.tint[3]}};
 			renderer.Render({tri,tri2},decal.decal,GFX3D::RENDER_TEXTURED|GFX3D::RENDER_DEPTH);
+			if(decal.decal!=GetGFX("dot.png").Decal()&&(decal.z[0]>0.1f||decal.z[1]>0.1f||decal.z[2]>0.1f||decal.z[3]>0.1f)){
+				tri.col[0]=tri.col[1]=tri.col[2]=tri2.col[0]=tri2.col[1]=tri2.col[2]={0,0,0,uint8_t(util::lerp(0,160,(1/std::pow(decal.z[0]/10.f+1,4))))};
+				tri.p[0].z=tri.p[1].z=tri.p[2].z=tri2.p[0].z=tri2.p[1].z=tri2.p[2].z=0.1f;
+				renderer.Render({tri,tri2},decal.decal,GFX3D::RENDER_TEXTURED|GFX3D::RENDER_DEPTH);
+			}
 		}else{
 			std::vector<GFX3D::triangle>tris;
+			std::vector<GFX3D::triangle>shadowTris;
 			tris.reserve(decal.points/3);
 			if(decal.structure!=DecalStructure::LIST)throw std::runtime_error{std::format("WARNING! Using triangle structure type {} is unsupported! Please only use DecalStructure::LIST!!",int(decal.structure))};
 			if(decal.points%3!=0)throw std::runtime_error{std::format("WARNING! Number of decal structure points is not a multiple of 3! Points provided: {}. THIS SHOULD NOT BE HAPPENING!",decal.points)};
 			for(int i{0};i<decal.points;i+=3){
 				GFX3D::triangle tri{{{decal.pos[i+0].x,decal.pos[i+0].y,decal.z[i+0],1.f},{decal.pos[i+1].x,decal.pos[i+1].y,decal.z[i+1],1.f},{decal.pos[i+2].x,decal.pos[i+2].y,decal.z[i+2],1.f}},{{decal.uv[i+0].x,decal.uv[i+0].y,0.f},{decal.uv[i+1].x,decal.uv[i+1].y,0.f},{decal.uv[i+2].x,decal.uv[i+2].y,0.f}},{decal.tint[i+0],decal.tint[i+1],decal.tint[i+2]}};
 				tris.emplace_back(tri);
+				if(decal.z[i+0]>0||decal.z[i+1]>0||decal.z[i+2]>0){
+					tri.col[0]=tri.col[1]=tri.col[2]={0,0,0,uint8_t(util::lerp(0,160,(1/std::pow(decal.z[0]/10.f+1,4))))};
+					tri.p[0].z=tri.p[1].z=tri.p[2].z=0.1f;
+					shadowTris.emplace_back(tri);
+				}
 			}
-			renderer.Render(tris,decal.decal);
+			renderer.Render(tris,decal.decal,GFX3D::RENDER_TEXTURED|GFX3D::RENDER_DEPTH);
+			if(shadowTris.size()>0){
+				renderer.Render(shadowTris,decal.decal,GFX3D::RENDER_TEXTURED|GFX3D::RENDER_DEPTH);
+			}
 		}
 	}
 
