@@ -80,19 +80,22 @@ void HamsterJet::Update(const float fElapsedTime){
 			hamster.SetPos(pos);
 			hamster.SetZ(z+0.03f);
 			if(timer<=0.f){
-				state=PLAYER_CONTROL;
+				state=HAMSTER_CONTROL;
 				HamsterGame::Game().SetZoom(0.6f);
 				easeInTimer=0.6f;
 			}
 		}break;
-		case PLAYER_CONTROL:{
+		case HAMSTER_CONTROL:{
 			jetState[TOP_LEFT]=jetState[BOTTOM_LEFT]=jetState[BOTTOM_RIGHT]=jetState[TOP_RIGHT]=OFF;
 			HandleJetControls();
 			pos=hamster.GetPos();
 		}break;
 		case LANDING:{
 			jetState[TOP_LEFT]=jetState[BOTTOM_LEFT]=jetState[BOTTOM_RIGHT]=jetState[TOP_RIGHT]=OFF;
-			HandleJetControls();
+			if(hamster.IsPlayerControlled)HandleJetControls();
+			else{
+				//TODO: AI controls here!
+			}
 			pos=hamster.GetPos();
 			hamster.SetZ(hamster.GetZ()-fallSpd*fElapsedTime);
 			z=hamster.GetZ();
@@ -104,6 +107,14 @@ void HamsterJet::Update(const float fElapsedTime){
 				timer=3.f;
 				originalPos=hamster.GetPos();
 				targetPos={hamster.GetPos().x+128.f,hamster.GetPos().y+32.f};
+				Terrain::CrashSpeed crashSpd{Terrain::LIGHT};
+				if(fallSpd>4.f)crashSpd=Terrain::MAX;
+				else if(fallSpd>2.f)crashSpd=Terrain::MEDIUM;
+				std::pair<Terrain::FuelDamage,Terrain::KnockoutOccurs>landingResult{Terrain::GetFuelDamageTakenAndKnockoutEffect(hamster.GetTerrainStandingOn(),crashSpd)};
+				hamster.jetFuel=std::max(0.f,hamster.jetFuel-landingResult.first);
+				if(landingResult.second)hamster.Knockout();
+				if(hamster.IsTerrainStandingOnSolid())hamster.SetPos(hamster.GetNearestSafeLocation());
+				if(hamster.jetFuel<=0.f)hamster.powerups.erase(Powerup::JET);
 			}
 		}break;
 		case COMPLETE_LANDING:{
@@ -121,11 +132,11 @@ void HamsterJet::Update(const float fElapsedTime){
 void HamsterJet::Draw(){
 	float drawingOffsetY{0.f};
 	hamster.SetDrawingOffsetY(0.f);
-	if((state==PLAYER_CONTROL||state==LANDING)&&z>2.f){
+	if((state==HAMSTER_CONTROL||state==LANDING)&&z>2.f){
 		HamsterGame::Game().SetZ(z/2.f);
 		HamsterGame::Game().tv.DrawRotatedDecal(pos,HamsterGame::GetGFX("aimingTarget.png").Decal(),0.f,HamsterGame::GetGFX("aimingTarget.png").Sprite()->Size()/2);
 	}
-	if(state==PLAYER_CONTROL){
+	if(state==HAMSTER_CONTROL){
 		drawingOffsetY=util::lerp(48.f,0.f,easeInTimer/0.6f);
 		hamster.SetDrawingOffsetY(util::lerp(48.f,0.f,easeInTimer/0.6f));
 	}
@@ -168,7 +179,7 @@ void HamsterJet::HandleJetControls(){
 		jetState[BOTTOM_RIGHT]=ON;
 		jetState[TOP_RIGHT]=ON;
 	}
-	if(aimingDir!=vf2d{}){
+	if(aimingDir!=vf2d{}&&hamster.jetFuel>0.f){
 		hamster.targetRot=aimingDir.norm().polar().y;
 		const vf2d currentVel{hamster.vel};
 		hamster.vel+=vf2d{currentVel.polar().x+(hamster.GetMaxSpeed()*HamsterGame::Game().GetElapsedTime())/hamster.GetTimeToMaxSpeed(),hamster.rot}.cart();

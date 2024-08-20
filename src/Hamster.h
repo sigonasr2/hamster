@@ -59,6 +59,7 @@ class Hamster{
 		FLYING,
 		WAIT,
 		BURNING,
+		KNOCKOUT,
 	};
 
 	static std::vector<Hamster>HAMSTER_LIST;
@@ -103,6 +104,12 @@ class Hamster{
 	std::optional<HamsterJet>hamsterJet;
 	float lastTappedSpace{0.f};
 	float drawingOffsetY{0.f};
+	SpecialRenderable hamsterJetDisplay;
+	SpecialRenderable hamsterJetLightsDisplay;
+	float readyFlashTimer{};
+	float jetFuel{0.f};
+	float jetFuelDisplayAmt{0.f};
+	float knockoutTimer{0.f};
 public:
 	Hamster(const vf2d spawnPos,const std::string_view img,const PlayerControlled IsPlayerControlled=NPC);
 	static const Hamster&GetPlayer();
@@ -129,6 +136,7 @@ public:
 	const bool HasPowerup(const Powerup::PowerupType powerup)const;
 	void RemoveAllPowerups();
 	const bool IsLethalTerrain(const vf2d pos)const;
+	const bool IsSolidTerrain(const vf2d pos)const;
 	const bool IsDrowning()const;
 	const bool IsBurning()const;
 	const float GetDrownRatio()const;
@@ -137,4 +145,7 @@ public:
 	void SetZ(const float z);
 	static void OnUserDestroy();
 	void SetDrawingOffsetY(const float offsetY);
+	const vf2d GetNearestSafeLocation()const;
+	void SetJetFuel(const float amt);
+	void Knockout();
 };

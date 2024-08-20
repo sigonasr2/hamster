@@ -47,7 +47,7 @@ public:
 	enum State{
 		SWOOP_DOWN,
 		RISE_UP,
-		PLAYER_CONTROL,
+		HAMSTER_CONTROL,
 		LANDING,
 		COMPLETE_LANDING,
 	};

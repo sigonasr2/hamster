@@ -57,5 +57,13 @@ namespace Terrain{
         TUNNEL,
         ICE,
     };
+    enum CrashSpeed{
+        MAX,
+        MEDIUM,
+        LIGHT,
+    };
+    using FuelDamage=float;
+    using KnockoutOccurs=bool;
     const std::string TerrainToString(const TerrainType type);
+    const std::pair<FuelDamage,KnockoutOccurs>GetFuelDamageTakenAndKnockoutEffect(const TerrainType type,const CrashSpeed crashSpeed);
 }

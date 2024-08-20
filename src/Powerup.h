@@ -41,6 +41,8 @@ All rights reserved.
 #include "olcUTIL_Geometry2D.h"
 #include "olcPGEX_TransformedView.h"
 
+class Hamster;
+
 class Powerup{
 public:
 	enum PowerupType{
@@ -79,5 +81,5 @@ public:
 	static void UpdatePowerups(const float fElapsedTime);
 	static void DrawPowerups(TransformedView&tv);
 	static const geom2d::rect<float>GetPowerupSubimageRect(const PowerupType powerupType);
-	void OnPowerupObtain();
+	void OnPowerupObtain(Hamster&pickupHamster);
 };

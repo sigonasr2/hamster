@@ -74,3 +74,81 @@ const std::string Terrain::TerrainToString(const TerrainType type){
 		}
 	}
 }
+const std::pair<Terrain::FuelDamage,Terrain::KnockoutOccurs>Terrain::GetFuelDamageTakenAndKnockoutEffect(const TerrainType type,const CrashSpeed crashSpeed){
+
+	const auto GetHardSurfaceCrashResult=[&crashSpeed](){
+		switch(crashSpeed){
+			case MAX:{
+				return std::pair<FuelDamage,KnockoutOccurs>{1.f,true};
+			}break;
+			case MEDIUM:{
+				return std::pair<FuelDamage,KnockoutOccurs>{0.8f,false};
+			}break;
+			case LIGHT:{
+				return std::pair<FuelDamage,KnockoutOccurs>{0.5f,false};
+			}break;
+		}
+	};
+	const auto GetMediumSurfaceCrashResult=[&crashSpeed](){
+		switch(crashSpeed){
+			case MAX:{
+				return std::pair<FuelDamage,KnockoutOccurs>{0.8f,true};
+			}break;
+			case MEDIUM:{
+				return std::pair<FuelDamage,KnockoutOccurs>{0.5f,false};
+			}break;
+			case LIGHT:{
+				return std::pair<FuelDamage,KnockoutOccurs>{0.25f,false};
+			}break;
+		}
+	};
+	const auto GetSoftSurfaceCrashResult=[&crashSpeed](){
+		switch(crashSpeed){
+			case MAX:{
+				return std::pair<FuelDamage,KnockoutOccurs>{0.5f,false};
+			}break;
+			case MEDIUM:{
+				return std::pair<FuelDamage,KnockoutOccurs>{0.25f,false};
+			}break;
+			case LIGHT:{
+				return std::pair<FuelDamage,KnockoutOccurs>{0.25f,false};
+			}break;
+		}
+	};
+
+	switch(type){
+		case ROCK:{
+			return GetHardSurfaceCrashResult();
+		}break;
+		case GRASS:{
+			return GetMediumSurfaceCrashResult();
+		}break;
+		case SAND:{
+			return GetSoftSurfaceCrashResult();
+		}break;
+		case SWAMP:{
+			return GetSoftSurfaceCrashResult();
+		}break;
+		case LAVA:{
+			return GetSoftSurfaceCrashResult();
+		}break;
+		case SHORE:{
+			return GetMediumSurfaceCrashResult();
+		}break;
+		case OCEAN:{
+			return GetMediumSurfaceCrashResult();
+		}break;
+		case FOREST:{
+			return GetMediumSurfaceCrashResult();
+		}break;
+		case TUNNEL:{
+			return GetHardSurfaceCrashResult();
+		}break;
+		case ICE:{
+			return GetHardSurfaceCrashResult();
+		}break;
+		default:{
+			return GetMediumSurfaceCrashResult();
+		}
+	}
+}

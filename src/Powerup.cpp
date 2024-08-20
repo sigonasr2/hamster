@@ -38,6 +38,7 @@ All rights reserved.
 
 #include "HamsterGame.h"
 #include "Powerup.h"
+#include "Hamster.h"
 
 std::vector<Powerup>Powerup::powerupList;
 std::unordered_map<int,std::pair<Powerup::PowerupType,Powerup::TileType>>Powerup::powerupIds;
@@ -112,6 +113,7 @@ const geom2d::rect<float>Powerup::GetPowerupSubimageRect(const PowerupType power
 	return {POWERUP_TILESET_STARTING_POS+vf2d{int(powerupType)*32.f,0.f},{32,32}};
 }
 
-void Powerup::OnPowerupObtain(){
+void Powerup::OnPowerupObtain(Hamster&pickupHamster){
 	spinSpd=0.3f;
+	if(type==JET)pickupHamster.SetJetFuel(1.f);
 }

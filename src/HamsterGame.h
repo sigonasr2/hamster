@@ -64,6 +64,7 @@ public:
 		WHEEL_BOTTOM,
 		JET_LIGHTS,
 		JET_FLAMES,
+		KNOCKOUT,
 	};
 
 	HamsterGame();

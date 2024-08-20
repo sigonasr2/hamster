@@ -92,61 +92,7 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 					h.imgScale=1.f;
 					h.drownTimer=0.f;
 					if(!h.lastSafeLocation.has_value()){
-						#pragma region Safe Terrain Outline Search Algorithm
-						{
-							using TilePos=vi2d;
-							using TileDistance=int;
-
-							const vi2d playerTile{h.GetPos()/16};
-							geom2d::rect<int>searchRect{{-1,-1},{3,3}};
-							std::optional<std::pair<TilePos,TileDistance>>closestTile;
-
-							const auto DetermineAndUpdateClosestTile=[&h,&playerTile,&closestTile](const vi2d&tile){
-								if(!h.IsLethalTerrain(tile*16)){
-									std::pair<TilePos,TileDistance>closest{closestTile.value_or(std::pair<TilePos,TileDistance>{{},std::numeric_limits<int>::max()})};
-									int tileDist{abs(playerTile.x-tile.x)+abs(playerTile.y-tile.y)};
-									if(tileDist<=closest.second)closestTile.emplace(std::pair<TilePos,TileDistance>{tile,tileDist});
-								}
-							};
-							while(!closestTile.has_value()){
-								#pragma region Top Outline Check
-								{
-									for(int offsetX:std::ranges::iota_view(searchRect.pos.x,searchRect.size.x)){
-										const vi2d checkTile{playerTile+vi2d{offsetX,searchRect.top().end.y}};
-										DetermineAndUpdateClosestTile(checkTile);
-									}
-								}
-								#pragma endregion
-								#pragma region Bottom Outline Check
-								{
-									for(int offsetX:std::ranges::iota_view(searchRect.pos.x,searchRect.size.x)){
-										const vi2d checkTile{playerTile+vi2d{offsetX,searchRect.bottom().end.y}};
-										DetermineAndUpdateClosestTile(checkTile);
-									}
-								}
-								#pragma endregion
-								#pragma region Right Outline Check
-								{
-									for(int offsetY:std::ranges::iota_view(searchRect.pos.y+1,searchRect.size.y-2+1)){
-										const vi2d checkTile{playerTile+vi2d{searchRect.right().end.x,offsetY}};
-										DetermineAndUpdateClosestTile(checkTile);
-									}
-								}
-								#pragma endregion
-								#pragma region Left Outline Check
-								{
-									for(int offsetY:std::ranges::iota_view(searchRect.pos.y+1,searchRect.size.y-2+1)){
-										const vi2d checkTile{playerTile+vi2d{searchRect.left().end.x,offsetY}};
-										DetermineAndUpdateClosestTile(checkTile);
-									}
-								}
-								#pragma endregion
-								searchRect.pos-=1;
-								searchRect.size+=2;
-							}
-							h.lastSafeLocation=closestTile.value().first*16+8;
-						}
-						#pragma endregion
+						h.lastSafeLocation=h.GetNearestSafeLocation();
 					}
 					h.SetPos(h.lastSafeLocation.value());
 					h.state=NORMAL;
@@ -160,6 +106,13 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 				}else{
 					h.waitTimer=4.f;
 					h.state=WAIT;
+				}
+			}break;
+			case KNOCKOUT:{
+				h.knockoutTimer-=fElapsedTime;
+				if(h.knockoutTimer<=0.f){
+					h.state=NORMAL;
+					h.animations.ChangeState(h.internalAnimState,HamsterGame::DEFAULT);
 				}
 			}break;
 		}
@@ -182,6 +135,12 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 		}
 		h.TurnTowardsTargetDirection();
 		h.MoveHamster();
+		if(h.IsPlayerControlled){
+			h.hamsterJetDisplay.Update(fElapsedTime);
+			h.hamsterJetLightsDisplay.Update(fElapsedTime);
+			h.readyFlashTimer+=fElapsedTime;
+			h.jetFuelDisplayAmt+=(h.jetFuel-h.jetFuelDisplayAmt)*4.f*fElapsedTime;
+		}
 	}
 }
 
@@ -194,6 +153,8 @@ void Hamster::LoadHamsters(const vf2d startingLoc){
 	for(int i:std::ranges::iota_view(0U,NPC_HAMSTER_COUNT)){
 		HAMSTER_LIST.emplace_back(startingLoc,NPC_HAMSTER_IMAGES.at(util::random()%NPC_HAMSTER_IMAGES.size()),NPC);
 	}
+	playerHamster.value()->hamsterJetDisplay.Initialize("hamster_jet.png",{78,223,208},{79,81,128});
+	playerHamster.value()->hamsterJetLightsDisplay.Initialize("hamster_jet.png",{245,233,130},{245,233,130});
 }
 
 void Hamster::DrawHamsters(TransformedView&tv){
@@ -216,10 +177,44 @@ void Hamster::DrawHamsters(TransformedView&tv){
 }
 
 void Hamster::DrawOverlay(){
-	if(GetPlayer().hamsterJet.has_value()){
-		GetPlayer().hamsterJet.value().DrawOverlay();
-		HamsterGame::Game().DrawDecal(vf2d{96.f,0.f}+HamsterGame::SCREEN_FRAME.size,HamsterGame::GetGFX("fuelmeter.png").Decal());
+	if(GetPlayer().hamsterJet.has_value())GetPlayer().hamsterJet.value().DrawOverlay();
+	
+	const vf2d jetDisplayOffset{HamsterGame::SCREEN_FRAME.pos+vf2d{HamsterGame::SCREEN_FRAME.size.x,0.f}};
+	Pixel jetDisplayCol{VERY_DARK_GREY};
+	if(!GetPlayer().hamsterJet.has_value()){
+		if(GetPlayer().HasPowerup(Powerup::JET))jetDisplayCol=WHITE;
+		const Animate2D::FrameSequence&lightAnim{HamsterGame::Game().GetAnimation("hamster_jet.png",HamsterGame::AnimationState::JET_LIGHTS)};
+		const Animate2D::Frame&lightFrame{lightAnim.GetFrame(HamsterGame::Game().GetRuntime())};
+		HamsterGame::Game().DrawPartialRotatedDecal(jetDisplayOffset+vf2d{48.f,80.f},GetPlayer().hamsterJetDisplay.Decal(),0.f,{24.f,24.f},{0.f,0.f},{48.f,48.f},{2.f,2.f},jetDisplayCol);
+		HamsterGame::Game().DrawPartialRotatedDecal(jetDisplayOffset+vf2d{48.f,80.f},GetPlayer().hamsterJetLightsDisplay.Decal(),0.f,{24.f,24.f},lightFrame.GetSourceRect().pos,lightFrame.GetSourceRect().size,{2.f,2.f},jetDisplayCol);
 	}
+
+	if(GetPlayer().HasPowerup(Powerup::JET)&&!GetPlayer().hamsterJet.has_value()){
+		const std::string readyText{"READY!"};
+		const vi2d textSize{HamsterGame::Game().GetTextSize(readyText)};
+		for(int y:std::ranges::iota_view(-1,2)){
+			for(int x:std::ranges::iota_view(-1,2)){
+				if(x==0&&y==0)continue;
+				HamsterGame::Game().DrawRotatedStringDecal(jetDisplayOffset+vf2d{48.f,116.f}+vi2d{x,y},readyText,0.f,textSize/2,fmod(GetPlayer().readyFlashTimer,1.5f)<=0.75f?DARK_RED:BLACK);
+			}
+		}
+		HamsterGame::Game().DrawRotatedStringDecal(jetDisplayOffset+vf2d{48.f,116.f},readyText,0.f,textSize/2,GREEN);
+		HamsterGame::Game().DrawDecal(HamsterGame::SCREEN_FRAME.pos+vf2d{HamsterGame::SCREEN_FRAME.size.x,0.f},HamsterGame::GetGFX("fuelmeter.png").Decal());
+		const std::string launchText{"(SPACE)x2\nto Launch!"};
+		const vi2d launchTextSize{HamsterGame::Game().GetTextSize(launchText)};
+		for(int y:std::ranges::iota_view(-1,2)){
+			for(int x:std::ranges::iota_view(-1,2)){
+				if(x==0&&y==0)continue;
+				HamsterGame::Game().DrawRotatedStringDecal(jetDisplayOffset+vf2d{48.f,224.f}+vi2d{x,y},launchText,0.f,launchTextSize/2,BLACK);
+			}
+		}
+		HamsterGame::Game().DrawRotatedStringDecal(jetDisplayOffset+vf2d{48.f,224.f},launchText,0.f,launchTextSize/2,WHITE);
+	}else{
+		HamsterGame::Game().DrawPartialDecal(HamsterGame::SCREEN_FRAME.pos+vf2d{HamsterGame::SCREEN_FRAME.size.x,0.f},HamsterGame::GetGFX("fuelmeter.png").Decal(),{0,0},{96,200});
+	}
+	const float jetFuelBarHeight{float(HamsterGame::GetGFX("fuelbar.png").Sprite()->height)};
+	HamsterGame::Game().DrawPartialDecal(jetDisplayOffset+vf2d{24.f,139.f}+vf2d{0.f,jetFuelBarHeight*(1.f-GetPlayer().jetFuelDisplayAmt)},HamsterGame::GetGFX("fuelbar.png").Decal(),{0.f,jetFuelBarHeight*(1.f-GetPlayer().jetFuelDisplayAmt)},{float(HamsterGame::GetGFX("fuelbar.png").Sprite()->width),jetFuelBarHeight*(GetPlayer().jetFuelDisplayAmt)});
+	if(GetPlayer().HasPowerup(Powerup::JET))HamsterGame::Game().DrawDecal(jetDisplayOffset+vf2d{22.f,137.f},HamsterGame::GetGFX("fuelbar_outline.png").Decal(),{1.f,1.f},GetPlayer().jetFuel<=0.2f?(fmod(GetPlayer().readyFlashTimer,1.f)<=0.5f?RED:BLACK):BLACK);
 }
 
 const Animate2D::Frame&Hamster::GetCurrentAnimation()const{
@@ -265,7 +260,11 @@ void Hamster::HandlePlayerControls(){
 		}
 		lastTappedSpace=0.f;
 	}
-	if(HamsterGame::Game().GetKey(P).bPressed)ObtainPowerup(Powerup::JET);
+	if(HamsterGame::Game().GetKey(P).bPressed){
+		ObtainPowerup(Powerup::JET);
+		Powerup tempJetPowerup{{},Powerup::JET};
+		tempJetPowerup.OnPowerupObtain(*this);
+	}
 }
 
 void Hamster::TurnTowardsTargetDirection(){
@@ -276,6 +275,9 @@ void Hamster::MoveHamster(){
 	SetPos(GetPos()+vel*HamsterGame::Game().GetElapsedTime());
 	
 	distanceTravelled+=vel.mag()*HamsterGame::Game().GetElapsedTime();
+	if(state==FLYING){
+		jetFuel=std::max(0.f,jetFuel-vel.mag()*HamsterGame::Game().GetElapsedTime()/100000.f);
+	}
 
 	#pragma region Handle Friction
 		if(frictionEnabled){
@@ -314,9 +316,11 @@ void Hamster::HandleCollision(){
 		}
 	}
 	for(Powerup&powerup:Powerup::GetPowerups()){
-		if(z<=0.1f&&!HasPowerup(powerup.GetType())&&geom2d::overlaps(geom2d::circle<float>(GetPos(),collisionRadius),geom2d::circle<float>(powerup.GetPos(),20.f))){
+		if(z<=0.1f&&
+			(!HasPowerup(powerup.GetType())||HasPowerup(Powerup::JET)&&powerup.GetType()==Powerup::JET&&jetFuel!=1.f)
+			&&geom2d::overlaps(geom2d::circle<float>(GetPos(),collisionRadius),geom2d::circle<float>(powerup.GetPos(),20.f))){
 			ObtainPowerup(powerup.GetType());
-			powerup.OnPowerupObtain();
+			powerup.OnPowerupObtain(*this);
 		}
 	}
 }
@@ -450,4 +454,72 @@ void Hamster::OnUserDestroy(){
 
 void Hamster::SetDrawingOffsetY(const float offsetY){
 	drawingOffsetY=offsetY;
+}
+
+const vf2d Hamster::GetNearestSafeLocation()const{		
+	using TilePos=vi2d;
+	using TileDistance=int;
+
+	const vi2d playerTile{GetPos()/16};
+	geom2d::rect<int>searchRect{{-1,-1},{3,3}};
+	std::optional<std::pair<TilePos,TileDistance>>closestTile;
+
+	const auto DetermineAndUpdateClosestTile=[this,&playerTile,&closestTile](const vi2d&tile){
+		if(!IsLethalTerrain(tile*16)&&!IsSolidTerrain(tile*16)){
+			std::pair<TilePos,TileDistance>closest{closestTile.value_or(std::pair<TilePos,TileDistance>{{},std::numeric_limits<int>::max()})};
+			int tileDist{abs(playerTile.x-tile.x)+abs(playerTile.y-tile.y)};
+			if(tileDist<=closest.second)closestTile.emplace(std::pair<TilePos,TileDistance>{tile,tileDist});
+		}
+	};
+	while(!closestTile.has_value()){
+		#pragma region Top Outline Check
+		{
+			for(int offsetX:std::ranges::iota_view(searchRect.pos.x,searchRect.size.x)){
+				const vi2d checkTile{playerTile+vi2d{offsetX,searchRect.top().end.y}};
+				DetermineAndUpdateClosestTile(checkTile);
+			}
+		}
+		#pragma endregion
+		#pragma region Bottom Outline Check
+		{
+			for(int offsetX:std::ranges::iota_view(searchRect.pos.x,searchRect.size.x)){
+				const vi2d checkTile{playerTile+vi2d{offsetX,searchRect.bottom().end.y}};
+				DetermineAndUpdateClosestTile(checkTile);
+			}
+		}
+		#pragma endregion
+		#pragma region Right Outline Check
+		{
+			for(int offsetY:std::ranges::iota_view(searchRect.pos.y+1,searchRect.size.y-2+1)){
+				const vi2d checkTile{playerTile+vi2d{searchRect.right().end.x,offsetY}};
+				DetermineAndUpdateClosestTile(checkTile);
+			}
+		}
+		#pragma endregion
+		#pragma region Left Outline Check
+		{
+			for(int offsetY:std::ranges::iota_view(searchRect.pos.y+1,searchRect.size.y-2+1)){
+				const vi2d checkTile{playerTile+vi2d{searchRect.left().end.x,offsetY}};
+				DetermineAndUpdateClosestTile(checkTile);
+			}
+		}
+		#pragma endregion
+		searchRect.pos-=1;
+		searchRect.size+=2;
+	}
+	return closestTile.value().first*16+8;
+}
+
+const bool Hamster::IsSolidTerrain(const vf2d pos)const{
+	return HamsterGame::Game().IsTerrainSolid(pos);
+}
+
+void Hamster::SetJetFuel(const float amt){
+	jetFuel=amt;
+}
+
+void Hamster::Knockout(){
+	state=KNOCKOUT;
+	knockoutTimer=4.f;
+	animations.ChangeState(internalAnimState,HamsterGame::KNOCKOUT);
 }
