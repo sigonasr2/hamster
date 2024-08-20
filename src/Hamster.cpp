@@ -523,3 +523,7 @@ void Hamster::Knockout(){
 	knockoutTimer=4.f;
 	animations.ChangeState(internalAnimState,HamsterGame::KNOCKOUT);
 }
+
+const float Hamster::GetSpeed()const{
+	return vel.mag();
+}

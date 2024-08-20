@@ -148,4 +148,5 @@ public:
 	const vf2d GetNearestSafeLocation()const;
 	void SetJetFuel(const float amt);
 	void Knockout();
+	const float GetSpeed()const;
 };

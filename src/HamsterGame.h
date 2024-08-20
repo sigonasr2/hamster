@@ -118,4 +118,5 @@ private:
 	const float fLazyFollowRate{4.0f};
 	vf2d cloudSpd{};
 	vf2d cloudOffset{};
+	float speedometerDisplayAmt{0.f};
 };

@@ -53,6 +53,8 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("fuelmeter.png");
 	_LoadImage("fuelbar.png");
 	_LoadImage("fuelbar_outline.png");
+	_LoadImage("speedometer.png");
+	_LoadImage("speedometer_overlay.png");
 	UpdateMatrixTexture();
 }
 
@@ -137,6 +139,8 @@ void HamsterGame::LoadLevel(const std::string_view mapName){
 }
 
 void HamsterGame::UpdateGame(const float fElapsedTime){
+	vEye.z+=(Hamster::GetPlayer().GetZ()+zoom-vEye.z)*fLazyFollowRate*fElapsedTime;
+	speedometerDisplayAmt+=(Hamster::GetPlayer().GetSpeed()-speedometerDisplayAmt)*fLazyFollowRate*fElapsedTime;
 	UpdateMatrixTexture();
 	UpdateWaterTexture();
 	cloudOffset+=cloudSpd*fElapsedTime;
@@ -185,15 +189,34 @@ void HamsterGame::DrawGame(){
 		}
 	#pragma endregion
 	#pragma region Drown/Burn Bar.
-		if(Hamster::GetPlayer().IsDrowning()){
-			DrawDecal({12.f,240.f},GetGFX("drownmeter.png").Decal());
-			GradientFillRectDecal(vf2d{12.f,240.f}+vf2d{12.f,5.f},vf2d{Hamster::GetPlayer().GetDrownRatio()*57.f,4.f},{145,199,255},{226,228,255},{226,228,255},{145,199,255});
-		}
-		else if(Hamster::GetPlayer().IsBurning()){
-			DrawDecal({12.f,240.f},GetGFX("burnmeter.png").Decal());
-			GradientFillRectDecal(vf2d{12.f,240.f}+vf2d{12.f,5.f},vf2d{Hamster::GetPlayer().GetBurnRatio()*57.f,4.f},{250,177,163},{226,228,255},{226,228,255},{250,177,163});
+		{
+			if(Hamster::GetPlayer().IsDrowning()){
+				DrawDecal({12.f,240.f},GetGFX("drownmeter.png").Decal());
+				GradientFillRectDecal(vf2d{12.f,240.f}+vf2d{12.f,5.f},vf2d{Hamster::GetPlayer().GetDrownRatio()*57.f,4.f},{145,199,255},{226,228,255},{226,228,255},{145,199,255});
+			}
+			else if(Hamster::GetPlayer().IsBurning()){
+				DrawDecal({12.f,240.f},GetGFX("burnmeter.png").Decal());
+				GradientFillRectDecal(vf2d{12.f,240.f}+vf2d{12.f,5.f},vf2d{Hamster::GetPlayer().GetBurnRatio()*57.f,4.f},{250,177,163},{226,228,255},{226,228,255},{250,177,163});
+			}
 		}
 	#pragma endregion
+	float speedometerWidth{float(GetGFX("speedometer.png").Sprite()->width)};
+	const float speedometerSpd{std::min(speedometerWidth,speedometerDisplayAmt/180.f*speedometerWidth)};
+	DrawPartialRotatedDecal(SCREEN_FRAME.pos+SCREEN_FRAME.size+vf2d{48.f,-4.f-GetGFX("speedometer_overlay.png").Sprite()->height},GetGFX("speedometer_overlay.png").Decal(),0.f,GetGFX("speedometer_overlay.png").Sprite()->Size()/2,{},vf2d{speedometerSpd,float(GetGFX("speedometer_overlay.png").Sprite()->height)});
+	DrawRotatedDecal(SCREEN_FRAME.pos+SCREEN_FRAME.size+vf2d{48.f,-4.f-GetGFX("speedometer.png").Sprite()->height},GetGFX("speedometer.png").Decal(),0.f,GetGFX("speedometer.png").Sprite()->Size()/2);
+	const std::string speedometerStr{std::format("{:.0f}km/h",speedometerDisplayAmt)};
+	const vf2d speedometerStrSize{GetTextSize(speedometerStr)};
+	Pixel speedometerCol{CYAN};
+	if(speedometerDisplayAmt>=180)speedometerCol=RED;
+	else if(speedometerDisplayAmt>=120)speedometerCol=YELLOW;
+	else if(speedometerDisplayAmt>=80)speedometerCol=GREEN;
+	for(int y:std::ranges::iota_view(-1,2)){
+		for(int x:std::ranges::iota_view(-1,2)){
+			if(x==0&&y==0)continue;
+			DrawStringDecal(SCREEN_FRAME.pos+SCREEN_FRAME.size-speedometerStrSize-vf2d{4.f,4.f}+vi2d{x,y},speedometerStr,BLACK);
+		}
+	}
+	DrawStringDecal(SCREEN_FRAME.pos+SCREEN_FRAME.size-speedometerStrSize-vf2d{4.f,4.f},speedometerStr,speedometerCol);
 }
 
 const Terrain::TerrainType HamsterGame::GetTerrainTypeAtPos(const vf2d pos)const{
@@ -247,9 +270,6 @@ void HamsterGame::DrawLevelTiles(){
 
 bool HamsterGame::OnUserUpdate(float fElapsedTime){
 	runTime+=fElapsedTime;
-
-	vEye.z+=(Hamster::GetPlayer().GetZ()+zoom-vEye.z)*fLazyFollowRate*fElapsedTime;
-
 	UpdateGame(fElapsedTime);
 	DrawGame();
 	return true;
