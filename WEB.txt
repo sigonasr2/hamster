@@ -1,0 +1,28 @@
+Leaderboard - Request driven
+
+Packet of information: Name, Time, Map
+
+WebSocket: Multiplayer
+
+Connects to websocket on the web version
+Start a race, sends to server when race started
+Similar message 
+
+Time calculation on server-side.
+
+Pausing and quitting / force quit.
+
+Force Disconnect 
+
+
+String Form.
+
+Client Side: Timestamp when start and when sending.
+
+Leaderboard: Retrieve in-game.
+
+
+
+
+Stretch Goal
+============

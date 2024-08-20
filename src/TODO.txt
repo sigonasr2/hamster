@@ -72,6 +72,14 @@ Fall-o-meter
 Hamster Rescue Boat
 
 
+AI
+===
+Pre-record movement nodes every X amount of seconds.
+AI will move towards those nodes as best they can. If they get stuck for some amount of time, attempt moving forward with next nodes. (Give them like 5 extra seconds per node than intended)
+Record each collection of a powerup/launch moment as these are important nodes for AI to be on. (Maybe "Cheat" the AI a little if thier stuck node counte i really high by teleporting them when they are off-screen)
+
+
+
 LORE
 ===================
 

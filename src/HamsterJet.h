@@ -41,6 +41,9 @@ All rights reserved.
 #include "SpecialRenderable.h"
 
 class Hamster;
+namespace Terrain{
+	enum CrashSpeed;
+};
 
 class HamsterJet{
 public:
@@ -85,4 +88,5 @@ public:
 	void HandleJetControls();
 	const State GetState()const;
 	void SetPos(const vf2d pos);
+	Terrain::CrashSpeed GetLandingSpeed()const;
 };

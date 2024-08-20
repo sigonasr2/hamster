@@ -149,4 +149,6 @@ public:
 	void SetJetFuel(const float amt);
 	void Knockout();
 	const float GetSpeed()const;
+	const Terrain::TerrainType GetTerrainHoveringOver()const;
+	void SetState(const HamsterState state);
 };

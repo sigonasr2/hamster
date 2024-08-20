@@ -65,15 +65,17 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 		h.HandleCollision();
 		switch(h.state){
 			case NORMAL:{
-				if(h.IsPlayerControlled){
-					h.HandlePlayerControls();
-				}else{
-					//TODO: NPC controls.
+				if(h.bumpTimer<=0.f){
+					if(h.IsPlayerControlled){
+						h.HandlePlayerControls();
+					}else{
+						//TODO: NPC controls.
+					}
 				}
 			}break;
 			case BUMPED:{
 				if(h.bumpTimer<=0.f){
-					h.state=NORMAL;
+					h.SetState(NORMAL);
 				}
 			}break;
 			case DROWNING:{
@@ -83,7 +85,7 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 				}
 				else{
 					h.waitTimer=4.f;
-					h.state=WAIT;
+					h.SetState(WAIT);
 				}
 			}break;
 			case WAIT:{
@@ -95,7 +97,7 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 						h.lastSafeLocation=h.GetNearestSafeLocation();
 					}
 					h.SetPos(h.lastSafeLocation.value());
-					h.state=NORMAL;
+					h.SetState(NORMAL);
 					h.RemoveAllPowerups();
 				}
 			}break;
@@ -105,13 +107,13 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 					h.imgScale=std::max(0.f,h.imgScale-0.5f*fElapsedTime);
 				}else{
 					h.waitTimer=4.f;
-					h.state=WAIT;
+					h.SetState(WAIT);
 				}
 			}break;
 			case KNOCKOUT:{
 				h.knockoutTimer-=fElapsedTime;
 				if(h.knockoutTimer<=0.f){
-					h.state=NORMAL;
+					h.SetState(NORMAL);
 					h.animations.ChangeState(h.internalAnimState,HamsterGame::DEFAULT);
 				}
 			}break;
@@ -126,10 +128,10 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 				h.lastSafeLocation=h.GetPos();
 			}
 			if(h.drownTimer>=h.DEFAULT_DROWN_TIME&&h.state!=DROWNING&&h.state!=WAIT){
-				h.state=DROWNING;
+				h.SetState(DROWNING);
 			}
 			if(h.burnTimer>=h.DEFAULT_BURN_TIME&&h.state!=BURNING&&h.state!=WAIT){
-				h.state=BURNING;
+				h.SetState(BURNING);
 			}
 		}
 		if(h.hamsterJet.has_value())h.hamsterJet.value().Update(fElapsedTime);
@@ -214,6 +216,10 @@ void Hamster::DrawOverlay(){
 	}
 	const float jetFuelBarHeight{float(HamsterGame::GetGFX("fuelbar.png").Sprite()->height)};
 	HamsterGame::Game().DrawPartialDecal(jetDisplayOffset+vf2d{24.f,139.f}+vf2d{0.f,jetFuelBarHeight*(1.f-GetPlayer().jetFuelDisplayAmt)},HamsterGame::GetGFX("fuelbar.png").Decal(),{0.f,jetFuelBarHeight*(1.f-GetPlayer().jetFuelDisplayAmt)},{float(HamsterGame::GetGFX("fuelbar.png").Sprite()->width),jetFuelBarHeight*(GetPlayer().jetFuelDisplayAmt)});
+	if(GetPlayer().hamsterJet.has_value()){
+		const Terrain::FuelDamage jetFuelLandingCost{std::min(GetPlayer().jetFuelDisplayAmt,Terrain::GetFuelDamageTakenAndKnockoutEffect(GetPlayer().GetTerrainHoveringOver(),GetPlayer().hamsterJet.value().GetLandingSpeed()).first)};
+		HamsterGame::Game().DrawPartialDecal(jetDisplayOffset+vf2d{24.f,139.f}+vf2d{0.f,jetFuelBarHeight*(1.f-GetPlayer().jetFuelDisplayAmt)},HamsterGame::GetGFX("fuelbar.png").Decal(),{0.f,jetFuelBarHeight*(1.f-GetPlayer().jetFuelDisplayAmt)},{float(HamsterGame::GetGFX("fuelbar.png").Sprite()->width),jetFuelBarHeight*jetFuelLandingCost},{1.f,1.f},{255,0,0,192});
+	}
 	if(GetPlayer().HasPowerup(Powerup::JET))HamsterGame::Game().DrawDecal(jetDisplayOffset+vf2d{22.f,137.f},HamsterGame::GetGFX("fuelbar_outline.png").Decal(),{1.f,1.f},GetPlayer().jetFuel<=0.2f?(fmod(GetPlayer().readyFlashTimer,1.f)<=0.5f?RED:BLACK):BLACK);
 }
 
@@ -254,7 +260,7 @@ void Hamster::HandlePlayerControls(){
 	}
 	if(HamsterGame::Game().GetKey(SPACE).bPressed){
 		if(lastTappedSpace<=0.6f&&HasPowerup(Powerup::JET)){
-			state=FLYING;
+			SetState(FLYING);
 			lastSafeLocation.reset();
 			hamsterJet.emplace(*this);
 		}
@@ -312,7 +318,6 @@ void Hamster::HandleCollision(){
 				vel=vf2d{GetBumpAmount(),float(collisionLine.vector().polar().y+geom2d::pi)}.cart();
 				h.vel=vf2d{GetBumpAmount(),collisionLine.vector().polar().y}.cart();
 			}
-			state=h.state=BUMPED;
 			bumpTimer=h.bumpTimer=0.12f;
 		}
 	}
@@ -332,6 +337,10 @@ const float Hamster::GetRadius()const{
 
 const Terrain::TerrainType Hamster::GetTerrainStandingOn()const{
 	if(state==FLYING)return Terrain::ROCK;
+	return HamsterGame::Game().GetTerrainTypeAtPos(GetPos());
+}
+
+const Terrain::TerrainType Hamster::GetTerrainHoveringOver()const{
 	return HamsterGame::Game().GetTerrainTypeAtPos(GetPos());
 }
 
@@ -373,6 +382,9 @@ const float Hamster::GetMaxSpeed()const{
 		}break;
 		case Terrain::FOREST:{
 			if(!HasPowerup(Powerup::FOREST))finalMaxSpd*=0.50f;
+		}break;
+		case Terrain::VOID:{
+			finalMaxSpd*=0.10f;
 		}break;
 	}
 	if(HasPowerup(Powerup::WHEEL))finalMaxSpd*=1.5f;
@@ -520,11 +532,15 @@ void Hamster::SetJetFuel(const float amt){
 }
 
 void Hamster::Knockout(){
-	state=KNOCKOUT;
+	SetState(KNOCKOUT);
 	knockoutTimer=4.f;
 	animations.ChangeState(internalAnimState,HamsterGame::KNOCKOUT);
 }
 
 const float Hamster::GetSpeed()const{
 	return vel.mag();
+}
+
+void Hamster::SetState(const HamsterState state){
+	this->state=state;
 }
