@@ -374,6 +374,8 @@ int main()
 */
 #pragma endregion
 
+#include "olcUTIL_Geometry2D.h"
+
 #ifndef OLC_PGE_DEF
 #define OLC_PGE_DEF
 

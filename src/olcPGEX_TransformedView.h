@@ -192,6 +192,10 @@ namespace olc
 		// Draws a multiline string as a decal, with tiniting and scaling
 		void DrawStringDecal(const olc::vf2d& pos, const std::string& sText, const olc::Pixel col = olc::WHITE, const olc::vf2d& scale = { 1.0f, 1.0f });
 		void DrawStringPropDecal(const olc::vf2d& pos, const std::string& sText, const olc::Pixel col = olc::WHITE, const olc::vf2d& scale = { 1.0f, 1.0f });
+		
+		void DrawRotatedStringDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center = { 0.0f, 0.0f }, const olc::Pixel col = olc::WHITE, const olc::vf2d& scale = { 1.0f, 1.0f });
+		void DrawRotatedStringPropDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center = { 0.0f, 0.0f }, const olc::Pixel col = olc::WHITE, const olc::vf2d& scale = { 1.0f, 1.0f });
+
 		// Draws a single shaded filled rectangle as a decal
 		void FillRectDecal(const olc::vf2d& pos, const olc::vf2d& size, const olc::Pixel col = olc::WHITE);
 		void DrawRectDecal(const olc::vf2d& pos, const olc::vf2d& size, const olc::Pixel col = olc::WHITE);
@@ -702,6 +706,12 @@ namespace olc
 		pge->DrawPolygonDecal(decal, vTransformed, uv, colours, tint,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 
+	void TransformedView::DrawRotatedStringDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center, const olc::Pixel col, const olc::vf2d& scale){
+		pge->DrawRotatedStringDecal(WorldToScreen(pos),sText,fAngle,center,col,scale*m_vWorldScale*m_vRecipPixel,GFX3DTransform::TRANSFORM_REQUIRED);
+	}
+	void TransformedView::DrawRotatedStringPropDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center, const olc::Pixel col, const olc::vf2d& scale){
+		pge->DrawRotatedStringPropDecal(WorldToScreen(pos),sText,fAngle,center,col,scale*m_vWorldScale*m_vRecipPixel,GFX3DTransform::TRANSFORM_REQUIRED);
+	}
 
 
 #if defined (OLC_PGEX_SHADER)

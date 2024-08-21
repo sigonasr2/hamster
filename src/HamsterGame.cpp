@@ -4,6 +4,7 @@
 #include <ranges>
 #include "util.h"
 #include "Checkpoint.h"
+#include "FloatingText.h"
 
 geom2d::rect<float>HamsterGame::SCREEN_FRAME{{96,0},{320,288}};
 std::unordered_map<std::string,Animate2D::Animation<AnimationState::AnimationState>>HamsterGame::ANIMATIONS;
@@ -161,6 +162,7 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 	Hamster::UpdateHamsters(fElapsedTime);
 	Powerup::UpdatePowerups(fElapsedTime);
 	Checkpoint::UpdateCheckpoints(fElapsedTime);
+	FloatingText::UpdateFloatingText(fElapsedTime);
 	border.Update(fElapsedTime);
 }
 
@@ -181,6 +183,7 @@ void HamsterGame::DrawGame(){
 	SetZ(6.f);
 	tv.DrawPartialDecal({-3200,-3200},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400},GetGFX("clouds.png").Decal(),cloudOffset*2,currentMap.value().GetData().GetMapData().MapSize*16/2.f,{255,255,255,72});
 	SetZ(0.f);
+	FloatingText::DrawFloatingText(tv);
 	border.Draw();
 	Hamster::DrawOverlay();
 	#pragma region Powerup Display

@@ -46,6 +46,8 @@ All rights reserved.
 #include "HamsterGame.h"
 #include "Checkpoint.h"
 
+using Timer=float;
+
 class Hamster{
 	friend class HamsterJet;
 	enum PlayerControlled{
@@ -113,6 +115,7 @@ class Hamster{
 	float knockoutTimer{0.f};
 	std::unordered_set<Checkpoint>checkpointsCollected;
 	float raceFinishAnimTimer{0.f};
+	std::pair<Timer,vf2d>collectedCheckpointInfo{INFINITY,{}};
 public:
 	Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled=NPC);
 	static const Hamster&GetPlayer();
