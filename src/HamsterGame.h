@@ -67,7 +67,6 @@ public:
 	bool OnUserCreate()override final;
 	bool OnUserUpdate(float fElapsedTime)override final;
 	bool OnUserDestroy()override final;
-
 	static const Renderable&GetGFX(const std::string&img);
 	static const Animate2D::Animation<AnimationState::AnimationState>&GetAnimations(const std::string&img);
 	static const Animate2D::FrameSequence&GetAnimation(const std::string&img,const AnimationState::AnimationState state);
@@ -99,8 +98,6 @@ private:
 	Renderable mapImage;
 	std::vector<Letter>activeLetters;
 	float updatePixelsTimer;
-	Renderable animatedWaterTile;
-	void UpdateWaterTexture();
 	GFX3D::PipeLine renderer;
 	virtual void Apply3DTransform(std::vector<DecalInstance>&decals)override final;
 	float zoom{1.f}; //Increase to zoom out, decrease to zoom in (this is the overhead distance from the player).
@@ -114,4 +111,5 @@ private:
 	ViewPort radar;
 	void DrawRadar();
 	float radarScale{48.f};
+	std::vector<Renderable>waterTiles;
 };

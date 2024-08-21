@@ -38,6 +38,16 @@ bool HamsterGame::OnUserCreate(){
 		radarCircle.push_back(vf2d{cos(angle),sin(angle)}*43+vf2d{43,44});
 	}
 	radar=ViewPort{radarCircle,{5.f,8.f}};
+
+	for(int i:std::ranges::iota_view(0,8)){
+		waterTiles.emplace_back();
+		Renderable&waterTile{waterTiles.back()};
+		waterTile.Create(16,16,false,false);
+		SetDrawTarget(waterTile.Sprite());
+		DrawPartialSprite({},GetGFX("gametiles.png").Sprite(),{192+i*16,784},{16,16});
+		SetDrawTarget(nullptr);
+		waterTile.Decal()->Update();
+	}
 	return true;
 }
 
@@ -104,8 +114,6 @@ void HamsterGame::LoadAnimations(){
 	LoadAnimation(AnimationState::DEFAULT,"checkpoint.png",{{}},0.f,Animate2D::Style::OneShot,{128,128});
 	LoadAnimation(AnimationState::CHECKPOINT_CYCLING,"checkpoint.png",{{},{128,0}},0.4f,Animate2D::Style::Repeat,{128,128});
 	LoadAnimation(AnimationState::CHECKPOINT_COLLECTED,"checkpoint.png",{{128,0}},0.f,Animate2D::Style::OneShot,{128,128});
-	animatedWaterTile.Create(16,16,false,false);
-	UpdateWaterTexture();
 }
 
 void HamsterGame::LoadLevel(const std::string&mapName){
@@ -167,7 +175,6 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 	}else if(GetMouseWheel()<0){
 		radarScale=std::clamp(radarScale*2.f,6.f,96.f);
 	}
-	UpdateWaterTexture();
 	cloudOffset+=cloudSpd*fElapsedTime;
 	camera.SetViewSize(tv.GetWorldVisibleArea());
 	camera.Update(fElapsedTime);
@@ -182,7 +189,8 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 
 void HamsterGame::DrawGame(){
 	SetZ(-0.01f);
-	tv.DrawPartialDecal({-3200,-3200},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400},animatedWaterTile.Decal(),{0,0},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400});
+	const size_t waterTileInd{size_t(GetRuntime()/0.2f)};
+	tv.DrawPartialDecal({-3200,-3200},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400},waterTiles[waterTileInd%waterTiles.size()].Decal(),{0,0},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400});
 	SetZ(-0.0005f);
 	DrawLevelTiles();
 	Checkpoint::DrawCheckpoints(tv);
@@ -340,15 +348,6 @@ HamsterGame&HamsterGame::Game(){
 
 const double HamsterGame::GetRuntime()const{
 	return runTime;
-}
-
-void HamsterGame::UpdateWaterTexture(){
-	const Animate2D::FrameSequence&waterAnimSequence{ANIMATED_TILE_IDS[1384]};
-	const Animate2D::Frame&frame{waterAnimSequence.GetFrame(GetRuntime())};
-	SetDrawTarget(animatedWaterTile.Sprite());
-	DrawPartialSprite({},frame.GetSourceImage()->Sprite(),frame.GetSourceRect().pos,frame.GetSourceRect().size);
-	SetDrawTarget(nullptr);
-	animatedWaterTile.Decal()->Update();
 }
 
 void HamsterGame::Apply3DTransform(std::vector<DecalInstance>&decals){

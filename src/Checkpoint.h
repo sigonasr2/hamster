@@ -62,7 +62,7 @@ public:
 template <>
 struct std::hash<Checkpoint>
 {
-  std::size_t operator()(const Checkpoint&checkpoint)const
+  int_fast64_t operator()(const Checkpoint&checkpoint)const
   {
 	return (int_fast64_t)(*(int_fast32_t*)(&checkpoint.pos.x))<<32|*(int_fast32_t*)(&checkpoint.pos.y);
   }
