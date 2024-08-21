@@ -162,4 +162,6 @@ public:
 	static const std::vector<Hamster>&GetHamsters();
 	const HamsterState&GetState()const;
 	const bool BurnedOrDrowned()const;
+	const bool CanMove()const;
+	const bool FlyingInTheAir()const;
 };

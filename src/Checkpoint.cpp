@@ -72,9 +72,12 @@ void Checkpoint::DrawCheckpoints(TransformedView&tv){
 		const Animate2D::Frame&frame{checkpoint.animation.GetFrame(checkpoint.internal_animState)};
 		if(checkpoint.animation.GetState(checkpoint.internal_animState)!=AnimationState::DEFAULT){
 			HamsterGame::Game().SetDecalMode(DecalMode::ADDITIVE);
+			HamsterGame::Game().SetZ(0.007f);
 			tv.DrawPartialRotatedDecal(checkpoint.pos,frame.GetSourceImage()->Decal(),0.f,frame.GetSourceRect().size/2,frame.GetSourceRect().pos,frame.GetSourceRect().size,{1.1f,1.1f});
+			HamsterGame::Game().SetZ(0.009f);
 			HamsterGame::Game().SetDecalMode(DecalMode::NORMAL);
 		}
+		HamsterGame::Game().SetZ(0.009f);
 		tv.DrawPartialRotatedDecal(checkpoint.pos,frame.GetSourceImage()->Decal(),0.f,frame.GetSourceRect().size/2,frame.GetSourceRect().pos,frame.GetSourceRect().size);
 		geom2d::line<float>playerToCheckpointLine{geom2d::line<float>(Hamster::GetPlayer().GetPos(),checkpoint.pos)};
 		

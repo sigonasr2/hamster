@@ -67,10 +67,18 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 		h.HandleCollision();
 		switch(h.state){
 			case NORMAL:{
-				if(h.bumpTimer<=0.f&&!h.CollectedAllCheckpoints()){
+				if(h.CanMove()){
 					if(h.IsPlayerControlled){
 						h.HandlePlayerControls();
 					}else{
+						if(!h.hamsterJet.has_value()){
+							h.ObtainPowerup(Powerup::JET);
+							Powerup tempJetPowerup{{},Powerup::JET};
+							tempJetPowerup.OnPowerupObtain(h);
+							h.SetState(FLYING);
+							h.lastSafeLocation.reset();
+							h.hamsterJet.emplace(h);
+						}
 						//TODO: NPC controls.
 					}
 				}
@@ -181,17 +189,17 @@ void Hamster::DrawHamsters(TransformedView&tv){
 				yHopAmt=-abs(sin(geom2d::pi*(animCycle/0.35f)))*12.f;
 			}
 			if(h.hamsterJet.has_value())h.hamsterJet.value().Draw();
-			HamsterGame::Game().SetZ(h.z);
+			HamsterGame::Game().SetZ(h.z+0.02f);
 			tv.DrawRotatedDecal(h.pos+vf2d{0.f,h.drawingOffsetY},HamsterGame::GetGFX("shadow.png").Decal(),0.f,HamsterGame::GetGFX("shadow.png").Sprite()->Size()/2);
-			HamsterGame::Game().SetZ(h.z+0.005f);
+			HamsterGame::Game().SetZ(h.z+0.025f);
 			tv.DrawPartialRotatedDecal(h.pos+vf2d{0.f,h.drawingOffsetY+yHopAmt},img.GetSourceImage()->Decal(),0.f,img.GetSourceRect().size/2,img.GetSourceRect().pos,img.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale*vf2d{facingXScale,1.f},PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
-			HamsterGame::Game().SetZ(h.z);
+			HamsterGame::Game().SetZ(0.f);
 		}else{
 			if(h.hamsterJet.has_value())h.hamsterJet.value().Draw();
-			HamsterGame::Game().SetZ(h.z);
+			HamsterGame::Game().SetZ(h.z+0.02f);
 			if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos+vf2d{0.f,h.drawingOffsetY},wheelBottomImg.GetSourceImage()->Decal(),h.rot,wheelBottomImg.GetSourceRect().size/2,wheelBottomImg.GetSourceRect().pos,wheelBottomImg.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
 			tv.DrawPartialRotatedDecal(h.pos+vf2d{0.f,h.drawingOffsetY},img.GetSourceImage()->Decal(),h.rot,img.GetSourceRect().size/2,img.GetSourceRect().pos,img.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
-			HamsterGame::Game().SetZ(h.z+0.01f);
+			HamsterGame::Game().SetZ(h.z+0.025f);
 			if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos+vf2d{0.f,h.drawingOffsetY},wheelTopImg.GetSourceImage()->Decal(),h.rot,wheelTopImg.GetSourceRect().size/2,wheelTopImg.GetSourceRect().pos,wheelTopImg.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,{255,255,255,192},h.imgScale));
 			HamsterGame::Game().SetZ(0.f);
 		}
@@ -363,7 +371,7 @@ const float Hamster::GetRadius()const{
 }
 
 const Terrain::TerrainType Hamster::GetTerrainStandingOn()const{
-	if(state==FLYING)return Terrain::ROCK;
+	if(FlyingInTheAir())return Terrain::ROCK;
 	return HamsterGame::Game().GetTerrainTypeAtPos(GetPos());
 }
 
@@ -381,7 +389,7 @@ const float Hamster::GetTimeToMaxSpeed()const{
 	else if(!HasPowerup(Powerup::SWAMP)&&GetTerrainStandingOn()==Terrain::SWAMP)finalTimeToMaxSpd*=1.25;
 	if(hamsterJet.has_value()){
 		if(hamsterJet.value().GetState()==HamsterJet::LANDING)finalTimeToMaxSpd*=2.f;
-		else if(state==FLYING)finalTimeToMaxSpd*=3.f;
+		else if(FlyingInTheAir())finalTimeToMaxSpd*=3.f;
 	}
 	return finalTimeToMaxSpd;
 }
@@ -417,7 +425,7 @@ const float Hamster::GetMaxSpeed()const{
 	if(HasPowerup(Powerup::WHEEL))finalMaxSpd*=1.5f;
 	if(hamsterJet.has_value()){
 		if(hamsterJet.value().GetState()==HamsterJet::LANDING)finalMaxSpd*=1.5f;
-		else if(state==FLYING)finalMaxSpd*=8.f;
+		else if(FlyingInTheAir())finalMaxSpd*=8.f;
 	}
 	return finalMaxSpd;
 }
@@ -427,7 +435,7 @@ const float Hamster::GetFriction()const{
 	else if(!HasPowerup(Powerup::SWAMP)&&GetTerrainStandingOn()==Terrain::SWAMP)finalFriction*=0.6f;
 	if(hamsterJet.has_value()){
 		if(hamsterJet.value().GetState()==HamsterJet::LANDING)finalFriction*=1.5f;
-		else if(state==FLYING)finalFriction*=8.f;
+		else if(FlyingInTheAir())finalFriction*=8.f;
 	}
 	return finalFriction;
 }
@@ -588,4 +596,11 @@ const Hamster::HamsterState&Hamster::GetState()const{
 
 const bool Hamster::BurnedOrDrowned()const{
 	return GetState()==WAIT;
+}
+const bool Hamster::CanMove()const{
+	return bumpTimer<=0.f&&!CollectedAllCheckpoints();
+}
+
+const bool Hamster::FlyingInTheAir()const{
+	return GetState()==FLYING&&hamsterJet.value().GetZ()>0.5f&&GetZ()>0.5f;
 }

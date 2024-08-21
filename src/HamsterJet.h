@@ -39,11 +39,9 @@ All rights reserved.
 
 #include "olcUTIL_Geometry2D.h"
 #include "SpecialRenderable.h"
+#include "Terrain.h"
 
 class Hamster;
-namespace Terrain{
-	enum CrashSpeed;
-};
 
 class HamsterJet{
 public:
@@ -80,6 +78,7 @@ private:
 	float timer{};
 	std::array<JetState,4>jetState{};
 	float lastTappedSpace{};
+	bool setHamsterOriginalPos{false};
 public:
 	HamsterJet(Hamster&hamster);
 	void Update(const float fElapsedTime);
@@ -89,4 +88,5 @@ public:
 	const State GetState()const;
 	void SetPos(const vf2d pos);
 	Terrain::CrashSpeed GetLandingSpeed()const;
+	const float GetZ()const;
 };

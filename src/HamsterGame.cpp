@@ -32,7 +32,7 @@ bool HamsterGame::OnUserCreate(){
 
 	renderer.SetProjection(90.0f, (float)SCREEN_FRAME.size.x/(float)SCREEN_FRAME.size.y, 0.1f, 1000.0f, 0, SCREEN_FRAME.pos.y, 512, SCREEN_FRAME.size.y);
 	std::vector<vf2d>radarCircle;
-	for(int i=360;i>=0;i-=4){
+	for(int i=360;i>=0;i-=20){
 		float angle=util::degToRad(float(i))-geom2d::pi/2;
 		if(i==360){radarCircle.push_back(vf2d{cos(angle),sin(angle)}*43+vf2d{43,44});}
 		radarCircle.push_back(vf2d{cos(angle),sin(angle)}*43+vf2d{43,44});
@@ -184,11 +184,12 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 }
 
 void HamsterGame::DrawGame(){
-	SetZ(-0.001f);
+	SetZ(-0.01f);
 	tv.DrawPartialDecal({-3200,-3200},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400},animatedWaterTile.Decal(),{0,0},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400});
-	SetZ(0.f);
+	SetZ(-0.0005f);
 	DrawLevelTiles();
 	Checkpoint::DrawCheckpoints(tv);
+	SetZ(0.01f);
 	Powerup::DrawPowerups(tv);
 	Hamster::DrawHamsters(tv);
 	SetZ(3.f);
@@ -322,11 +323,9 @@ bool HamsterGame::OnUserUpdate(float fElapsedTime){
 }
 
 const Renderable&HamsterGame::GetGFX(const std::string&img){
-	if(!GFX.count(img))throw std::runtime_error{std::format("Image {} does not exist!",img)};
 	return GFX[img];
 }
 const Animate2D::Animation<AnimationState::AnimationState>&HamsterGame::GetAnimations(const std::string&img){
-	if(!ANIMATIONS.count(img))throw std::runtime_error{std::format("Animations for {} does not exist!",img)};
 	return ANIMATIONS[img];
 }
 
@@ -433,25 +432,38 @@ void HamsterGame::Apply3DTransform(std::vector<DecalInstance>&decals){
 	
 	renderer.SetTransform(matWorld);
 
+	float zIncrementer{0.f};
+
 	for(DecalInstance&decal:oldDecals){
 		SetDecalMode(decal.mode);
-		if(decal.transform==GFX3DTransform::NO_TRANSFORM)foregroundDecals.emplace_back(decal);
+		if(decal.transform==GFX3DTransform::NO_TRANSFORM){
+			foregroundDecals.emplace_back(decal);
+		}
 		else
 		if(decal.points==3){
 			GFX3D::triangle tri{{{decal.pos[0].x,decal.pos[0].y,decal.z[0],1.f},{decal.pos[1].x,decal.pos[1].y,decal.z[1],1.f},{decal.pos[2].x,decal.pos[2].y,decal.z[2],1.f}},{{decal.uv[0].x,decal.uv[0].y,0.f},{decal.uv[1].x,decal.uv[1].y,0.f},{decal.uv[2].x,decal.uv[2].y,0.f}},{decal.tint[0],decal.tint[1],decal.tint[2]}};
+			tri.p[0].z+=zIncrementer;
+			tri.p[1].z+=zIncrementer;
+			tri.p[2].z+=zIncrementer;
 			renderer.Render({tri},decal.decal,GFX3D::RENDER_TEXTURED|GFX3D::RENDER_DEPTH);
 			if(decal.z[0]>0.1f||decal.z[1]>0.1f||decal.z[2]>0.1f){
 				tri.col[0]=tri.col[1]=tri.col[2]={0,0,0,uint8_t(util::lerp(0,160,(1/std::pow(decal.z[0]/10.f+1,4))))};
-				tri.p[0].z=tri.p[1].z=tri.p[2].z=0.1f;
+				tri.p[0].z=tri.p[1].z=tri.p[2].z=0.1f+zIncrementer;
 				renderer.Render({tri},decal.decal,GFX3D::RENDER_TEXTURED|GFX3D::RENDER_DEPTH);
 			}
 		}else if(decal.points==4){
 			GFX3D::triangle tri{{{decal.pos[0].x,decal.pos[0].y,decal.z[0],1.f},{decal.pos[1].x,decal.pos[1].y,decal.z[1],1.f},{decal.pos[2].x,decal.pos[2].y,decal.z[2],1.f}},{{decal.uv[0].x,decal.uv[0].y,0.f},{decal.uv[1].x,decal.uv[1].y,0.f},{decal.uv[2].x,decal.uv[2].y,0.f}},{decal.tint[0],decal.tint[1],decal.tint[2]}};
 			GFX3D::triangle tri2{{{decal.pos[0].x,decal.pos[0].y,decal.z[0],1.f},{decal.pos[2].x,decal.pos[2].y,decal.z[2],1.f},{decal.pos[3].x,decal.pos[3].y,decal.z[3],1.f}},{{decal.uv[0].x,decal.uv[0].y,0.f},{decal.uv[2].x,decal.uv[2].y,0.f},{decal.uv[3].x,decal.uv[3].y,0.f}},{decal.tint[0],decal.tint[2],decal.tint[3]}};
+			tri.p[0].z+=zIncrementer;
+			tri.p[1].z+=zIncrementer;
+			tri.p[2].z+=zIncrementer;
+			tri2.p[0].z+=zIncrementer;
+			tri2.p[1].z+=zIncrementer;
+			tri2.p[2].z+=zIncrementer;
 			renderer.Render({tri,tri2},decal.decal,GFX3D::RENDER_TEXTURED|GFX3D::RENDER_DEPTH);
 			if(decal.decal!=GetGFX("dot.png").Decal()&&(decal.z[0]>0.1f||decal.z[1]>0.1f||decal.z[2]>0.1f||decal.z[3]>0.1f)){
 				tri.col[0]=tri.col[1]=tri.col[2]=tri2.col[0]=tri2.col[1]=tri2.col[2]={0,0,0,uint8_t(util::lerp(0,160,(1/std::pow(decal.z[0]/10.f+1,4))))};
-				tri.p[0].z=tri.p[1].z=tri.p[2].z=tri2.p[0].z=tri2.p[1].z=tri2.p[2].z=0.1f;
+				tri.p[0].z=tri.p[1].z=tri.p[2].z=tri2.p[0].z=tri2.p[1].z=tri2.p[2].z=0.1f+zIncrementer;
 				renderer.Render({tri,tri2},decal.decal,GFX3D::RENDER_TEXTURED|GFX3D::RENDER_DEPTH);
 			}
 		}else{
@@ -462,10 +474,13 @@ void HamsterGame::Apply3DTransform(std::vector<DecalInstance>&decals){
 			if(decal.points%3!=0)throw std::runtime_error{std::format("WARNING! Number of decal structure points is not a multiple of 3! Points provided: {}. THIS SHOULD NOT BE HAPPENING!",decal.points)};
 			for(int i{0};i<decal.points;i+=3){
 				GFX3D::triangle tri{{{decal.pos[i+0].x,decal.pos[i+0].y,decal.z[i+0],1.f},{decal.pos[i+1].x,decal.pos[i+1].y,decal.z[i+1],1.f},{decal.pos[i+2].x,decal.pos[i+2].y,decal.z[i+2],1.f}},{{decal.uv[i+0].x,decal.uv[i+0].y,0.f},{decal.uv[i+1].x,decal.uv[i+1].y,0.f},{decal.uv[i+2].x,decal.uv[i+2].y,0.f}},{decal.tint[i+0],decal.tint[i+1],decal.tint[i+2]}};
+				tri.p[0].z+=zIncrementer;
+				tri.p[1].z+=zIncrementer;
+				tri.p[2].z+=zIncrementer;
 				tris.emplace_back(tri);
-				if(decal.z[i+0]>0||decal.z[i+1]>0||decal.z[i+2]>0){
+				if(decal.z[i+0]>0.1f||decal.z[i+1]>0.1f||decal.z[i+2]>0.1f){
 					tri.col[0]=tri.col[1]=tri.col[2]={0,0,0,uint8_t(util::lerp(0,160,(1/std::pow(decal.z[0]/10.f+1,4))))};
-					tri.p[0].z=tri.p[1].z=tri.p[2].z=0.1f;
+					tri.p[0].z=tri.p[1].z=tri.p[2].z=0.1f+zIncrementer;
 					shadowTris.emplace_back(tri);
 				}
 			}
@@ -475,6 +490,7 @@ void HamsterGame::Apply3DTransform(std::vector<DecalInstance>&decals){
 			}
 		}
 		SetDecalMode(DecalMode::NORMAL);
+		zIncrementer+=0.000001f;
 	}
 
 	std::sort(decals.begin(),decals.end(),[](const DecalInstance&d1,const DecalInstance&d2){return d1.z[0]>d2.z[0];});
@@ -533,22 +549,27 @@ void HamsterGame::DrawRadar(){
 		{HAMSTER,{{16.f*9,0.f},{16.f,16.f}}},
 	};
 
+	const auto DeferRenderingBasedOnPosition=[this,&icon](const vf2d&pos,const IconType powerupIcon,const uint8_t iconAlpha){
+		if(geom2d::intersects(geom2d::circle<float>{{43.f+5.f,44.f+8.f},43},geom2d::rect<float>{pos-vf2d{16.f,16.f},{32.f,32.f}}).size()>0)radar.DrawPartialRotatedDecal(pos,GetGFX("radaricons.png").Decal(),0.f,{8.f,8.f},icon.at(powerupIcon).pos,icon.at(powerupIcon).size,{1.f,1.f},{255,255,255,iconAlpha});
+		else if(geom2d::contains(geom2d::circle<float>{{43.f+5.f,44.f+8.f},43},geom2d::rect<float>{pos-vf2d{8.f,8.f},{16.f,16.f}}))DrawPartialRotatedDecal(pos+vf2d{5.f,8.f},GetGFX("radaricons.png").Decal(),0.f,{8.f,8.f},icon.at(powerupIcon).pos,icon.at(powerupIcon).size,{1.f,1.f},{255,255,255,iconAlpha});
+	};
+
 	for(const Powerup&powerup:Powerup::GetPowerups()){
 		IconType powerupIcon{IconType(int(powerup.GetType())+1)};
 		uint8_t iconAlpha{255U};
 		if(Hamster::GetPlayer().HasPowerup(powerup.GetType()))iconAlpha=64U;
-		radar.DrawPartialRotatedDecal(WorldToRadar(powerup.GetPos()),GetGFX("radaricons.png").Decal(),0.f,{8.f,8.f},icon.at(powerupIcon).pos,icon.at(powerupIcon).size,{1.f,1.f},{255,255,255,iconAlpha});
+		DeferRenderingBasedOnPosition(WorldToRadar(powerup.GetPos()),powerupIcon,iconAlpha);
 	}
 	for(const Checkpoint&cp:Checkpoint::GetCheckpoints()){
 		uint8_t iconAlpha{255U};
 		if(Hamster::GetPlayer().HasCollectedCheckpoint(cp))iconAlpha=64U;
-		radar.DrawPartialRotatedDecal(WorldToRadar(cp.GetPos()),GetGFX("radaricons.png").Decal(),0.f,{8.f,8.f},icon.at(CHECKPOINT).pos,icon.at(CHECKPOINT).size,{1.f,1.f},{255,255,255,iconAlpha});
+		DeferRenderingBasedOnPosition(WorldToRadar(cp.GetPos()),CHECKPOINT,iconAlpha);
 	}
 	for(const Hamster&h:Hamster::GetHamsters()){
 		if(&h==&Hamster::GetPlayer())continue;
 		uint8_t iconAlpha{255U};
 		if(h.BurnedOrDrowned())iconAlpha=64U;
-		radar.DrawPartialRotatedDecal(WorldToRadar(h.GetPos()),GetGFX("radaricons.png").Decal(),0.f,{8.f,8.f},icon.at(HAMSTER).pos,icon.at(HAMSTER).size,{1.f,1.f},{255,255,255,iconAlpha});
+		DeferRenderingBasedOnPosition(WorldToRadar(h.GetPos()),HAMSTER,iconAlpha);
 	}
 }
 

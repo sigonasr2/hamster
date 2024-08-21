@@ -156,7 +156,7 @@ olc::ViewPort::ViewPort(std::vector<vf2d> vertices, olc::vf2d offset)
 }
 
 void olc::ViewPort::addPoint(vf2d point) {
-    clipVertices.push_back(point);
+    clipVertices.emplace_back(point);
 }
 
 void olc::ViewPort::clear() {
@@ -600,17 +600,17 @@ void olc::ViewPort::drawClippedDecal(Decal *decal,
 
             if (bDirection <= 0) {
                 if (aDirection > 0) {
-                    outputList.push_back(intersectionPoint);
-                    outputUvs.push_back(intersectionUv);
-                    outputCols.push_back(intersectionCol);
+                    outputList.emplace_back(intersectionPoint);
+                    outputUvs.emplace_back(intersectionUv);
+                    outputCols.emplace_back(intersectionCol);
                 }
-                outputList.push_back(polygonB);
-                outputUvs.push_back(uvB);
-                outputCols.push_back(colB);
+                outputList.emplace_back(polygonB);
+                outputUvs.emplace_back(uvB);
+                outputCols.emplace_back(colB);
             } else if (aDirection <= 0) {
-                outputList.push_back(intersectionPoint);
-                outputUvs.push_back(intersectionUv);
-                outputCols.push_back(intersectionCol);
+                outputList.emplace_back(intersectionPoint);
+                outputUvs.emplace_back(intersectionUv);
+                outputCols.emplace_back(intersectionCol);
             }
         }
     }
@@ -670,17 +670,17 @@ void olc::ViewPort::drawClippedPolygonDecal(Decal *decal,
 
             if (bDirection <= 0) {
                 if (aDirection > 0) {
-                    outputList.push_back(intersectionPoint);
-                    outputUvs.push_back(intersectionUv);
-                    outputDepths.push_back(intersectionDepth);
+                    outputList.emplace_back(intersectionPoint);
+                    outputUvs.emplace_back(intersectionUv);
+                    outputDepths.emplace_back(intersectionDepth);
                 }
-                outputList.push_back(polygonB);
-                outputUvs.push_back(uvB);
-                outputDepths.push_back(Wb);
+                outputList.emplace_back(polygonB);
+                outputUvs.emplace_back(uvB);
+                outputDepths.emplace_back(Wb);
             } else if (aDirection <= 0) {
-                outputList.push_back(intersectionPoint);
-                outputUvs.push_back(intersectionUv);
-                outputDepths.push_back(intersectionDepth);
+                outputList.emplace_back(intersectionPoint);
+                outputUvs.emplace_back(intersectionUv);
+                outputDepths.emplace_back(intersectionDepth);
             }
         }
     }

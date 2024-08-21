@@ -52,10 +52,14 @@ void HamsterJet::Update(const float fElapsedTime){
 	lastTappedSpace+=fElapsedTime;
 	switch(state){
 		case SWOOP_DOWN:{
-			HamsterGame::Game().SetZoom(1.5f);
+			if(hamster.IsPlayerControlled)HamsterGame::Game().SetZoom(1.5f);
 			z=util::lerp(0.f,3.f,std::pow(timer/3.f,2));
 			vf2d originalPos{hamster.GetPos().x-128.f,hamster.GetPos().y+32.f};
 			if(timer<=0.4f){
+				if(!setHamsterOriginalPos){
+					setHamsterOriginalPos=true;
+					hamsterOriginalPos=hamster.GetPos();
+				}
 				hamster.SetPos(hamsterOriginalPos-vf2d{0.f,sin(float(geom2d::pi)*timer/0.4f)*8.f});
 				hamster.SetZ(sin(float(geom2d::pi)*timer/0.4f)*0.2f);
 				jetState[TOP_LEFT]=jetState[BOTTOM_LEFT]=jetState[BOTTOM_RIGHT]=jetState[TOP_RIGHT]=OFF;
@@ -80,21 +84,28 @@ void HamsterJet::Update(const float fElapsedTime){
 			hamster.SetZ(z+0.03f);
 			if(timer<=0.f){
 				state=HAMSTER_CONTROL;
-				HamsterGame::Game().SetZoom(0.6f);
+				if(hamster.IsPlayerControlled)HamsterGame::Game().SetZoom(0.6f);
 				easeInTimer=0.6f;
 			}
 		}break;
 		case HAMSTER_CONTROL:{
 			easeInTimer=std::max(0.f,easeInTimer-fElapsedTime);
 			jetState[TOP_LEFT]=jetState[BOTTOM_LEFT]=jetState[BOTTOM_RIGHT]=jetState[TOP_RIGHT]=OFF;
-			HandleJetControls();
+			if(hamster.CanMove()){
+				if(hamster.IsPlayerControlled)HandleJetControls();
+				else{
+					//TODO: AI controls here!
+				}
+			}
 		}break;
 		case LANDING:{
 			easeInTimer=std::min(0.6f,easeInTimer+fElapsedTime);
 			jetState[TOP_LEFT]=jetState[BOTTOM_LEFT]=jetState[BOTTOM_RIGHT]=jetState[TOP_RIGHT]=OFF;
-			if(hamster.IsPlayerControlled)HandleJetControls();
-			else{
-				//TODO: AI controls here!
+			if(hamster.CanMove()){
+				if(hamster.IsPlayerControlled)HandleJetControls();
+				else{
+					//TODO: AI controls here!
+				}
 			}
 			pos=hamster.GetPos();
 			hamster.SetZ(hamster.GetZ()-fallSpd*fElapsedTime);
@@ -103,7 +114,7 @@ void HamsterJet::Update(const float fElapsedTime){
 				hamster.SetZ(0.f);
 				state=COMPLETE_LANDING;
 				hamster.SetState(Hamster::NORMAL);
-				HamsterGame::Game().SetZoom(1.f);
+				if(hamster.IsPlayerControlled)HamsterGame::Game().SetZoom(1.f);
 				timer=3.f;
 				originalPos=hamster.GetPos();
 				targetPos={hamster.GetPos().x+128.f,hamster.GetPos().y+32.f};
@@ -220,4 +231,8 @@ Terrain::CrashSpeed HamsterJet::GetLandingSpeed()const{
 	if(fallSpd>4.f)return Terrain::MAX;
 	if(fallSpd>2.f)return Terrain::MEDIUM;
 	else return Terrain::LIGHT;
+}
+
+const float HamsterJet::GetZ()const{
+	return z;
 }

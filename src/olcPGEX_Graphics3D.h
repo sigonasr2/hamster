@@ -976,221 +976,90 @@ namespace olc
 			line2 = GFX3D::Math::Vec_Sub(triTransformed.p[2], triTransformed.p[0]);
 			normal = GFX3D::Math::Vec_CrossProduct(line1, line2);
 			normal = GFX3D::Math::Vec_Normalise(normal);
+			triangle triProjected = triTransformed;
 
-			// Cull triangles that face away from viewer
-			if (flags & RENDER_CULL_CW && GFX3D::Math::Vec_DotProduct(normal, triTransformed.p[0]) > 0.0f) continue;
-			if (flags & RENDER_CULL_CCW && GFX3D::Math::Vec_DotProduct(normal, triTransformed.p[0]) < 0.0f) continue;
-					
-			// If Lighting, calculate shading
-			if (flags & RENDER_LIGHTS)
+			// Project new triangle
+			triProjected.p[0] = GFX3D::Math::Mat_MultiplyVector(matProj, triTransformed.p[0]);
+			triProjected.p[1] = GFX3D::Math::Mat_MultiplyVector(matProj, triTransformed.p[1]);
+			triProjected.p[2] = GFX3D::Math::Mat_MultiplyVector(matProj, triTransformed.p[2]);
+
+			// Apply Projection to Verts
+			triProjected.p[0].x = triProjected.p[0].x / triProjected.p[0].w;
+			triProjected.p[1].x = triProjected.p[1].x / triProjected.p[1].w;
+			triProjected.p[2].x = triProjected.p[2].x / triProjected.p[2].w;
+
+			triProjected.p[0].y = triProjected.p[0].y / triProjected.p[0].w;
+			triProjected.p[1].y = triProjected.p[1].y / triProjected.p[1].w;
+			triProjected.p[2].y = triProjected.p[2].y / triProjected.p[2].w;
+
+			triProjected.p[0].z = triProjected.p[0].z / triProjected.p[0].w;
+			triProjected.p[1].z = triProjected.p[1].z / triProjected.p[1].w;
+			triProjected.p[2].z = triProjected.p[2].z / triProjected.p[2].w;
+
+			// Apply Projection to Tex coords
+			triProjected.t[0].x = triProjected.t[0].x / triProjected.p[0].w;
+			triProjected.t[1].x = triProjected.t[1].x / triProjected.p[1].w;
+			triProjected.t[2].x = triProjected.t[2].x / triProjected.p[2].w;
+
+			triProjected.t[0].y = triProjected.t[0].y / triProjected.p[0].w;
+			triProjected.t[1].y = triProjected.t[1].y / triProjected.p[1].w;
+			triProjected.t[2].y = triProjected.t[2].y / triProjected.p[2].w;
+
+			triProjected.t[0].z = 1.0f / triProjected.p[0].w;
+			triProjected.t[1].z = 1.0f / triProjected.p[1].w;
+			triProjected.t[2].z = 1.0f / triProjected.p[2].w;
+			// Scale to viewport
+			/*triRaster.p[0].x *= -1.0f;
+			triRaster.p[1].x *= -1.0f;
+			triRaster.p[2].x *= -1.0f;
+			triRaster.p[0].y *= -1.0f;
+			triRaster.p[1].y *= -1.0f;
+			triTransformed.p[2].y *= -1.0f;*/
+			vec3d vOffsetView = { 1,1,0 };
+			triProjected.p[0] = Math::Vec_Add(triProjected.p[0], vOffsetView);
+			triProjected.p[1] = Math::Vec_Add(triProjected.p[1], vOffsetView);
+			triProjected.p[2] = Math::Vec_Add(triProjected.p[2], vOffsetView);
+			triProjected.p[0].x *= 0.5f * fViewW;
+			triProjected.p[0].y *= 0.5f * fViewH;
+			triProjected.p[1].x *= 0.5f * fViewW;
+			triProjected.p[1].y *= 0.5f * fViewH;
+			triProjected.p[2].x *= 0.5f * fViewW;
+			triProjected.p[2].y *= 0.5f * fViewH;
+			vOffsetView = { fViewX,fViewY,0 };
+			triProjected.p[0] = Math::Vec_Add(triProjected.p[0], vOffsetView);
+			triProjected.p[1] = Math::Vec_Add(triProjected.p[1], vOffsetView);
+			triProjected.p[2] = Math::Vec_Add(triProjected.p[2], vOffsetView);
+
+			// For now, just draw triangle
+
+			//if (flags & RENDER_TEXTURED)
+			//{/*
+			//	TexturedTriangle(
+			//		triProjected.p[0].x, triProjected.p[0].y, triProjected.t[0].x, triProjected.t[0].y, triProjected.t[0].z,
+			//		triProjected.p[1].x, triProjected.p[1].y, triProjected.t[1].x, triProjected.t[1].y, triProjected.t[1].z,
+			//		triProjected.p[2].x, triProjected.p[2].y, triProjected.t[2].x, triProjected.t[2].y, triProjected.t[2].z,
+			//		sprTexture);*/
+
+			//	RasterTriangle(
+			//		triProjected.p[0].x, triProjected.p[0].y, triProjected.t[0].x, triProjected.t[0].y, triProjected.t[0].z, triProjected.col,
+			//		triProjected.p[1].x, triProjected.p[1].y, triProjected.t[1].x, triProjected.t[1].y, triProjected.t[1].z, triProjected.col,
+			//		triProjected.p[2].x, triProjected.p[2].y, triProjected.t[2].x, triProjected.t[2].y, triProjected.t[2].z, triProjected.col,
+			//		sprTexture, nFlags);
+
+			//}
+
+			if (flags & RENDER_WIRE)
 			{
-				olc::Pixel ambient_clamp = { 0,0,0 };
-				olc::Pixel light_combined = { 0,0,0 };
-				uint32_t nLightSources = 0;
-				float nLightR = 0, nLightG = 0, nLightB = 0;
-
-				for (int i = 0; i < 4; i++)
-				{
-					switch (lights[i].type)
-					{
-					case LIGHT_DISABLED:
-						break;
-					case LIGHT_AMBIENT:
-						ambient_clamp = lights[i].col;						
-						break;
-					case LIGHT_DIRECTIONAL:
-						{
-							nLightSources++;
-							GFX3D::vec3d light_dir = GFX3D::Math::Vec_Normalise(lights[i].dir);
-							float light = GFX3D::Math::Vec_DotProduct(light_dir, normal);
-							if (light > 0)
-							{
-								int j = 0;
-							}
-
-							light = std::max(light, 0.0f);
-							nLightR += light * (lights[i].col.r/255.0f);
-							nLightG += light * (lights[i].col.g/255.0f);
-							nLightB += light * (lights[i].col.b/255.0f);
-						}
-						break;
-					case LIGHT_POINT:
-						break;
-					}
-				}
-
-				//nLightR /= nLightSources;
-				//nLightG /= nLightSources;
-				//nLightB /= nLightSources;
-
-				nLightR = std::max(nLightR, ambient_clamp.r / 255.0f);
-				nLightG = std::max(nLightG, ambient_clamp.g / 255.0f);
-				nLightB = std::max(nLightB, ambient_clamp.b / 255.0f);
-
-				triTransformed.col[0] = olc::Pixel(uint8_t(nLightR * triTransformed.col[0].r), uint8_t(nLightG * triTransformed.col[0].g), uint8_t(nLightB * triTransformed.col[0].b));
-				triTransformed.col[1] = olc::Pixel(uint8_t(nLightR * triTransformed.col[1].r), uint8_t(nLightG * triTransformed.col[1].g), uint8_t(nLightB * triTransformed.col[1].b));
-				triTransformed.col[2] = olc::Pixel(uint8_t(nLightR * triTransformed.col[2].r), uint8_t(nLightG * triTransformed.col[2].g), uint8_t(nLightB * triTransformed.col[2].b));
-
-
-
-				/*GFX3D::vec3d light_dir = { 1,1,1 };
-				light_dir = GFX3D::Math::Vec_Normalise(light_dir);
-				float light = GFX3D::Math::Vec_DotProduct(light_dir, normal);
-				if (light < 0) light = 0;
-				triTransformed.col[0] = olc::Pixel(light * 255.0f, light * 255.0f, light * 255.0f);
-				triTransformed.col[1] = olc::Pixel(light * 255.0f, light * 255.0f, light * 255.0f);
-				triTransformed.col[2] = olc::Pixel(light * 255.0f, light * 255.0f, light * 255.0f);*/
+				DrawTriangleWire(triProjected, olc::RED);
 			}
-			//else
-			//	triTransformed.col = olc::WHITE;
-
-			// Clip triangle against near plane
-			int nClippedTriangles = 0;
-			GFX3D::triangle clipped[2];
-			nClippedTriangles = GFX3D::Math::Triangle_ClipAgainstPlane({ 0.0f, 0.0f, 0.1f }, { 0.0f, 0.0f, 1.0f }, triTransformed, clipped[0], clipped[1]);
-			
-			// This may yield two new triangles
-			for (int n = 0; n < nClippedTriangles; n++)
+			else
 			{
-				triangle triProjected = clipped[n];
-
-				// Project new triangle
-				triProjected.p[0] = GFX3D::Math::Mat_MultiplyVector(matProj, clipped[n].p[0]);
-				triProjected.p[1] = GFX3D::Math::Mat_MultiplyVector(matProj, clipped[n].p[1]);
-				triProjected.p[2] = GFX3D::Math::Mat_MultiplyVector(matProj, clipped[n].p[2]);
-
-				// Apply Projection to Verts
-				triProjected.p[0].x = triProjected.p[0].x / triProjected.p[0].w;
-				triProjected.p[1].x = triProjected.p[1].x / triProjected.p[1].w;
-				triProjected.p[2].x = triProjected.p[2].x / triProjected.p[2].w;
-
-				triProjected.p[0].y = triProjected.p[0].y / triProjected.p[0].w;
-				triProjected.p[1].y = triProjected.p[1].y / triProjected.p[1].w;
-				triProjected.p[2].y = triProjected.p[2].y / triProjected.p[2].w;
-
-				triProjected.p[0].z = triProjected.p[0].z / triProjected.p[0].w;
-				triProjected.p[1].z = triProjected.p[1].z / triProjected.p[1].w;
-				triProjected.p[2].z = triProjected.p[2].z / triProjected.p[2].w;
-
-				// Apply Projection to Tex coords
-				triProjected.t[0].x = triProjected.t[0].x / triProjected.p[0].w;
-				triProjected.t[1].x = triProjected.t[1].x / triProjected.p[1].w;
-				triProjected.t[2].x = triProjected.t[2].x / triProjected.p[2].w;
-
-				triProjected.t[0].y = triProjected.t[0].y / triProjected.p[0].w;
-				triProjected.t[1].y = triProjected.t[1].y / triProjected.p[1].w;
-				triProjected.t[2].y = triProjected.t[2].y / triProjected.p[2].w;
-
-				triProjected.t[0].z = 1.0f / triProjected.p[0].w;
-				triProjected.t[1].z = 1.0f / triProjected.p[1].w;
-				triProjected.t[2].z = 1.0f / triProjected.p[2].w;
-
-				// Clip against viewport in screen space
-				// Clip triangles against all four screen edges, this could yield
-				// a bunch of triangles, so create a queue that we traverse to 
-				//  ensure we only test new triangles generated against planes
-				GFX3D::triangle sclipped[2];
-				std::list<GFX3D::triangle> listTriangles;
-				
-
-				// Add initial triangle
-				listTriangles.push_back(triProjected);
-				int nNewTriangles = 1;
-
-				for (int p = 0; p < 4; p++)
-				{
-					int nTrisToAdd = 0;
-					while (nNewTriangles > 0)
-					{
-						// Take triangle from front of queue
-						triangle test = listTriangles.front();
-						listTriangles.pop_front();
-						nNewTriangles--;
-
-						// Clip it against a plane. We only need to test each 
-						// subsequent plane, against subsequent new triangles
-						// as all triangles after a plane clip are guaranteed
-						// to lie on the inside of the plane. I like how this
-						// comment is almost completely and utterly justified
-						switch (p)
-						{
-						case 0:	nTrisToAdd = GFX3D::Math::Triangle_ClipAgainstPlane({ 0.0f, -1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, test, sclipped[0], sclipped[1]); break;
-						case 1:	nTrisToAdd = GFX3D::Math::Triangle_ClipAgainstPlane({ 0.0f, +1.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }, test, sclipped[0], sclipped[1]); break;
-						case 2:	nTrisToAdd = GFX3D::Math::Triangle_ClipAgainstPlane({ -1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, test, sclipped[0], sclipped[1]); break;
-						case 3:	nTrisToAdd = GFX3D::Math::Triangle_ClipAgainstPlane({ +1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, test, sclipped[0], sclipped[1]); break;
-						}
-
-
-						// Clipping may yield a variable number of triangles, so
-						// add these new ones to the back of the queue for subsequent
-						// clipping against next planes
-						for (int w = 0; w < nTrisToAdd; w++)
-							listTriangles.push_back(sclipped[w]);
-					}
-					nNewTriangles = listTriangles.size();
-				}
-
-				for (auto &triRaster : listTriangles)
-				{
-					// Scale to viewport
-					/*triRaster.p[0].x *= -1.0f;
-					triRaster.p[1].x *= -1.0f;
-					triRaster.p[2].x *= -1.0f;
-					triRaster.p[0].y *= -1.0f;
-					triRaster.p[1].y *= -1.0f;
-					triRaster.p[2].y *= -1.0f;*/
-					vec3d vOffsetView = { 1,1,0 };
-					triRaster.p[0] = Math::Vec_Add(triRaster.p[0], vOffsetView);
-					triRaster.p[1] = Math::Vec_Add(triRaster.p[1], vOffsetView);
-					triRaster.p[2] = Math::Vec_Add(triRaster.p[2], vOffsetView);
-					triRaster.p[0].x *= 0.5f * fViewW;
-					triRaster.p[0].y *= 0.5f * fViewH;
-					triRaster.p[1].x *= 0.5f * fViewW;
-					triRaster.p[1].y *= 0.5f * fViewH;
-					triRaster.p[2].x *= 0.5f * fViewW;
-					triRaster.p[2].y *= 0.5f * fViewH;
-					vOffsetView = { fViewX,fViewY,0 };
-					triRaster.p[0] = Math::Vec_Add(triRaster.p[0], vOffsetView);
-					triRaster.p[1] = Math::Vec_Add(triRaster.p[1], vOffsetView);
-					triRaster.p[2] = Math::Vec_Add(triRaster.p[2], vOffsetView);
-
-					// For now, just draw triangle
-
-					//if (flags & RENDER_TEXTURED)
-					//{/*
-					//	TexturedTriangle(
-					//		triRaster.p[0].x, triRaster.p[0].y, triRaster.t[0].x, triRaster.t[0].y, triRaster.t[0].z,
-					//		triRaster.p[1].x, triRaster.p[1].y, triRaster.t[1].x, triRaster.t[1].y, triRaster.t[1].z,
-					//		triRaster.p[2].x, triRaster.p[2].y, triRaster.t[2].x, triRaster.t[2].y, triRaster.t[2].z,
-					//		sprTexture);*/
-
-					//	RasterTriangle(
-					//		triRaster.p[0].x, triRaster.p[0].y, triRaster.t[0].x, triRaster.t[0].y, triRaster.t[0].z, triRaster.col,
-					//		triRaster.p[1].x, triRaster.p[1].y, triRaster.t[1].x, triRaster.t[1].y, triRaster.t[1].z, triRaster.col,
-					//		triRaster.p[2].x, triRaster.p[2].y, triRaster.t[2].x, triRaster.t[2].y, triRaster.t[2].z, triRaster.col,
-					//		sprTexture, nFlags);
-
-					//}
-
-					if (flags & RENDER_WIRE)
-					{
-						DrawTriangleWire(triRaster, olc::RED);
-					}
-					else
-					{
-						RasterTriangle(
-							triRaster.p[0].x,triRaster.p[0].y,triRaster.p[0].z, triRaster.t[0].x, triRaster.t[0].y, triRaster.t[0].z, triRaster.col[0],
-							triRaster.p[1].x,triRaster.p[1].y,triRaster.p[1].z, triRaster.t[1].x, triRaster.t[1].y, triRaster.t[1].z, triRaster.col[1],
-							triRaster.p[2].x,triRaster.p[2].y,triRaster.p[2].z, triRaster.t[2].x, triRaster.t[2].y, triRaster.t[2].z, triRaster.col[2],
-							dec, flags);
+				RasterTriangle(
+					triProjected.p[0].x,triProjected.p[0].y,triProjected.p[0].z, triProjected.t[0].x, triProjected.t[0].y, triProjected.t[0].z, triProjected.col[0],
+					triProjected.p[1].x,triProjected.p[1].y,triProjected.p[1].z, triProjected.t[1].x, triProjected.t[1].y, triProjected.t[1].z, triProjected.col[1],
+					triProjected.p[2].x,triProjected.p[2].y,triProjected.p[2].z, triProjected.t[2].x, triProjected.t[2].y, triProjected.t[2].z, triProjected.col[2],
+					dec, flags);
 						
-					}
-
-
-
-
-					nTriangleDrawnCount++;
-				}
 			}
 		}
 

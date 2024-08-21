@@ -3272,7 +3272,7 @@ namespace olc
 	{
 		DecalInstance di;
 		di.decal = decal;
-		di.points = 4;
+		di.points = 4; 
 		di.tint = { tint, tint, tint, tint };
 		di.w = { 1, 1, 1, 1 };
 		di.z={z,z,z,z};
@@ -4596,26 +4596,12 @@ namespace olc
 					glBegin(GL_TRIANGLES);
 			}
 
-			if (decal.depth)
+			// Render as 2D Spatial entity
+			for (uint32_t n = 0; n < decal.points; n++)
 			{
-
-				// Render as 3D Spatial Entity
-				for (uint32_t n = 0; n < decal.points; n++)
-				{
-					glColor4ub(decal.tint[n].r, decal.tint[n].g, decal.tint[n].b, decal.tint[n].a);
-					glTexCoord4f(decal.uv[n].x, decal.uv[n].y, 0.0f, decal.w[n]);
-					glVertex3f(decal.pos[n].x, decal.pos[n].y, decal.z[n]);
-				}
-			}
-			else
-			{
-				// Render as 2D Spatial entity
-				for (uint32_t n = 0; n < decal.points; n++)
-				{
-					glColor4ub(decal.tint[n].r, decal.tint[n].g, decal.tint[n].b, decal.tint[n].a);
-					glTexCoord4f(decal.uv[n].x, decal.uv[n].y, 0.0f, decal.w[n]);
-					glVertex2f(decal.pos[n].x, decal.pos[n].y);
-				}
+				glColor4ub(decal.tint[n].r, decal.tint[n].g, decal.tint[n].b, decal.tint[n].a);
+				glTexCoord4f(decal.uv[n].x, decal.uv[n].y, 0.0f, decal.w[n]);
+				glVertex2f(decal.pos[n].x, decal.pos[n].y);
 			}
 
 			glEnd();
