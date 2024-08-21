@@ -126,7 +126,7 @@ void HamsterGame::LoadLevel(const std::string&mapName){
 					const int tileID{layer.tiles[y][x]-1};
 					if(Powerup::TileIDIsUpperLeftPowerupTile(tileID))mapPowerups.emplace_back(vf2d{float(x),float(y)}*16+vf2d{16,16},Powerup::TileIDPowerupType(tileID));
 					
-					if(tileID==1485)checkpoints.emplace_back(vf2d{float(x),float(y)}*16+vf2d{48,64});
+					if(tileID==1484)checkpoints.emplace_back(vf2d{float(x),float(y)}*16+vf2d{64,64});
 					
 					const int numTilesWide{GetGFX("gametiles.png").Sprite()->width/16};
 					const int numTilesTall{GetGFX("gametiles.png").Sprite()->height/16};
@@ -187,7 +187,7 @@ void HamsterGame::DrawGame(){
 		for(int y:std::ranges::iota_view(0,4)){
 			for(int x:std::ranges::iota_view(0,2)){
 				const int powerupInd{y*2+x};
-				const float drawX{x*32.f+12.f};
+				const float drawX{x*32.f+20.f};
 				const float drawY{y*32.f+12.f+96.f};
 				const Powerup::PowerupType powerupType{Powerup::PowerupType(powerupInd)};
 				const geom2d::rect<float>powerupSubimageRect{Powerup::GetPowerupSubimageRect(powerupType)};
