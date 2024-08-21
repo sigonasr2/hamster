@@ -111,7 +111,7 @@ class Hamster{
 	float jetFuel{0.f};
 	float jetFuelDisplayAmt{0.f};
 	float knockoutTimer{0.f};
-	std::unordered_set<Checkpoint>checkpointsCollected;
+	std::set<vf2d>checkpointsCollected;
 	float raceFinishAnimTimer{0.f};
 	std::pair<Timer,vf2d>collectedCheckpointInfo{INFINITY,{}};
 public:

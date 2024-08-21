@@ -56,14 +56,4 @@ public:
 	static std::vector<Checkpoint>&GetCheckpoints();
 	const vf2d&GetPos()const;
 	void OnCheckpointCollect();
-	friend const bool operator==(const Checkpoint&cp1,const Checkpoint&cp2){return cp1.pos==cp2.pos;}
-};
-
-template <>
-struct std::hash<Checkpoint>
-{
-  int_fast64_t operator()(const Checkpoint&checkpoint)const
-  {
-	return (int_fast64_t)(*(int_fast32_t*)(&checkpoint.pos.x))<<32|*(int_fast32_t*)(&checkpoint.pos.y);
-  }
 };

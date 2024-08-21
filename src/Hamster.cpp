@@ -356,8 +356,8 @@ void Hamster::HandleCollision(){
 		}
 	}
 	for(Checkpoint&checkpoint:Checkpoint::GetCheckpoints()){
-		if(z<=0.1f&&geom2d::overlaps(geom2d::rect<float>(checkpoint.GetPos()-vf2d{62,60},{122.f,113.f}),geom2d::circle<float>(GetPos(),collisionRadius))&&!checkpointsCollected.count(checkpoint)){
-			checkpointsCollected.insert(checkpoint);
+		if(z<=0.1f&&geom2d::overlaps(geom2d::rect<float>(checkpoint.GetPos()-vf2d{62,60},{122.f,113.f}),geom2d::circle<float>(GetPos(),collisionRadius))&&!checkpointsCollected.count(checkpoint.GetPos())){
+			checkpointsCollected.insert(checkpoint.GetPos());
 			FloatingText::CreateFloatingText(pos,std::format("{} / {}",checkpointsCollected.size(),Checkpoint::GetCheckpoints().size()),{WHITE,GREEN},{1.5f,2.f});
 			checkpoint.OnCheckpointCollect();
 		}
@@ -583,7 +583,7 @@ const bool Hamster::CollectedAllCheckpoints()const{
 }
 
 const bool Hamster::HasCollectedCheckpoint(const Checkpoint&cp)const{
-	return checkpointsCollected.contains(cp);
+	return checkpointsCollected.contains(cp.GetPos());
 }
 const std::vector<Hamster>&Hamster::GetHamsters(){
 	return HAMSTER_LIST;
