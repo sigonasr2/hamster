@@ -53,7 +53,6 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("shadow.png");
 	_LoadImage("drownmeter.png");
 	_LoadImage("burnmeter.png");
-	_LoadImage("hamster_jet.png");
 	_LoadImage("dot.png");
 	_LoadImage("clouds.png");
 	_LoadImage("aimingTarget.png");
@@ -67,7 +66,6 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("radar.png");
 	_LoadImage("checkpoint_arrow.png");
 	_LoadImage("radaricons.png");
-	UpdateMatrixTexture();
 }
 
 void HamsterGame::LoadAnimations(){
@@ -101,6 +99,7 @@ void HamsterGame::LoadAnimations(){
 		lavaAnimFrames.AddFrame(Animate2D::Frame{&GetGFX("gametiles.png"),{sourcePos,{16,16}}});
 	}
 	LoadAnimation(AnimationState::JET_LIGHTS,"hamster_jet.png",{{0,48},{48,48}},0.3f,Animate2D::Style::Repeat,{48,48});
+	LoadAnimation(AnimationState::JET,"hamster_jet.png",{{},{0,96},{48,96},{96,96},{0,144},{48,144},{96,144},{0,192},{48,192},{96,192}},0.2f,Animate2D::Style::Repeat,{48,48});
 	LoadAnimation(AnimationState::JET_FLAMES,"hamster_jet.png",{{48,0},{96,0}},0.15f,Animate2D::Style::Repeat,{48,48});
 	LoadAnimation(AnimationState::DEFAULT,"checkpoint.png",{{}},0.f,Animate2D::Style::OneShot,{128,128});
 	LoadAnimation(AnimationState::CHECKPOINT_CYCLING,"checkpoint.png",{{},{128,0}},0.4f,Animate2D::Style::Repeat,{128,128});
@@ -168,8 +167,6 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 	}else if(GetMouseWheel()<0){
 		radarScale=std::clamp(radarScale*2.f,6.f,96.f);
 	}
-
-	UpdateMatrixTexture();
 	UpdateWaterTexture();
 	cloudOffset+=cloudSpd*fElapsedTime;
 	camera.SetViewSize(tv.GetWorldVisibleArea());
@@ -266,6 +263,7 @@ void HamsterGame::DrawGame(){
 	DrawStringDecal(SCREEN_FRAME.pos+SCREEN_FRAME.size-speedometerStrSize-vf2d{4.f,4.f},speedometerStr,speedometerCol);
 	DrawDecal({2.f,4.f},GetGFX("radar.png").Decal());
 	DrawRadar();
+	DrawStringDecal({0,8.f},std::to_string(GetFPS()));
 }
 
 const Terrain::TerrainType HamsterGame::GetTerrainTypeAtPos(const vf2d pos)const{
@@ -342,66 +340,6 @@ HamsterGame&HamsterGame::Game(){
 
 const double HamsterGame::GetRuntime()const{
 	return runTime;
-}
-
-void HamsterGame::UpdateMatrixTexture(){
-	const auto result{GFX.insert({"MATRIX_TEXTURE",Renderable{}})};
-	Renderable&texture{(*result.first).second};
-	if(result.second){
-		texture.Create(64,64,false,false);
-		texture.Sprite()->SetSampleMode(Sprite::PERIODIC);
-	}
-
-	const std::array<char,10>matrixLetters{'0','1','2','3','4','5','6','7','8','9'};
-	
-	if(matrixTimer==0){
-		activeLetters.emplace_back(vf2d{float(rand()%64),float(64)},util::random(-40)-20,matrixLetters[rand()%matrixLetters.size()]);
-		matrixTimer=util::random(0.125);
-	}
-	if(updatePixelsTimer==0){
-		SetDrawTarget(texture.Sprite());
-		Sprite*img=texture.Sprite();
-		for(int y=63;y>=0;y--){
-			for(int x=63;x>=0;x--){
-				Pixel col=img->GetPixel(x,y);
-				if(col.r>0){
-					if(x>0){
-						Pixel leftCol=img->GetPixel(x-1,y);
-						if(leftCol.r<col.r){
-							leftCol=PixelLerp(col,leftCol,0.125);
-						}
-						Draw(x-1,y,leftCol);
-					}
-					if(x<img->width-1){
-						Pixel rightCol=img->GetPixel(x+1,y);
-						if(rightCol.r<col.r){
-							rightCol=PixelLerp(col,rightCol,0.125);
-						}
-						Draw(x+1,y,rightCol);
-					}
-					col/=8;
-					Draw(x,y,col);
-				}
-			}
-		}
-		for(int y=0;y<64;y++){
-			Draw({0,y},img->GetPixel(1,y));
-		}
-		SetDrawTarget(nullptr);
-		updatePixelsTimer=0.1;
-	}
-	if(activeLetters.size()>0){
-		SetDrawTarget(texture.Sprite());
-		for(Letter&letter:activeLetters){
-			letter.pos.y+=letter.spd*GetElapsedTime();
-			DrawString(letter.pos,std::string(1,letter.c));
-		}
-		SetDrawTarget(nullptr);
-		texture.Decal()->Update();
-	}
-	matrixTimer=std::max(0.f,matrixTimer-GetElapsedTime());
-	updatePixelsTimer=std::max(0.f,updatePixelsTimer-GetElapsedTime());
-	std::erase_if(activeLetters,[](Letter&letter){return letter.pos.y<-32;});
 }
 
 void HamsterGame::UpdateWaterTexture(){

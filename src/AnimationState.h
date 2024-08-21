@@ -41,6 +41,7 @@ namespace AnimationState{
 		DEFAULT,
 		WHEEL_TOP,
 		WHEEL_BOTTOM,
+		JET,
 		JET_LIGHTS,
 		JET_FLAMES,
 		KNOCKOUT,

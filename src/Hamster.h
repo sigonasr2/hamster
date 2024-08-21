@@ -107,8 +107,6 @@ class Hamster{
 	std::optional<HamsterJet>hamsterJet;
 	float lastTappedSpace{0.f};
 	float drawingOffsetY{0.f};
-	SpecialRenderable hamsterJetDisplay;
-	SpecialRenderable hamsterJetLightsDisplay;
 	float readyFlashTimer{};
 	float jetFuel{0.f};
 	float jetFuelDisplayAmt{0.f};

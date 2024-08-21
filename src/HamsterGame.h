@@ -45,7 +45,6 @@ All rights reserved.
 #include "TMXParser.h"
 #include "TSXParser.h"
 #include "Terrain.h"
-#include "SpecialRenderable.h"
 #include "olcPGEX_Graphics3D.h"
 #include "AnimationState.h"
 #include "olcPGEX_Viewport.h"
@@ -98,8 +97,6 @@ private:
 	double runTime{};
 	Camera2D camera;
 	Renderable mapImage;
-	void UpdateMatrixTexture();
-	float matrixTimer;
 	std::vector<Letter>activeLetters;
 	float updatePixelsTimer;
 	Renderable animatedWaterTile;

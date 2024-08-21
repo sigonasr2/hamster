@@ -38,7 +38,6 @@ All rights reserved.
 #pragma once
 
 #include "olcUTIL_Geometry2D.h"
-#include "SpecialRenderable.h"
 #include "Terrain.h"
 
 class Hamster;
@@ -73,8 +72,6 @@ private:
 	float z;
 	float targetZ{};
 	State state;
-	SpecialRenderable jet;
-	SpecialRenderable lights;
 	float timer{};
 	std::array<JetState,4>jetState{};
 	float lastTappedSpace{};

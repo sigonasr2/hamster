@@ -42,12 +42,8 @@ All rights reserved.
 
 HamsterJet::HamsterJet(Hamster&hamster)
 	:hamster(hamster),hamsterOriginalPos(hamster.GetPos()),pos({hamster.GetPos().x-128.f,hamster.GetPos().y+32.f}),z(3.f),state(SWOOP_DOWN),timer(3.f){
-	jet.Initialize("hamster_jet.png",{78,223,208},{79,81,128});
-	lights.Initialize("hamster_jet.png",{245,233,130},{245,233,130});
 }
 void HamsterJet::Update(const float fElapsedTime){
-	jet.Update(fElapsedTime);
-	lights.Update(fElapsedTime);
 	timer=std::max(0.f,timer-fElapsedTime);
 	lastTappedSpace+=fElapsedTime;
 	switch(state){
@@ -149,7 +145,9 @@ void HamsterJet::Draw(){
 		hamster.SetDrawingOffsetY(util::lerp(48.f,0.f,easeInTimer/0.6f));
 	}
 	HamsterGame::Game().SetZ(z);
-	HamsterGame::Game().tv.DrawPartialRotatedDecal(pos+vf2d{0,drawingOffsetY},jet.Decal(),0.f,{24,24},{},{48,48});
+	const Animate2D::FrameSequence&jetAnim{HamsterGame::Game().GetAnimation("hamster_jet.png",AnimationState::JET)};
+	const Animate2D::Frame&jetFrame{jetAnim.GetFrame(HamsterGame::Game().GetRuntime())};
+	HamsterGame::Game().tv.DrawPartialRotatedDecal(pos+vf2d{0,drawingOffsetY},jetFrame.GetSourceImage()->Decal(),0.f,jetFrame.GetSourceRect().size/2,jetFrame.GetSourceRect().pos,jetFrame.GetSourceRect().size);
 	const Animate2D::FrameSequence&flameAnim{HamsterGame::Game().GetAnimation("hamster_jet.png",AnimationState::JET_FLAMES)};
 	const Animate2D::Frame&flameFrame{flameAnim.GetFrame(HamsterGame::Game().GetRuntime())};
 	HamsterGame::Game().SetZ(z+0.01f);
@@ -160,7 +158,7 @@ void HamsterJet::Draw(){
 	const Animate2D::FrameSequence&lightAnim{HamsterGame::Game().GetAnimation("hamster_jet.png",AnimationState::JET_LIGHTS)};
 	const Animate2D::Frame&lightFrame{lightAnim.GetFrame(HamsterGame::Game().GetRuntime())};
 	HamsterGame::Game().SetZ(z+0.02f);
-	HamsterGame::Game().tv.DrawPartialRotatedDecal(pos+vf2d{0,drawingOffsetY},lights.Decal(),0.f,lightFrame.GetSourceRect().size/2.f,lightFrame.GetSourceRect().pos,lightFrame.GetSourceRect().size);
+	HamsterGame::Game().tv.DrawPartialRotatedDecal(pos+vf2d{0,drawingOffsetY},lightFrame.GetSourceImage()->Decal(),0.f,lightFrame.GetSourceRect().size/2.f,lightFrame.GetSourceRect().pos,lightFrame.GetSourceRect().size);
 	HamsterGame::Game().SetZ(0.f);
 }
 

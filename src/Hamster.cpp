@@ -148,8 +148,6 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 		h.TurnTowardsTargetDirection();
 		h.MoveHamster();
 		if(h.IsPlayerControlled){
-			h.hamsterJetDisplay.Update(fElapsedTime);
-			h.hamsterJetLightsDisplay.Update(fElapsedTime);
 			h.readyFlashTimer+=fElapsedTime;
 			h.jetFuelDisplayAmt+=(h.jetFuel-h.jetFuelDisplayAmt)*4.f*fElapsedTime;
 		}
@@ -169,8 +167,6 @@ void Hamster::LoadHamsters(const vf2d startingLoc){
 	for(int i:std::ranges::iota_view(0U,NPC_HAMSTER_COUNT)){
 		HAMSTER_LIST.emplace_back(startingLoc,NPC_HAMSTER_IMAGES.at(util::random()%NPC_HAMSTER_IMAGES.size()),NPC);
 	}
-	playerHamster.value()->hamsterJetDisplay.Initialize("hamster_jet.png",{78,223,208},{79,81,128});
-	playerHamster.value()->hamsterJetLightsDisplay.Initialize("hamster_jet.png",{245,233,130},{245,233,130});
 }
 
 void Hamster::DrawHamsters(TransformedView&tv){
@@ -215,8 +211,10 @@ void Hamster::DrawOverlay(){
 		if(GetPlayer().HasPowerup(Powerup::JET))jetDisplayCol=WHITE;
 		const Animate2D::FrameSequence&lightAnim{HamsterGame::Game().GetAnimation("hamster_jet.png",AnimationState::JET_LIGHTS)};
 		const Animate2D::Frame&lightFrame{lightAnim.GetFrame(HamsterGame::Game().GetRuntime())};
-		HamsterGame::Game().DrawPartialRotatedDecal(jetDisplayOffset+vf2d{48.f,80.f},GetPlayer().hamsterJetDisplay.Decal(),0.f,{24.f,24.f},{0.f,0.f},{48.f,48.f},{2.f,2.f},jetDisplayCol);
-		HamsterGame::Game().DrawPartialRotatedDecal(jetDisplayOffset+vf2d{48.f,80.f},GetPlayer().hamsterJetLightsDisplay.Decal(),0.f,{24.f,24.f},lightFrame.GetSourceRect().pos,lightFrame.GetSourceRect().size,{2.f,2.f},jetDisplayCol);
+		const Animate2D::FrameSequence&jetAnim{HamsterGame::Game().GetAnimation("hamster_jet.png",AnimationState::JET)};
+		const Animate2D::Frame&jetFrame{jetAnim.GetFrame(HamsterGame::Game().GetRuntime())};
+		HamsterGame::Game().DrawPartialRotatedDecal(jetDisplayOffset+vf2d{48.f,80.f},jetFrame.GetSourceImage()->Decal(),0.f,jetFrame.GetSourceRect().size/2,jetFrame.GetSourceRect().pos,jetFrame.GetSourceRect().size,{2.f,2.f},jetDisplayCol);
+		HamsterGame::Game().DrawPartialRotatedDecal(jetDisplayOffset+vf2d{48.f,80.f},lightFrame.GetSourceImage()->Decal(),0.f,lightFrame.GetSourceRect().size/2,lightFrame.GetSourceRect().pos,jetFrame.GetSourceRect().size,{2.f,2.f},jetDisplayCol);
 	}
 
 	if(GetPlayer().HasPowerup(Powerup::JET)&&!GetPlayer().hamsterJet.has_value()){
