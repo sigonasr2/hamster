@@ -159,4 +159,7 @@ public:
 	void SetState(const HamsterState state);
 	const bool CollectedAllCheckpoints()const;
 	const bool HasCollectedCheckpoint(const Checkpoint&cp)const;
+	static const std::vector<Hamster>&GetHamsters();
+	const HamsterState&GetState()const;
+	const bool BurnedOrDrowned()const;
 };

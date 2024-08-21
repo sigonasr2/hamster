@@ -579,3 +579,13 @@ const bool Hamster::CollectedAllCheckpoints()const{
 const bool Hamster::HasCollectedCheckpoint(const Checkpoint&cp)const{
 	return checkpointsCollected.contains(cp);
 }
+const std::vector<Hamster>&Hamster::GetHamsters(){
+	return HAMSTER_LIST;
+}
+const Hamster::HamsterState&Hamster::GetState()const{
+	return state;
+}
+
+const bool Hamster::BurnedOrDrowned()const{
+	return GetState()==WAIT;
+}

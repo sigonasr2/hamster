@@ -107,6 +107,9 @@ void Powerup::UpdatePowerups(const float fElapsedTime){
 			if(powerup.spinSpd>=3.f)powerup.spinSpd=0.f;
 		}
 	}
+	std::sort(powerupList.begin(),powerupList.end(),[](const Powerup&p1,const Powerup&p2){
+		return geom2d::line<float>(Hamster::GetPlayer().GetPos(),p1.pos).length()>geom2d::line<float>(Hamster::GetPlayer().GetPos(),p2.pos).length();
+	});
 }
 
 void Powerup::DrawPowerups(TransformedView&tv){

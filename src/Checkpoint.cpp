@@ -63,6 +63,9 @@ void Checkpoint::UpdateCheckpoints(const float fElapsedTime){
 			}
 		}
 	}
+	std::sort(checkpoints.begin(),checkpoints.end(),[](const Checkpoint&c1,const Checkpoint&c2){
+		return geom2d::line<float>(Hamster::GetPlayer().GetPos(),c1.pos).length()>geom2d::line<float>(Hamster::GetPlayer().GetPos(),c2.pos).length();
+	});
 }
 void Checkpoint::DrawCheckpoints(TransformedView&tv){
 	for(Checkpoint&checkpoint:checkpoints){

@@ -34,7 +34,7 @@ bool HamsterGame::OnUserCreate(){
 	std::vector<vf2d>radarCircle;
 	for(int i=360;i>=0;i-=4){
 		float angle=util::degToRad(float(i))-geom2d::pi/2;
-		if(i==360){radarCircle.push_back(vf2d{cos(angle),sin(angle)}*42+43);}
+		if(i==360){radarCircle.push_back(vf2d{cos(angle),sin(angle)}*43+vf2d{43,44});}
 		radarCircle.push_back(vf2d{cos(angle),sin(angle)}*43+vf2d{43,44});
 	}
 	radar=ViewPort{radarCircle,{5.f,8.f}};
@@ -66,6 +66,7 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("speedometer_overlay.png");
 	_LoadImage("radar.png");
 	_LoadImage("checkpoint_arrow.png");
+	_LoadImage("radaricons.png");
 	UpdateMatrixTexture();
 }
 
@@ -161,6 +162,13 @@ void HamsterGame::LoadLevel(const std::string&mapName){
 void HamsterGame::UpdateGame(const float fElapsedTime){
 	vEye.z+=(Hamster::GetPlayer().GetZ()+zoom-vEye.z)*fLazyFollowRate*fElapsedTime;
 	speedometerDisplayAmt+=(Hamster::GetPlayer().GetSpeed()-speedometerDisplayAmt)*fLazyFollowRate*fElapsedTime;
+
+	if(GetMouseWheel()>0){
+		radarScale=std::clamp(radarScale/2.f,6.f,96.f);
+	}else if(GetMouseWheel()<0){
+		radarScale=std::clamp(radarScale*2.f,6.f,96.f);
+	}
+
 	UpdateMatrixTexture();
 	UpdateWaterTexture();
 	cloudOffset+=cloudSpd*fElapsedTime;
@@ -255,8 +263,8 @@ void HamsterGame::DrawGame(){
 		}
 	}
 	DrawStringDecal(SCREEN_FRAME.pos+SCREEN_FRAME.size-speedometerStrSize-vf2d{4.f,4.f},speedometerStr,speedometerCol);
-	radar.FillRectDecal({},{128,128},GREEN);
 	DrawDecal({2.f,4.f},GetGFX("radar.png").Decal());
+	DrawRadar();
 }
 
 const Terrain::TerrainType HamsterGame::GetTerrainTypeAtPos(const vf2d pos)const{
@@ -490,6 +498,58 @@ const bool HamsterGame::IsInBounds(const vf2d pos)const{
 
 const float HamsterGame::GetCameraZ()const{
 	return vEye.z;
+}
+
+void HamsterGame::DrawRadar(){
+	const vf2d radarOffset{43.f,44.f};
+	const auto WorldToRadar=[this,&radarOffset](const vf2d&pos){
+		vf2d relativeWorldPos{pos-Hamster::GetPlayer().GetPos()};
+		return relativeWorldPos/radarScale+radarOffset+vf2d{5.f,8.f}/radarScale;
+	};
+
+	enum IconType{
+		CHECKPOINT,
+		WHEEL,
+		GRASS,
+		SAND,
+		SWAMP,
+		LAVA,
+		FOREST,
+		ICE,
+		JET,
+		HAMSTER,
+	};
+
+	const std::unordered_map<IconType,geom2d::rect<float>>icon{
+		{CHECKPOINT,{{16.f*0,0.f},{16.f,16.f}}},
+		{WHEEL,{{16.f*1,0.f},{16.f,16.f}}},
+		{GRASS,{{16.f*2,0.f},{16.f,16.f}}},
+		{SAND,{{16.f*3,0.f},{16.f,16.f}}},
+		{SWAMP,{{16.f*4,0.f},{16.f,16.f}}},
+		{LAVA,{{16.f*5,0.f},{16.f,16.f}}},
+		{FOREST,{{16.f*6,0.f},{16.f,16.f}}},
+		{ICE,{{16.f*7,0.f},{16.f,16.f}}},
+		{JET,{{16.f*8,0.f},{16.f,16.f}}},
+		{HAMSTER,{{16.f*9,0.f},{16.f,16.f}}},
+	};
+
+	for(const Powerup&powerup:Powerup::GetPowerups()){
+		IconType powerupIcon{IconType(int(powerup.GetType())+1)};
+		uint8_t iconAlpha{255U};
+		if(Hamster::GetPlayer().HasPowerup(powerup.GetType()))iconAlpha=64U;
+		radar.DrawPartialRotatedDecal(WorldToRadar(powerup.GetPos()),GetGFX("radaricons.png").Decal(),0.f,{8.f,8.f},icon.at(powerupIcon).pos,icon.at(powerupIcon).size,{1.f,1.f},{255,255,255,iconAlpha});
+	}
+	for(const Checkpoint&cp:Checkpoint::GetCheckpoints()){
+		uint8_t iconAlpha{255U};
+		if(Hamster::GetPlayer().HasCollectedCheckpoint(cp))iconAlpha=64U;
+		radar.DrawPartialRotatedDecal(WorldToRadar(cp.GetPos()),GetGFX("radaricons.png").Decal(),0.f,{8.f,8.f},icon.at(CHECKPOINT).pos,icon.at(CHECKPOINT).size,{1.f,1.f},{255,255,255,iconAlpha});
+	}
+	for(const Hamster&h:Hamster::GetHamsters()){
+		if(&h==&Hamster::GetPlayer())continue;
+		uint8_t iconAlpha{255U};
+		if(h.BurnedOrDrowned())iconAlpha=64U;
+		radar.DrawPartialRotatedDecal(WorldToRadar(h.GetPos()),GetGFX("radaricons.png").Decal(),0.f,{8.f,8.f},icon.at(HAMSTER).pos,icon.at(HAMSTER).size,{1.f,1.f},{255,255,255,iconAlpha});
+	}
 }
 
 int main()
