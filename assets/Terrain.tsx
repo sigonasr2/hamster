@@ -3937,6 +3937,7 @@
  </tile>
  <tile id="687" type="TileProps">
   <properties>
+   <property name="Solid" type="bool" value="true"/>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="1"/>
   </properties>
  </tile>
@@ -3954,6 +3955,7 @@
  </tile>
  <tile id="690" type="TileProps">
   <properties>
+   <property name="Solid" type="bool" value="true"/>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="1"/>
   </properties>
  </tile>
@@ -4534,6 +4536,7 @@
  <tile id="835" type="TileProps">
   <properties>
    <property name="Solid" type="bool" value="true"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="1"/>
   </properties>
  </tile>
  <tile id="836" type="TileProps">

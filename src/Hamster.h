@@ -118,6 +118,7 @@ class Hamster{
 	float raceFinishAnimTimer{0.f};
 	std::pair<Timer,vf2d>collectedCheckpointInfo{INFINITY,{}};
 	float burrowTimer{};
+	float burrowImgShrinkTimer{};
 	uint16_t enteredTunnel{};
 public:
 	Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled=NPC);

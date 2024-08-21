@@ -129,6 +129,9 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 			}break;
 			case BURROWING:{
 				h.burrowTimer-=fElapsedTime;
+				h.burrowImgShrinkTimer-=fElapsedTime;
+				h.shrinkEffectColor=BLACK;
+				h.imgScale=std::max(0.f,util::lerp(0,1,h.burrowImgShrinkTimer*2.f));
 				if(h.burrowTimer<=0.f){
 					h.burrowTimer=3.f;
 					h.SetState(BURROW_WAIT);
@@ -139,6 +142,8 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 				if(h.burrowTimer<=0.f){
 					h.burrowTimer=1.f;
 					h.SetState(SURFACING);
+					h.imgScale=0.f;
+					h.burrowImgShrinkTimer=0.5f;
 				}
 				const Tunnel&enteredTunnel{HamsterGame::Game().GetTunnels().at(h.enteredTunnel)};
 				const vf2d destinationTunnelPos{HamsterGame::Game().GetTunnels().at(enteredTunnel.linkedTo).worldPos+vi2d{8,8}};
@@ -146,6 +151,8 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 			}break;
 			case SURFACING:{
 				h.burrowTimer-=fElapsedTime;
+				h.burrowImgShrinkTimer-=fElapsedTime;
+				h.imgScale=std::min(1.f,util::lerp(1,0,h.burrowImgShrinkTimer*2.f));
 				vf2d targetDirVec{0.f,-16.f};
 				const Tunnel&enteredTunnel{HamsterGame::Game().GetTunnels().at(h.enteredTunnel)};
 				const vf2d destinationTunnelPos{HamsterGame::Game().GetTunnels().at(enteredTunnel.linkedTo).worldPos+vi2d{8,8}};
@@ -164,6 +171,7 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 				h.pos=walkOutTunnelDest.lerp(destinationTunnelPos,h.burrowTimer);
 				if(h.burrowTimer<=0.f){
 					h.SetState(Hamster::NORMAL);
+					h.imgScale=1.f;
 				}
 			}break;
 		}
@@ -407,6 +415,7 @@ void Hamster::HandleCollision(){
 				SetState(Hamster::BURROWING);
 				burrowTimer=1.f;
 				enteredTunnel=id;
+				burrowImgShrinkTimer=0.5f;
 			}
 		}
 	}
