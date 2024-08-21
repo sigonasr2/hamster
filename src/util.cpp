@@ -1,5 +1,4 @@
 #include "util.h"
-#include "olcUTIL_Geometry2D.h"
 
 std::random_device rd;
 std::mt19937 rng(rd());
@@ -53,4 +52,7 @@ float olc::util::lerp(float n1,float n2,double t){
 }
 float olc::util::degToRad(float deg){
 	return deg*(geom2d::pi/180);
+}
+vf2d olc::util::pointTo(vf2d posFrom,vf2d posTo){
+	return geom2d::line(posFrom,posTo).vector().norm();
 }

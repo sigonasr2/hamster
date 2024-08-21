@@ -37,6 +37,7 @@ All rights reserved.
 #pragma endregion
 #pragma once
 #include <random>
+#include "olcUTIL_Geometry2D.h"
 
 namespace olc::util{
 	//Returns 0-range (as a float).
@@ -49,4 +50,6 @@ namespace olc::util{
 	void turn_towards_direction(float&angle,float target,float rate);
 	float lerp(float n1,float n2,double t);
 	float degToRad(float deg);
+	//Returns a normalized vector pointing from posFrom towards posTo.
+	vf2d pointTo(vf2d posFrom,vf2d posTo);
 };

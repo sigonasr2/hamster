@@ -575,3 +575,7 @@ void Hamster::SetState(const HamsterState state){
 const bool Hamster::CollectedAllCheckpoints()const{
 	return checkpointsCollected.size()==Checkpoint::GetCheckpoints().size();
 }
+
+const bool Hamster::HasCollectedCheckpoint(const Checkpoint&cp)const{
+	return checkpointsCollected.contains(cp);
+}

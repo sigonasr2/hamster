@@ -158,4 +158,5 @@ public:
 	const Terrain::TerrainType GetTerrainHoveringOver()const;
 	void SetState(const HamsterState state);
 	const bool CollectedAllCheckpoints()const;
+	const bool HasCollectedCheckpoint(const Checkpoint&cp)const;
 };

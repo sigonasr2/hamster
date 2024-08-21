@@ -80,6 +80,7 @@ public:
 	void SetZoom(const float zoom);
 	const float GetZoom()const;
 	const bool IsInBounds(const vf2d pos)const;
+	const float GetCameraZ()const;
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();

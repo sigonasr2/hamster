@@ -65,6 +65,7 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("speedometer.png");
 	_LoadImage("speedometer_overlay.png");
 	_LoadImage("radar.png");
+	_LoadImage("checkpoint_arrow.png");
 	UpdateMatrixTexture();
 }
 
@@ -485,6 +486,10 @@ const float HamsterGame::GetZoom()const{
 
 const bool HamsterGame::IsInBounds(const vf2d pos)const{
 	return !(pos.x<=-160.f||pos.y<=-160.f||pos.x>=currentMap.value().GetData().GetMapData().width*16+160.f||pos.y>=currentMap.value().GetData().GetMapData().height*16+160.f);
+}
+
+const float HamsterGame::GetCameraZ()const{
+	return vEye.z;
 }
 
 int main()

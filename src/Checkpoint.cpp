@@ -38,6 +38,8 @@ All rights reserved.
 
 #include "Checkpoint.h"
 #include "HamsterGame.h"
+#include "Hamster.h"
+#include "util.h"
 std::vector<Checkpoint>Checkpoint::checkpoints;
 Checkpoint::Checkpoint(const vf2d pos)
 :pos(pos){
@@ -71,6 +73,22 @@ void Checkpoint::DrawCheckpoints(TransformedView&tv){
 			HamsterGame::Game().SetDecalMode(DecalMode::NORMAL);
 		}
 		tv.DrawPartialRotatedDecal(checkpoint.pos,frame.GetSourceImage()->Decal(),0.f,frame.GetSourceRect().size/2,frame.GetSourceRect().pos,frame.GetSourceRect().size);
+		geom2d::line<float>playerToCheckpointLine{geom2d::line<float>(Hamster::GetPlayer().GetPos(),checkpoint.pos)};
+		
+		if(!Hamster::GetPlayer().HasCollectedCheckpoint(checkpoint)){
+			const float screenDistance{playerToCheckpointLine.length()*(1.325f/(HamsterGame::Game().GetCameraZ()))};
+			if(screenDistance>226){
+				const vf2d dirVec{playerToCheckpointLine.vector().norm()};
+				const float dir{dirVec.polar().y};
+				std::optional<vf2d>projCircle{geom2d::project(geom2d::circle<float>({},16),HamsterGame::SCREEN_FRAME,geom2d::ray<float>(HamsterGame::SCREEN_FRAME.middle(),dirVec))};
+				if(projCircle.has_value()){
+					Pixel arrowCol{PixelLerp(GREEN,BLACK,std::clamp((screenDistance-226)/1000.f,0.f,1.f))};
+					uint8_t iconAlpha{uint8_t(util::lerp(255.f,0.f,std::clamp((screenDistance-226)/1000.f,0.f,1.f)))};
+					HamsterGame::Game().DrawPartialRotatedDecal(projCircle.value(),HamsterGame::GetGFX("checkpoint.png").Decal(),0.f,{64,64},{},{128,128},{0.125f,0.125f},{255,255,255,iconAlpha});
+					HamsterGame::Game().DrawRotatedDecal(projCircle.value(),HamsterGame::GetGFX("checkpoint_arrow.png").Decal(),dir,HamsterGame::GetGFX("checkpoint_arrow.png").Sprite()->Size()/2,{1.f,1.f},arrowCol);
+				}
+			}
+		}
 	}
 }
 std::vector<Checkpoint>&Checkpoint::GetCheckpoints(){
