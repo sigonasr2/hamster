@@ -34,7 +34,7 @@
     "openFiles": [
     ],
     "project": "HamsterGame.tiled-project",
-    "property.type": "bool",
+    "property.type": "FacingDirection",
     "recentFiles": [
     ],
     "tileset.lastUsedFormat": "tsx",

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.10.2" name="Terrain" tilewidth="16" tileheight="16" tilecount="1484" columns="28">
- <image source="gametiles.png" width="448" height="848"/>
+<tileset version="1.10" tiledversion="1.10.2" name="Terrain" tilewidth="16" tileheight="16" tilecount="1708" columns="28">
+ <image source="gametiles.png" width="448" height="976"/>
  <tile id="0" type="TileProps">
   <properties>
    <property name="Solid" type="bool" value="true"/>
@@ -3694,6 +3694,7 @@
  <tile id="638" type="TileProps"/>
  <tile id="639" type="TileProps">
   <properties>
+   <property name="Facing" type="int" propertytype="FacingDirection" value="3"/>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="9"/>
   </properties>
  </tile>
@@ -4092,6 +4093,7 @@
  </tile>
  <tile id="715" type="TileProps">
   <properties>
+   <property name="Facing" type="int" propertytype="FacingDirection" value="2"/>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="9"/>
   </properties>
  </tile>
@@ -4109,6 +4111,7 @@
  </tile>
  <tile id="718" type="TileProps">
   <properties>
+   <property name="Facing" type="int" propertytype="FacingDirection" value="2"/>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="9"/>
   </properties>
  </tile>
@@ -4120,6 +4123,7 @@
  </tile>
  <tile id="720" type="TileProps">
   <properties>
+   <property name="Facing" type="int" propertytype="FacingDirection" value="3"/>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="9"/>
   </properties>
  </tile>
@@ -4137,6 +4141,7 @@
  </tile>
  <tile id="723" type="TileProps">
   <properties>
+   <property name="Facing" type="int" propertytype="FacingDirection" value="3"/>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="9"/>
   </properties>
  </tile>
@@ -4403,6 +4408,7 @@
  </tile>
  <tile id="800" type="TileProps">
   <properties>
+   <property name="Facing" type="int" propertytype="FacingDirection" value="0"/>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="9"/>
   </properties>
  </tile>
@@ -4532,6 +4538,7 @@
  </tile>
  <tile id="836" type="TileProps">
   <properties>
+   <property name="Facing" type="int" propertytype="FacingDirection" value="1"/>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="9"/>
   </properties>
  </tile>
@@ -4549,6 +4556,7 @@
  </tile>
  <tile id="839" type="TileProps">
   <properties>
+   <property name="Facing" type="int" propertytype="FacingDirection" value="1"/>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="9"/>
   </properties>
  </tile>
@@ -4594,6 +4602,7 @@
  </tile>
  <tile id="860" type="TileProps">
   <properties>
+   <property name="Facing" type="int" propertytype="FacingDirection" value="2"/>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="9"/>
   </properties>
  </tile>
@@ -4662,6 +4671,7 @@
  </tile>
  <tile id="884" type="TileProps">
   <properties>
+   <property name="Facing" type="int" propertytype="FacingDirection" value="0"/>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="9"/>
   </properties>
  </tile>
@@ -4679,6 +4689,7 @@
  </tile>
  <tile id="887" type="TileProps">
   <properties>
+   <property name="Facing" type="int" propertytype="FacingDirection" value="0"/>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="9"/>
   </properties>
  </tile>
@@ -4780,6 +4791,7 @@
  </tile>
  <tile id="920" type="TileProps">
   <properties>
+   <property name="Facing" type="int" propertytype="FacingDirection" value="1"/>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="9"/>
   </properties>
  </tile>

@@ -37,6 +37,12 @@ All rights reserved.
 #pragma endregion
 #include "Terrain.h"
 
+Terrain::Terrain(SolidType solid,TerrainType type,Direction facingDirection)
+:solid(solid),type(type),facing(facingDirection){}
+
+Terrain::Terrain()
+:Terrain(SolidType::WALKABLE,TerrainType::VOID,Direction::NORTH){}
+
 const std::string Terrain::TerrainToString(const TerrainType type){
 	switch(type){
 		case ROCK:{

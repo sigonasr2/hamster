@@ -11,6 +11,19 @@
     ],
     "propertyTypes": [
         {
+            "id": 6,
+            "name": "FacingDirection",
+            "storageType": "int",
+            "type": "enum",
+            "values": [
+                "NORTH",
+                "EAST",
+                "SOUTH",
+                "WEST"
+            ],
+            "valuesAsFlags": false
+        },
+        {
             "color": "#ffa0a0a4",
             "drawFill": true,
             "id": 4,
@@ -84,6 +97,12 @@
             "id": 2,
             "members": [
                 {
+                    "name": "Facing",
+                    "propertyType": "FacingDirection",
+                    "type": "int",
+                    "value": 0
+                },
+                {
                     "name": "Solid",
                     "type": "bool",
                     "value": false
@@ -106,6 +125,25 @@
                 "tileset",
                 "wangcolor",
                 "wangset",
+                "project"
+            ]
+        },
+        {
+            "color": "#ff55ff00",
+            "drawFill": true,
+            "id": 5,
+            "members": [
+                {
+                    "name": "Link",
+                    "type": "object",
+                    "value": 0
+                }
+            ],
+            "name": "Tunnel",
+            "type": "class",
+            "useAs": [
+                "property",
+                "object",
                 "project"
             ]
         }

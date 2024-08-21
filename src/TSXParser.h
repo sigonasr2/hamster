@@ -55,10 +55,10 @@ struct Tileset{
     bool isTerrain=false;
     std::unordered_map<int,TileCollisionData>CollisionData;
     std::unordered_map<int,std::vector<int>>AnimationData;
-    std::unordered_map<int,std::pair<Terrain::SolidType,Terrain::TerrainType>>TerrainData;
+    std::unordered_map<int,Terrain>TerrainData;
     friend std::ostream& operator << (std::ostream& os, Tileset& rhs);
 public:
-    const std::unordered_map<int,std::pair<Terrain::SolidType,Terrain::TerrainType>>&GetTerrainData()const;
+    const std::unordered_map<int,Terrain>&GetTerrainData()const;
 };
 
 class TSXParser{
@@ -85,7 +85,7 @@ class TSXParser{
         os<<rhs.ImageData.FormatTagData(rhs.ImageData.data)<<"\n";
         return os;
     }
-    const std::unordered_map<int,std::pair<Terrain::SolidType,Terrain::TerrainType>>&Tileset::GetTerrainData()const{
+    const std::unordered_map<int,Terrain>&Tileset::GetTerrainData()const{
         return TerrainData;
     }
     void TSXParser::ParseTag(std::string tag) {
@@ -161,15 +161,22 @@ class TSXParser{
         if(newTag.tag=="property"&&newTag.data["propertytype"]=="TerrainType"){
             //The way animation data is stored is every "animation_tile_precision" ms indicating which frame we should be on.
             for(int&tagID:previousTagID){
-                std::pair<Terrain::SolidType,Terrain::TerrainType>&tileData{parsedTilesetInfo.TerrainData[tagID]};
-                tileData.second=Terrain::TerrainType(newTag.GetInteger("value"));
+                Terrain&tileData{parsedTilesetInfo.TerrainData[tagID]};
+                tileData.type=Terrain::TerrainType(newTag.GetInteger("value"));
             }
         } else
         if(newTag.tag=="property"&&newTag.data["name"]=="Solid"){
             //The way animation data is stored is every "animation_tile_precision" ms indicating which frame we should be on.
             for(int&tagID:previousTagID){
-                std::pair<Terrain::SolidType,Terrain::TerrainType>&tileData{parsedTilesetInfo.TerrainData[tagID]};
-                tileData.first=Terrain::SolidType(newTag.GetBool("value"));
+                Terrain&tileData{parsedTilesetInfo.TerrainData[tagID]};
+                tileData.solid=Terrain::SolidType(newTag.GetBool("value"));
+            }
+        } else
+        if(newTag.tag=="property"&&newTag.data["name"]=="Facing"){
+            //The way animation data is stored is every "animation_tile_precision" ms indicating which frame we should be on.
+            for(int&tagID:previousTagID){
+                Terrain&tileData{parsedTilesetInfo.TerrainData[tagID]};
+                tileData.facing=Terrain::Direction(newTag.GetInteger("value"));
             }
         } else
         if(newTag.tag=="property"&&newTag.data["propertytype"]=="PowerupType"){

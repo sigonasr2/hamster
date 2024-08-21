@@ -63,6 +63,9 @@ class Hamster{
 		WAIT,
 		BURNING,
 		KNOCKOUT,
+		BURROWING,
+		BURROW_WAIT,
+		SURFACING,
 	};
 
 	static std::vector<Hamster>HAMSTER_LIST;
@@ -114,6 +117,8 @@ class Hamster{
 	std::set<vf2d>checkpointsCollected;
 	float raceFinishAnimTimer{0.f};
 	std::pair<Timer,vf2d>collectedCheckpointInfo{INFINITY,{}};
+	float burrowTimer{};
+	uint16_t enteredTunnel{};
 public:
 	Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled=NPC);
 	static const Hamster&GetPlayer();

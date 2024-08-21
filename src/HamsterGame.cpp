@@ -282,7 +282,7 @@ const Terrain::TerrainType HamsterGame::GetTerrainTypeAtPos(const vf2d pos)const
 		int tileY{int(floor(pos.y)/16)};
 		int tileID{layer.tiles[tileY][tileX]-1};
 		if(tileID==-1)continue;
-		if(currentTileset.value().GetData().GetTerrainData().count(tileID))tileType=currentTileset.value().GetData().GetTerrainData().at(tileID).second;
+		if(currentTileset.value().GetData().GetTerrainData().count(tileID))tileType=currentTileset.value().GetData().GetTerrainData().at(tileID).type;
 	}
 	return tileType;
 }
@@ -295,7 +295,7 @@ const bool HamsterGame::IsTerrainSolid(const vf2d pos)const{
 		if(tileX<=0||tileX>=currentMap.value().GetData().GetMapData().MapSize.x||tileY<=0||tileY>=currentMap.value().GetData().GetMapData().MapSize.y)break;
 		int tileID{layer.tiles[tileY][tileX]-1};
 		if(tileID==-1)continue;
-		if(currentTileset.value().GetData().GetTerrainData().count(tileID)&&currentTileset.value().GetData().GetTerrainData().at(tileID).first==Terrain::SolidType::SOLID)return true;
+		if(currentTileset.value().GetData().GetTerrainData().count(tileID)&&currentTileset.value().GetData().GetTerrainData().at(tileID).solid==Terrain::SolidType::SOLID)return true;
 	}
 	return false;
 }
@@ -508,6 +508,24 @@ void HamsterGame::DrawRadar(){
 		if(h.BurnedOrDrowned())iconAlpha=64U;
 		DeferRenderingBasedOnPosition(WorldToRadar(h.GetPos()),HAMSTER,iconAlpha);
 	}
+}
+
+const std::unordered_map<TunnelId,Tunnel>&HamsterGame::GetTunnels()const{
+	return currentMap.value().GetData().GetTunnels();
+}
+
+const Terrain::Direction&HamsterGame::GetTileFacingDirection(const vf2d worldPos)const{
+	Terrain::Direction tileFacingDir{Terrain::NORTH};
+	if(!IsInBounds(worldPos))return Terrain::NORTH;
+	for(const LayerTag&layer:currentMap.value().GetData().GetLayers()){
+		int tileX{int(floor(worldPos.x)/16)};
+		int tileY{int(floor(worldPos.y)/16)};
+		if(tileX<=0||tileX>=currentMap.value().GetData().GetMapData().MapSize.x||tileY<=0||tileY>=currentMap.value().GetData().GetMapData().MapSize.y)break;
+		int tileID{layer.tiles[tileY][tileX]-1};
+		if(tileID==-1)continue;
+		tileFacingDir=currentTileset.value().GetData().GetTerrainData().at(tileID).facing;
+	}
+	return tileFacingDir;
 }
 
 int main()

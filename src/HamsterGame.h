@@ -79,6 +79,8 @@ public:
 	const float GetZoom()const;
 	const bool IsInBounds(const vf2d pos)const;
 	const float GetCameraZ()const;
+	const std::unordered_map<TunnelId,Tunnel>&GetTunnels()const;
+	const Terrain::Direction&GetTileFacingDirection(const vf2d worldPos)const;
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();

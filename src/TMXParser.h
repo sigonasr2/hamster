@@ -90,6 +90,13 @@ struct ZoneData{
     std::vector<XMLTag>properties;
 };
 
+struct Tunnel{
+    vf2d worldPos;
+    uint16_t linkedTo;
+};
+
+using TunnelId=uint16_t;
+
 struct Map{
     friend class AiL;
     friend class TMXParser;
@@ -102,6 +109,7 @@ private:
     std::string mapType="";
     std::set<std::string>spawns;
     std::map<std::string,std::vector<::ZoneData>>ZoneData;
+    std::unordered_map<TunnelId,Tunnel>TunnelData;
 public:
     Map();
     void _SetMapData(MapTag data);
@@ -109,6 +117,7 @@ public:
     const MapTag&GetMapData()const;
     const std::string_view GetMapType()const;
     const std::vector<LayerTag>&GetLayers()const;
+    const std::unordered_map<uint16_t,Tunnel>&GetTunnels()const;
     const MapName&GetMapName()const;
     const std::string_view GetMapDisplayName()const;
     const Renderable*const GetOptimizedMap()const;
@@ -138,6 +147,8 @@ class TMXParser{
     int monsterPropertyTagCount=-1;
     bool infiniteMap=false;
     LayerTag*currentLayerTag=nullptr;
+    std::vector<std::pair<TunnelId,TunnelId>>TunnelLinks;
+    uint16_t previousTunnelId=0U;
     public:
     TMXParser(std::string file);
 };
@@ -198,6 +209,9 @@ class TMXParser{
         }else{
             return true;
         }
+    }
+    const std::unordered_map<uint16_t,Tunnel>&Map::GetTunnels()const{
+        return TunnelData;
     }
     Map::Map(){
         ZoneData["UpperZone"];
@@ -335,15 +349,23 @@ class TMXParser{
             //This is a property for a zone that doesn't fit into the other categories, we add it to the previous zone data encountered.
             prevZoneData->properties.push_back(newTag);
         }else
+        if(newTag.tag=="property"&&newTag.GetString("name")=="Link"){
+            TunnelLinks.emplace_back(previousTunnelId,newTag.GetInteger("value"));
+        }else
         if (newTag.tag=="object"&&newTag.data.find("type")!=newTag.data.end()){
-            //This is an object with a type that doesn't fit into other categories, we can add it to ZoneData.
-            std::vector<ZoneData>&zones=parsedMapInfo.ZoneData[newTag.data["type"]];
-            float width=1.f;
-            float height=1.f;
-            if(newTag.data.count("width")>0)width=newTag.GetFloat("width");
-            if(newTag.data.count("height")>0)height=newTag.GetFloat("height");
-            zones.emplace_back(geom2d::rect<int>{{newTag.GetInteger("x"),newTag.GetInteger("y")},{int(width),int(height)}});
-            prevZoneData=&zones.back();
+            if (newTag.GetString("type")=="Tunnel"){
+                previousTunnelId=newTag.GetInteger("id");
+                parsedMapInfo.TunnelData.insert({previousTunnelId,Tunnel{vi2d{newTag.GetInteger("x"),newTag.GetInteger("y")}/16*16}});
+            }else{
+                //This is an object with a type that doesn't fit into other categories, we can add it to ZoneData.
+                std::vector<ZoneData>&zones=parsedMapInfo.ZoneData[newTag.data["type"]];
+                float width=1.f;
+                float height=1.f;
+                if(newTag.data.count("width")>0)width=newTag.GetFloat("width");
+                if(newTag.data.count("height")>0)height=newTag.GetFloat("height");
+                zones.emplace_back(geom2d::rect<int>{{newTag.GetInteger("x"),newTag.GetInteger("y")},{int(width),int(height)}});
+                prevZoneData=&zones.back();
+            }
         }
     }
     TMXParser::TMXParser(std::string file){
@@ -389,6 +411,10 @@ class TMXParser{
                 }
         }
         std::sort(parsedMapInfo.TilesetData.begin(),parsedMapInfo.TilesetData.end(),[](XMLTag&t1,XMLTag&t2){return t1.GetInteger("firstgid")<t2.GetInteger("firstgid");});
+        for(const std::pair<TunnelId,TunnelId>&link:TunnelLinks){
+            parsedMapInfo.TunnelData.at(link.first).linkedTo=link.second;
+            parsedMapInfo.TunnelData.at(link.second).linkedTo=link.first;
+        }
     }
         
 

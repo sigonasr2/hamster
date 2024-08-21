@@ -38,7 +38,8 @@ All rights reserved.
 #pragma once
 #include <string>
 
-namespace Terrain{
+class Terrain{
+public:
     enum class SolidType{
         SOLID=true,
         WALKABLE=false,
@@ -57,6 +58,12 @@ namespace Terrain{
         TUNNEL,
         ICE,
     };
+    enum Direction{
+        NORTH,
+        EAST,
+        SOUTH,
+        WEST,
+    };
     enum CrashSpeed{
         MAX,
         MEDIUM,
@@ -64,6 +71,13 @@ namespace Terrain{
     };
     using FuelDamage=float;
     using KnockoutOccurs=bool;
-    const std::string TerrainToString(const TerrainType type);
-    const std::pair<FuelDamage,KnockoutOccurs>GetFuelDamageTakenAndKnockoutEffect(const TerrainType type,const CrashSpeed crashSpeed);
-}
+    static const std::string TerrainToString(const TerrainType type);
+    static const std::pair<FuelDamage,KnockoutOccurs>GetFuelDamageTakenAndKnockoutEffect(const TerrainType type,const CrashSpeed crashSpeed);
+
+public:
+    Terrain();
+    Terrain(SolidType solid,TerrainType type,Direction facingDirection);
+    SolidType solid;
+    TerrainType type;
+    Direction facing;
+};

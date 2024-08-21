@@ -127,6 +127,45 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 					h.animations.ChangeState(h.internalAnimState,AnimationState::DEFAULT);
 				}
 			}break;
+			case BURROWING:{
+				h.burrowTimer-=fElapsedTime;
+				if(h.burrowTimer<=0.f){
+					h.burrowTimer=3.f;
+					h.SetState(BURROW_WAIT);
+				}
+			}break;
+			case BURROW_WAIT:{
+				h.burrowTimer-=fElapsedTime;
+				if(h.burrowTimer<=0.f){
+					h.burrowTimer=1.f;
+					h.SetState(SURFACING);
+				}
+				const Tunnel&enteredTunnel{HamsterGame::Game().GetTunnels().at(h.enteredTunnel)};
+				const vf2d destinationTunnelPos{HamsterGame::Game().GetTunnels().at(enteredTunnel.linkedTo).worldPos+vi2d{8,8}};
+				h.pos=destinationTunnelPos.lerp(enteredTunnel.worldPos+vi2d{8,8},h.burrowTimer/3.f);
+			}break;
+			case SURFACING:{
+				h.burrowTimer-=fElapsedTime;
+				vf2d targetDirVec{0.f,-16.f};
+				const Tunnel&enteredTunnel{HamsterGame::Game().GetTunnels().at(h.enteredTunnel)};
+				const vf2d destinationTunnelPos{HamsterGame::Game().GetTunnels().at(enteredTunnel.linkedTo).worldPos+vi2d{8,8}};
+				switch(HamsterGame::Game().GetTileFacingDirection(destinationTunnelPos)){
+					case Terrain::EAST:{
+						targetDirVec={16.f,0.f};
+					}break;
+					case Terrain::SOUTH:{
+						targetDirVec={0.f,16.f};
+					}break;
+					case Terrain::WEST:{
+						targetDirVec={-16.f,0.f};
+					}break;
+				}
+				const vf2d walkOutTunnelDest{destinationTunnelPos+targetDirVec};
+				h.pos=walkOutTunnelDest.lerp(destinationTunnelPos,h.burrowTimer);
+				if(h.burrowTimer<=0.f){
+					h.SetState(Hamster::NORMAL);
+				}
+			}break;
 		}
 		if(h.state!=FLYING){
 			if((h.GetTerrainStandingOn()==Terrain::OCEAN||h.GetTerrainStandingOn()==Terrain::VOID||!h.HasPowerup(Powerup::SWAMP)&&h.GetTerrainStandingOn()==Terrain::SWAMP)&&h.state!=DROWNING&&h.state!=WAIT)h.drownTimer+=fElapsedTime;
@@ -360,6 +399,15 @@ void Hamster::HandleCollision(){
 			checkpointsCollected.insert(checkpoint.GetPos());
 			FloatingText::CreateFloatingText(pos,std::format("{} / {}",checkpointsCollected.size(),Checkpoint::GetCheckpoints().size()),{WHITE,GREEN},{1.5f,2.f});
 			checkpoint.OnCheckpointCollect();
+		}
+	}
+	if(GetState()==NORMAL){
+		for(const auto&[id,tunnel]:HamsterGame::Game().GetTunnels()){
+			if(geom2d::overlaps(geom2d::circle<float>(GetPos(),4),geom2d::rect<float>(tunnel.worldPos,{16,16}))){
+				SetState(Hamster::BURROWING);
+				burrowTimer=1.f;
+				enteredTunnel=id;
+			}
 		}
 	}
 }
