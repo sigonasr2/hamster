@@ -47,6 +47,7 @@ All rights reserved.
 #include "Terrain.h"
 #include "SpecialRenderable.h"
 #include "olcPGEX_Graphics3D.h"
+#include "AnimationState.h"
 
 struct Letter{
 	vf2d pos;
@@ -58,16 +59,8 @@ class HamsterGame : public olc::PixelGameEngine
 {
 	const static std::string ASSETS_DIR;
 public:
-	enum AnimationState{
-		DEFAULT,
-		WHEEL_TOP,
-		WHEEL_BOTTOM,
-		JET_LIGHTS,
-		JET_FLAMES,
-		KNOCKOUT,
-	};
-
-	HamsterGame();
+	HamsterGame()=delete;
+	HamsterGame(const std::string&appName);
 	static geom2d::rect<float>SCREEN_FRAME;
 	TransformedView tv{};
 public:
@@ -76,8 +69,8 @@ public:
 	bool OnUserDestroy()override final;
 
 	static const Renderable&GetGFX(const std::string&img);
-	static const Animate2D::Animation<HamsterGame::AnimationState>&GetAnimations(const std::string&img);
-	static const Animate2D::FrameSequence&GetAnimation(const std::string&img,const AnimationState state);
+	static const Animate2D::Animation<AnimationState::AnimationState>&GetAnimations(const std::string&img);
+	static const Animate2D::FrameSequence&GetAnimation(const std::string&img,const AnimationState::AnimationState state);
 	static HamsterGame&Game();
 	static std::unordered_map<uint32_t,Animate2D::FrameSequence>ANIMATED_TILE_IDS;
 	const double GetRuntime()const;
@@ -91,10 +84,10 @@ private:
 	void DrawGame();
 	void LoadGraphics();
 	void LoadAnimations();
-	void LoadLevel(const std::string_view mapName);
-	void _LoadImage(const std::string_view img);
+	void LoadLevel(const std::string&mapName);
+	void _LoadImage(const std::string&img);
 	static std::unordered_map<std::string,Renderable>GFX;
-	static std::unordered_map<std::string,Animate2D::Animation<HamsterGame::AnimationState>>ANIMATIONS;
+	static std::unordered_map<std::string,Animate2D::Animation<AnimationState::AnimationState>>ANIMATIONS;
 	static HamsterGame*self;
 	Border border;
 	void DrawLevelTiles();

@@ -512,8 +512,6 @@ namespace olc
 	#include "olcPixelGameEngine.h"
 #endif
 
-
-
 namespace olc::utils::geom2d
 {
 	// Lemon Meringue

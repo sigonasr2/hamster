@@ -3,16 +3,17 @@
 #include <stdexcept>
 #include <ranges>
 #include "util.h"
+#include "Checkpoint.h"
 
 geom2d::rect<float>HamsterGame::SCREEN_FRAME{{96,0},{320,288}};
-std::unordered_map<std::string,Animate2D::Animation<HamsterGame::AnimationState>>HamsterGame::ANIMATIONS;
+std::unordered_map<std::string,Animate2D::Animation<AnimationState::AnimationState>>HamsterGame::ANIMATIONS;
 std::unordered_map<std::string,Renderable>HamsterGame::GFX;
 const std::string HamsterGame::ASSETS_DIR{"assets/"};
 HamsterGame*HamsterGame::self{nullptr};
 std::unordered_map<uint32_t,Animate2D::FrameSequence>HamsterGame::ANIMATED_TILE_IDS;
 
-HamsterGame::HamsterGame(){
-	sAppName = "Project Hamster";
+HamsterGame::HamsterGame(const std::string&appName){
+	sAppName=appName;
 	HamsterGame::self=this;
 }
 
@@ -32,9 +33,9 @@ bool HamsterGame::OnUserCreate(){
 	return true;
 }
 
-void HamsterGame::_LoadImage(const std::string_view img){
-	GFX.insert({std::string(img),Renderable{}});
-	rcode result{GFX[std::string(img)].Load(ASSETS_DIR+std::string(img),nullptr,false,false)};
+void HamsterGame::_LoadImage(const std::string&img){
+	GFX.insert({img,Renderable{}});
+	rcode result{GFX[img].Load(ASSETS_DIR+img,nullptr,false,false)};
 	if(result!=OK)throw std::runtime_error{std::format("Failed to Load Image {}. OLC Rcode: {}",img,int(result))};
 }
 
@@ -60,13 +61,13 @@ void HamsterGame::LoadGraphics(){
 
 void HamsterGame::LoadAnimations(){
 	auto LoadImageIfRequired=[this](const std::string&img){if(!GFX.count(std::string(img)))_LoadImage(img);};
-	auto LoadStillAnimation=[this,&LoadImageIfRequired](const AnimationState state,const std::string&img){
+	auto LoadStillAnimation=[this,&LoadImageIfRequired](const AnimationState::AnimationState state,const std::string&img){
 		Animate2D::FrameSequence stillAnimation{0.f,Animate2D::Style::OneShot};
 		LoadImageIfRequired(img);
 		stillAnimation.AddFrame(Animate2D::Frame{&GetGFX(img),{{},GetGFX(img).Sprite()->Size()}});
 		ANIMATIONS[std::string(img)].AddState(state,stillAnimation);
 	};
-	auto LoadAnimation=[this,&LoadImageIfRequired](const AnimationState state,const std::string&img,const std::vector<vf2d>frames,const float frameDuration=0.1f,const Animate2D::Style style=Animate2D::Style::Repeat,vf2d frameSize={32,32}){
+	auto LoadAnimation=[this,&LoadImageIfRequired](const AnimationState::AnimationState state,const std::string&img,const std::vector<vf2d>frames,const float frameDuration=0.1f,const Animate2D::Style style=Animate2D::Style::Repeat,vf2d frameSize={32,32}){
 		Animate2D::FrameSequence newAnimation{frameDuration,style};
 		LoadImageIfRequired(img);
 		for(const vf2d&framePos:frames){
@@ -75,10 +76,11 @@ void HamsterGame::LoadAnimations(){
 		ANIMATIONS[std::string(img)].AddState(state,newAnimation);
 	};
 
-	LoadAnimation(DEFAULT,"hamster.png",{{0,32},{32,32}},0.3f);
-	LoadAnimation(WHEEL_TOP,"hamster.png",{{0,96},{32,96}},0.1f);
-	LoadAnimation(WHEEL_BOTTOM,"hamster.png",{{64,96},{96,96}},0.1f);
-	LoadAnimation(KNOCKOUT,"hamster.png",{{64,32},{96,32}},0.2f);
+	LoadAnimation(AnimationState::DEFAULT,"hamster.png",{{0,32},{32,32}},0.3f);
+	LoadAnimation(AnimationState::WHEEL_TOP,"hamster.png",{{0,96},{32,96}},0.1f);
+	LoadAnimation(AnimationState::WHEEL_BOTTOM,"hamster.png",{{64,96},{96,96}},0.1f);
+	LoadAnimation(AnimationState::KNOCKOUT,"hamster.png",{{64,32},{96,32}},0.2f);
+	LoadAnimation(AnimationState::SIDE_VIEW,"hamster.png",{{0,0},{32,0}},0.3f);
 	Animate2D::FrameSequence&waterAnimFrames{(*ANIMATED_TILE_IDS.insert({1384,Animate2D::FrameSequence{0.2f}}).first).second};
 	for(vf2d&sourcePos:std::vector<vf2d>{{192+16*0,784},{192+16*1,784},{192+16*2,784},{192+16*3,784},{192+16*4,784},{192+16*5,784},{192+16*6,784},{192+16*7,784}}){
 		waterAnimFrames.AddFrame(Animate2D::Frame{&GetGFX("gametiles.png"),{sourcePos,{16,16}}});
@@ -87,17 +89,19 @@ void HamsterGame::LoadAnimations(){
 	for(vf2d&sourcePos:std::vector<vf2d>{{192+16*0,800},{192+16*1,800},{192+16*2,800},{192+16*3,800},{192+16*4,800},{192+16*5,800},{192+16*6,800},{192+16*7,800},{192+16*8,800}}){
 		lavaAnimFrames.AddFrame(Animate2D::Frame{&GetGFX("gametiles.png"),{sourcePos,{16,16}}});
 	}
-	LoadAnimation(JET_LIGHTS,"hamster_jet.png",{{0,48},{48,48}},0.3f,Animate2D::Style::Repeat,{48,48});
-	LoadAnimation(JET_FLAMES,"hamster_jet.png",{{48,0},{96,0}},0.15f,Animate2D::Style::Repeat,{48,48});
-
+	LoadAnimation(AnimationState::JET_LIGHTS,"hamster_jet.png",{{0,48},{48,48}},0.3f,Animate2D::Style::Repeat,{48,48});
+	LoadAnimation(AnimationState::JET_FLAMES,"hamster_jet.png",{{48,0},{96,0}},0.15f,Animate2D::Style::Repeat,{48,48});
+	LoadAnimation(AnimationState::DEFAULT,"checkpoint.png",{{}},0.f,Animate2D::Style::OneShot,{128,128});
+	LoadAnimation(AnimationState::CHECKPOINT_CYCLING,"checkpoint.png",{{},{128,0}},0.4f,Animate2D::Style::Repeat,{128,128});
+	LoadAnimation(AnimationState::CHECKPOINT_COLLECTED,"checkpoint.png",{{128,0}},0.f,Animate2D::Style::OneShot,{128,128});
 	animatedWaterTile.Create(16,16,false,false);
 	UpdateWaterTexture();
 }
 
-void HamsterGame::LoadLevel(const std::string_view mapName){
+void HamsterGame::LoadLevel(const std::string&mapName){
 	const vf2d levelSpawnLoc{50,50}; //TEMPORARY
 
-	currentMap=TMXParser{ASSETS_DIR+std::string(mapName)};
+	currentMap=TMXParser{ASSETS_DIR+mapName};
 	cloudSpd.x=util::random_range(-12.f,12.f);
 	cloudSpd.y=util::random_range(-0.3f,0.3f);
 	cloudOffset.x=util::random();
@@ -112,13 +116,17 @@ void HamsterGame::LoadLevel(const std::string_view mapName){
 	Clear(BLANK);
 	SetPixelMode(Pixel::MASK);
 
-	#pragma region Detect powerup tiles
+	#pragma region Detect special tiles
+	{
 		std::vector<Powerup>mapPowerups;
+		std::vector<vf2d>checkpoints;
 		for(const LayerTag&layer:currentMap.value().GetData().GetLayers()){
 			for(size_t y:std::ranges::iota_view(0U,layer.tiles.size())){
 				for(size_t x:std::ranges::iota_view(0U,layer.tiles[y].size())){
 					const int tileID{layer.tiles[y][x]-1};
 					if(Powerup::TileIDIsUpperLeftPowerupTile(tileID))mapPowerups.emplace_back(vf2d{float(x),float(y)}*16+vf2d{16,16},Powerup::TileIDPowerupType(tileID));
+					
+					if(tileID==1485)checkpoints.emplace_back(vf2d{float(x),float(y)}*16+vf2d{48,64});
 					
 					const int numTilesWide{GetGFX("gametiles.png").Sprite()->width/16};
 					const int numTilesTall{GetGFX("gametiles.png").Sprite()->height/16};
@@ -131,6 +139,8 @@ void HamsterGame::LoadLevel(const std::string_view mapName){
 			}
 		}
 		Powerup::Initialize(mapPowerups);
+		Checkpoint::Initialize(checkpoints);
+	}
 	#pragma endregion
 
 	mapImage.Decal()->Update();
@@ -150,6 +160,7 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 	tv.SetWorldOffset(tv.ScaleToWorld(-SCREEN_FRAME.pos)+camera.GetViewPosition());
 	Hamster::UpdateHamsters(fElapsedTime);
 	Powerup::UpdatePowerups(fElapsedTime);
+	Checkpoint::UpdateCheckpoints(fElapsedTime);
 	border.Update(fElapsedTime);
 }
 
@@ -158,6 +169,7 @@ void HamsterGame::DrawGame(){
 	tv.DrawPartialDecal({-3200,-3200},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400},animatedWaterTile.Decal(),{0,0},currentMap.value().GetData().GetMapData().MapSize*16+vf2d{6400,6400});
 	SetZ(0.f);
 	DrawLevelTiles();
+	Checkpoint::DrawCheckpoints(tv);
 	Powerup::DrawPowerups(tv);
 	Hamster::DrawHamsters(tv);
 	SetZ(3.f);
@@ -279,7 +291,7 @@ const Renderable&HamsterGame::GetGFX(const std::string&img){
 	if(!GFX.count(img))throw std::runtime_error{std::format("Image {} does not exist!",img)};
 	return GFX[img];
 }
-const Animate2D::Animation<HamsterGame::AnimationState>&HamsterGame::GetAnimations(const std::string&img){
+const Animate2D::Animation<AnimationState::AnimationState>&HamsterGame::GetAnimations(const std::string&img){
 	if(!ANIMATIONS.count(img))throw std::runtime_error{std::format("Animations for {} does not exist!",img)};
 	return ANIMATIONS[img];
 }
@@ -388,6 +400,7 @@ void HamsterGame::Apply3DTransform(std::vector<DecalInstance>&decals){
 	renderer.SetTransform(matWorld);
 
 	for(DecalInstance&decal:oldDecals){
+		SetDecalMode(decal.mode);
 		if(decal.transform==GFX3DTransform::NO_TRANSFORM)foregroundDecals.emplace_back(decal);
 		else
 		if(decal.points==3){
@@ -427,13 +440,14 @@ void HamsterGame::Apply3DTransform(std::vector<DecalInstance>&decals){
 				renderer.Render(shadowTris,decal.decal,GFX3D::RENDER_TEXTURED|GFX3D::RENDER_DEPTH);
 			}
 		}
+		SetDecalMode(DecalMode::NORMAL);
 	}
 
 	std::sort(decals.begin(),decals.end(),[](const DecalInstance&d1,const DecalInstance&d2){return d1.z[0]>d2.z[0];});
 	std::copy(foregroundDecals.begin(),foregroundDecals.end(),std::back_inserter(decals));
 }
 
-const Animate2D::FrameSequence&HamsterGame::GetAnimation(const std::string&img,const AnimationState state){
+const Animate2D::FrameSequence&HamsterGame::GetAnimation(const std::string&img,const AnimationState::AnimationState state){
 	return GetAnimations(img).GetFrames(state);
 }
 
@@ -450,7 +464,7 @@ const bool HamsterGame::IsInBounds(const vf2d pos)const{
 
 int main()
 {
-	HamsterGame game;
+	HamsterGame game("Project Hamster");
 	if(game.Construct(512, 288, 3, 3))
 		game.Start();
 

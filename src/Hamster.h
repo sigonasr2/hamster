@@ -44,6 +44,7 @@ All rights reserved.
 #include <unordered_set>
 #include "HamsterJet.h"
 #include "HamsterGame.h"
+#include "Checkpoint.h"
 
 class Hamster{
 	friend class HamsterJet;
@@ -71,7 +72,7 @@ class Hamster{
 	static const std::string PLAYER_HAMSTER_IMAGE;
 
 	const float DEFAULT_MAX_SPD{128.f};
-	const float DEFAULT_TIME_TO_MAX_SPD{0.5f};
+	const float DEFAULT_TIME_TO_MAX_SPD{0.3f};
 	const float DEFAULT_FRICTION{400.f};
 	const float DEFAULT_TURN_SPD{2.f*geom2d::pi};
 	const float DEFAULT_BUMP_AMT{100.f};
@@ -95,7 +96,7 @@ class Hamster{
 	float imgScale{1.f};
 	Pixel shrinkEffectColor{BLACK};
 	std::string img;
-	Animate2D::Animation<HamsterGame::AnimationState>animations;
+	Animate2D::Animation<AnimationState::AnimationState>animations;
 	Animate2D::AnimationState internalAnimState;
 	PlayerControlled IsPlayerControlled;
 	static std::optional<Hamster*>playerHamster;
@@ -110,6 +111,8 @@ class Hamster{
 	float jetFuel{0.f};
 	float jetFuelDisplayAmt{0.f};
 	float knockoutTimer{0.f};
+	std::unordered_set<Checkpoint>checkpointsCollected;
+	float raceFinishAnimTimer{0.f};
 public:
 	Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled=NPC);
 	static const Hamster&GetPlayer();
@@ -151,4 +154,5 @@ public:
 	const float GetSpeed()const;
 	const Terrain::TerrainType GetTerrainHoveringOver()const;
 	void SetState(const HamsterState state);
+	const bool CollectedAllCheckpoints()const;
 };

@@ -40,6 +40,7 @@ All rights reserved.
 #include "Hamster.h"
 #include "util.h"
 #include <ranges>
+#include "AnimationState.h"
 
 std::vector<Hamster>Hamster::HAMSTER_LIST;
 const uint8_t Hamster::MAX_HAMSTER_COUNT{100U};
@@ -53,7 +54,7 @@ std::optional<Hamster*>Hamster::playerHamster;
 Hamster::Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled)
 :pos(spawnPos),IsPlayerControlled(IsPlayerControlled){
 	animations=HamsterGame::GetAnimations(img);
-	animations.ChangeState(internalAnimState,HamsterGame::DEFAULT);
+	animations.ChangeState(internalAnimState,AnimationState::DEFAULT);
 }
 
 void Hamster::UpdateHamsters(const float fElapsedTime){
@@ -65,7 +66,7 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 		h.HandleCollision();
 		switch(h.state){
 			case NORMAL:{
-				if(h.bumpTimer<=0.f){
+				if(h.bumpTimer<=0.f&&!h.CollectedAllCheckpoints()){
 					if(h.IsPlayerControlled){
 						h.HandlePlayerControls();
 					}else{
@@ -114,7 +115,7 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 				h.knockoutTimer-=fElapsedTime;
 				if(h.knockoutTimer<=0.f){
 					h.SetState(NORMAL);
-					h.animations.ChangeState(h.internalAnimState,HamsterGame::DEFAULT);
+					h.animations.ChangeState(h.internalAnimState,AnimationState::DEFAULT);
 				}
 			}break;
 		}
@@ -143,6 +144,10 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 			h.readyFlashTimer+=fElapsedTime;
 			h.jetFuelDisplayAmt+=(h.jetFuel-h.jetFuelDisplayAmt)*4.f*fElapsedTime;
 		}
+		if(h.CollectedAllCheckpoints()){
+			h.animations.ChangeState(h.internalAnimState,AnimationState::SIDE_VIEW);
+			h.raceFinishAnimTimer+=fElapsedTime;
+		}
 	}
 }
 
@@ -162,19 +167,33 @@ void Hamster::LoadHamsters(const vf2d startingLoc){
 void Hamster::DrawHamsters(TransformedView&tv){
 	for(Hamster&h:HAMSTER_LIST){
 		const Animate2D::FrameSequence&anim{h.animations.GetFrames(h.internalAnimState)};
-		const Animate2D::FrameSequence&wheelTopAnim{h.animations.GetFrames(HamsterGame::WHEEL_TOP)};
-		const Animate2D::FrameSequence&wheelBottomAnim{h.animations.GetFrames(HamsterGame::WHEEL_BOTTOM)};
-		const Animate2D::Frame&img{h.animations.GetState(h.internalAnimState)==HamsterGame::DEFAULT?anim.GetFrame(h.distanceTravelled/100.f):h.GetCurrentAnimation()};
+		const Animate2D::FrameSequence&wheelTopAnim{h.animations.GetFrames(AnimationState::WHEEL_TOP)};
+		const Animate2D::FrameSequence&wheelBottomAnim{h.animations.GetFrames(AnimationState::WHEEL_BOTTOM)};
+		const Animate2D::Frame&img{h.animations.GetState(h.internalAnimState)==AnimationState::DEFAULT?anim.GetFrame(h.distanceTravelled/100.f):h.GetCurrentAnimation()};
 		const Animate2D::Frame&wheelTopImg{wheelTopAnim.GetFrame(h.distanceTravelled/80.f)};
 		const Animate2D::Frame&wheelBottomImg{wheelBottomAnim.GetFrame(h.distanceTravelled/80.f)};
-		if(h.hamsterJet.has_value())h.hamsterJet.value().Draw();
-		HamsterGame::Game().SetZ(h.z);
-		if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos+vf2d{0.f,h.drawingOffsetY},wheelBottomImg.GetSourceImage()->Decal(),h.rot,wheelBottomImg.GetSourceRect().size/2,wheelBottomImg.GetSourceRect().pos,wheelBottomImg.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
-		HamsterGame::Game().SetZ(h.z+0.005f);
-		tv.DrawPartialRotatedDecal(h.pos+vf2d{0.f,h.drawingOffsetY},img.GetSourceImage()->Decal(),h.rot,img.GetSourceRect().size/2,img.GetSourceRect().pos,img.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
-		HamsterGame::Game().SetZ(h.z+0.01f);
-		if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos+vf2d{0.f,h.drawingOffsetY},wheelTopImg.GetSourceImage()->Decal(),h.rot,wheelTopImg.GetSourceRect().size/2,wheelTopImg.GetSourceRect().pos,wheelTopImg.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,{255,255,255,192},h.imgScale));
-		HamsterGame::Game().SetZ(0.f);
+		if(h.CollectedAllCheckpoints()){
+			float animCycle{fmod(h.raceFinishAnimTimer,1.5f)};
+			float facingXScale{fmod(h.raceFinishAnimTimer,3.f)>=1.5f?-1.f:1.f};
+			float yHopAmt{0.f};
+			if(animCycle>=0.8f){
+				yHopAmt=-abs(sin(geom2d::pi*(animCycle/0.35f)))*12.f;
+			}
+			if(h.hamsterJet.has_value())h.hamsterJet.value().Draw();
+			HamsterGame::Game().SetZ(h.z);
+			tv.DrawRotatedDecal(h.pos+vf2d{0.f,h.drawingOffsetY},HamsterGame::GetGFX("shadow.png").Decal(),0.f,HamsterGame::GetGFX("shadow.png").Sprite()->Size()/2);
+			HamsterGame::Game().SetZ(h.z+0.005f);
+			tv.DrawPartialRotatedDecal(h.pos+vf2d{0.f,h.drawingOffsetY+yHopAmt},img.GetSourceImage()->Decal(),0.f,img.GetSourceRect().size/2,img.GetSourceRect().pos,img.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale*vf2d{facingXScale,1.f},PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
+			HamsterGame::Game().SetZ(h.z);
+		}else{
+			if(h.hamsterJet.has_value())h.hamsterJet.value().Draw();
+			HamsterGame::Game().SetZ(h.z);
+			if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos+vf2d{0.f,h.drawingOffsetY},wheelBottomImg.GetSourceImage()->Decal(),h.rot,wheelBottomImg.GetSourceRect().size/2,wheelBottomImg.GetSourceRect().pos,wheelBottomImg.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
+			tv.DrawPartialRotatedDecal(h.pos+vf2d{0.f,h.drawingOffsetY},img.GetSourceImage()->Decal(),h.rot,img.GetSourceRect().size/2,img.GetSourceRect().pos,img.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,WHITE,h.imgScale));
+			HamsterGame::Game().SetZ(h.z+0.01f);
+			if(h.HasPowerup(Powerup::WHEEL))tv.DrawPartialRotatedDecal(h.pos+vf2d{0.f,h.drawingOffsetY},wheelTopImg.GetSourceImage()->Decal(),h.rot,wheelTopImg.GetSourceRect().size/2,wheelTopImg.GetSourceRect().pos,wheelTopImg.GetSourceRect().size,vf2d{1.f,1.f}*h.imgScale,PixelLerp(h.shrinkEffectColor,{255,255,255,192},h.imgScale));
+			HamsterGame::Game().SetZ(0.f);
+		}
 	}
 }
 
@@ -185,7 +204,7 @@ void Hamster::DrawOverlay(){
 	Pixel jetDisplayCol{VERY_DARK_GREY};
 	if(!GetPlayer().hamsterJet.has_value()){
 		if(GetPlayer().HasPowerup(Powerup::JET))jetDisplayCol=WHITE;
-		const Animate2D::FrameSequence&lightAnim{HamsterGame::Game().GetAnimation("hamster_jet.png",HamsterGame::AnimationState::JET_LIGHTS)};
+		const Animate2D::FrameSequence&lightAnim{HamsterGame::Game().GetAnimation("hamster_jet.png",AnimationState::JET_LIGHTS)};
 		const Animate2D::Frame&lightFrame{lightAnim.GetFrame(HamsterGame::Game().GetRuntime())};
 		HamsterGame::Game().DrawPartialRotatedDecal(jetDisplayOffset+vf2d{48.f,80.f},GetPlayer().hamsterJetDisplay.Decal(),0.f,{24.f,24.f},{0.f,0.f},{48.f,48.f},{2.f,2.f},jetDisplayCol);
 		HamsterGame::Game().DrawPartialRotatedDecal(jetDisplayOffset+vf2d{48.f,80.f},GetPlayer().hamsterJetLightsDisplay.Decal(),0.f,{24.f,24.f},lightFrame.GetSourceRect().pos,lightFrame.GetSourceRect().size,{2.f,2.f},jetDisplayCol);
@@ -254,7 +273,7 @@ void Hamster::HandlePlayerControls(){
 	if(aimingDir!=vf2d{}){
 		targetRot=aimingDir.norm().polar().y;
 		const vf2d currentVel{vel};
-		vel+=vf2d{currentVel.polar().x+(GetMaxSpeed()*HamsterGame::Game().GetElapsedTime())/GetTimeToMaxSpeed(),rot}.cart();
+		vel=vf2d{currentVel.polar().x+((GetMaxSpeed()/GetTimeToMaxSpeed())*HamsterGame::Game().GetElapsedTime()),rot}.cart();
 		vel=vf2d{std::min(GetMaxSpeed(),vel.polar().x),vel.polar().y}.cart();
 		frictionEnabled=false;
 	}
@@ -329,6 +348,12 @@ void Hamster::HandleCollision(){
 			powerup.OnPowerupObtain(*this);
 		}
 	}
+	for(Checkpoint&checkpoint:Checkpoint::GetCheckpoints()){
+		if(z<=0.1f&&geom2d::overlaps(geom2d::rect<float>(checkpoint.GetPos()-vf2d{62,60},{122.f,113.f}),geom2d::circle<float>(GetPos(),collisionRadius))&&!checkpointsCollected.count(checkpoint)){
+			checkpointsCollected.insert(checkpoint);
+			checkpoint.OnCheckpointCollect();
+		}
+	}
 }
 
 const float Hamster::GetRadius()const{
@@ -353,8 +378,8 @@ const float Hamster::GetTimeToMaxSpeed()const{
 	if(!HasPowerup(Powerup::ICE)&&GetTerrainStandingOn()==Terrain::ICE)finalTimeToMaxSpd*=3;
 	else if(!HasPowerup(Powerup::SWAMP)&&GetTerrainStandingOn()==Terrain::SWAMP)finalTimeToMaxSpd*=1.25;
 	if(hamsterJet.has_value()){
-		if(hamsterJet.value().GetState()==HamsterJet::LANDING)finalTimeToMaxSpd*=5.f;
-		else if(state==FLYING)finalTimeToMaxSpd*=30.f;
+		if(hamsterJet.value().GetState()==HamsterJet::LANDING)finalTimeToMaxSpd*=2.f;
+		else if(state==FLYING)finalTimeToMaxSpd*=3.f;
 	}
 	return finalTimeToMaxSpd;
 }
@@ -534,7 +559,7 @@ void Hamster::SetJetFuel(const float amt){
 void Hamster::Knockout(){
 	SetState(KNOCKOUT);
 	knockoutTimer=4.f;
-	animations.ChangeState(internalAnimState,HamsterGame::KNOCKOUT);
+	animations.ChangeState(internalAnimState,AnimationState::KNOCKOUT);
 }
 
 const float Hamster::GetSpeed()const{
@@ -543,4 +568,8 @@ const float Hamster::GetSpeed()const{
 
 void Hamster::SetState(const HamsterState state){
 	this->state=state;
+}
+
+const bool Hamster::CollectedAllCheckpoints()const{
+	return checkpointsCollected.size()==Checkpoint::GetCheckpoints().size();
 }
