@@ -9,3 +9,5 @@
 #include "TSXParser.h"
 #define OLC_PGEX_GRAPHICS3D
 #include "olcPGEX_Graphics3D.h"
+#define OLC_PGEX_VIEWPORT
+#include "olcPGEX_Viewport.h"

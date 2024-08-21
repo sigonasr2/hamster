@@ -31,6 +31,13 @@ bool HamsterGame::OnUserCreate(){
 	border.ChangeBorder(Border::DEFAULT);
 
 	renderer.SetProjection(90.0f, (float)SCREEN_FRAME.size.x/(float)SCREEN_FRAME.size.y, 0.1f, 1000.0f, 0, SCREEN_FRAME.pos.y, 512, SCREEN_FRAME.size.y);
+	std::vector<vf2d>radarCircle;
+	for(int i=360;i>=0;i-=4){
+		float angle=util::degToRad(float(i))-geom2d::pi/2;
+		if(i==360){radarCircle.push_back(vf2d{cos(angle),sin(angle)}*42+43);}
+		radarCircle.push_back(vf2d{cos(angle),sin(angle)}*43+vf2d{43,44});
+	}
+	radar=ViewPort{radarCircle,{5.f,8.f}};
 	return true;
 }
 
@@ -57,6 +64,7 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("fuelbar_outline.png");
 	_LoadImage("speedometer.png");
 	_LoadImage("speedometer_overlay.png");
+	_LoadImage("radar.png");
 	UpdateMatrixTexture();
 }
 
@@ -190,7 +198,7 @@ void HamsterGame::DrawGame(){
 		for(int y:std::ranges::iota_view(0,4)){
 			for(int x:std::ranges::iota_view(0,2)){
 				const int powerupInd{y*2+x};
-				const float drawX{x*32.f+20.f};
+				const float drawX{x*32.f+16.f};
 				const float drawY{y*32.f+12.f+96.f};
 				const Powerup::PowerupType powerupType{Powerup::PowerupType(powerupInd)};
 				const geom2d::rect<float>powerupSubimageRect{Powerup::GetPowerupSubimageRect(powerupType)};
@@ -246,6 +254,8 @@ void HamsterGame::DrawGame(){
 		}
 	}
 	DrawStringDecal(SCREEN_FRAME.pos+SCREEN_FRAME.size-speedometerStrSize-vf2d{4.f,4.f},speedometerStr,speedometerCol);
+	radar.FillRectDecal({},{128,128},GREEN);
+	DrawDecal({2.f,4.f},GetGFX("radar.png").Decal());
 }
 
 const Terrain::TerrainType HamsterGame::GetTerrainTypeAtPos(const vf2d pos)const{

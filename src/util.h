@@ -48,4 +48,5 @@ namespace olc::util{
 	float angle_difference(float angle_1, float angle_2);
 	void turn_towards_direction(float&angle,float target,float rate);
 	float lerp(float n1,float n2,double t);
+	float degToRad(float deg);
 };

@@ -48,6 +48,7 @@ All rights reserved.
 #include "SpecialRenderable.h"
 #include "olcPGEX_Graphics3D.h"
 #include "AnimationState.h"
+#include "olcPGEX_Viewport.h"
 
 struct Letter{
 	vf2d pos;
@@ -112,4 +113,5 @@ private:
 	vf2d cloudSpd{};
 	vf2d cloudOffset{};
 	float speedometerDisplayAmt{0.f};
+	ViewPort radar;
 };

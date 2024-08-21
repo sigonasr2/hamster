@@ -51,3 +51,6 @@ void olc::util::turn_towards_direction(float&angle,float target,float rate)
 float olc::util::lerp(float n1,float n2,double t){
 	return float(n1*(1-t)+n2*t);
 }
+float olc::util::degToRad(float deg){
+	return deg*(geom2d::pi/180);
+}
