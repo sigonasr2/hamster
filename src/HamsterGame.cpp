@@ -194,13 +194,25 @@ void HamsterGame::DrawGame(){
 				const float drawY{y*32.f+12.f+96.f};
 				const Powerup::PowerupType powerupType{Powerup::PowerupType(powerupInd)};
 				const geom2d::rect<float>powerupSubimageRect{Powerup::GetPowerupSubimageRect(powerupType)};
+				const Powerup tempPowerup{{},powerupType};
+				const std::string powerupName{tempPowerup.GetName()};
+				const vf2d powerupTextSize{GetTextSize(powerupName)};
 				if(Hamster::GetPlayer().HasPowerup(powerupType)){
 					SetDecalMode(DecalMode::ADDITIVE);
 					DrawPartialRotatedDecal(vf2d{drawX,drawY}+16,GetGFX("gametiles.png").Decal(),0.f,{16.f,16.f},powerupSubimageRect.pos,powerupSubimageRect.size,{1.1f,1.1f});
 					SetDecalMode(DecalMode::NORMAL);
 					DrawPartialDecal({drawX,drawY},GetGFX("gametiles.png").Decal(),powerupSubimageRect.pos,powerupSubimageRect.size);
+					SetDecalMode(DecalMode::ADDITIVE);
+					for(int y:std::ranges::iota_view(-1,2)){
+						for(int x:std::ranges::iota_view(-1,2)){
+							DrawRotatedStringDecal(vf2d{drawX+16.f,drawY+32.f}+vi2d{x,y},powerupName,0.f,powerupTextSize/2,CYAN,{0.5f,1.f});
+						}
+					}
+					SetDecalMode(DecalMode::NORMAL);
+					DrawRotatedStringDecal({drawX+16.f,drawY+32.f},powerupName,0.f,powerupTextSize/2,VERY_DARK_BLUE,{0.5f,1.f});
 				}else{
 					DrawPartialDecal({drawX,drawY},GetGFX("gametiles.png").Decal(),powerupSubimageRect.pos,powerupSubimageRect.size,{1.f,1.f},VERY_DARK_GREY);
+					DrawRotatedStringDecal({drawX+16.f,drawY+32.f},powerupName,0.f,powerupTextSize/2,DARK_GREY,{0.5f,1.f});
 				}
 			}
 		}

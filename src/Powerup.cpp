@@ -43,6 +43,16 @@ All rights reserved.
 std::vector<Powerup>Powerup::powerupList;
 std::unordered_map<int,std::pair<Powerup::PowerupType,Powerup::TileType>>Powerup::powerupIds;
 const vf2d Powerup::POWERUP_TILESET_STARTING_POS{144.f,816.f};
+std::unordered_map<Powerup::PowerupType,std::string>Powerup::powerupNames{
+	{WHEEL,"WHEEL"},
+	{GRASS,"GRASS"},
+	{SAND,"SAND"},
+	{SWAMP,"SWAMP"},
+	{LAVA,"LAVA"},
+	{FOREST,"FOREST"},
+	{ICE,"ICE"},
+	{JET,"JET"},
+};
 
 Powerup::Powerup(const vf2d pos,const PowerupType type)
 :pos(pos),type(type){}
@@ -116,4 +126,8 @@ const geom2d::rect<float>Powerup::GetPowerupSubimageRect(const PowerupType power
 void Powerup::OnPowerupObtain(Hamster&pickupHamster){
 	spinSpd=0.3f;
 	if(type==JET)pickupHamster.SetJetFuel(1.f);
+}
+
+const std::string&Powerup::GetName()const{
+	return powerupNames.at(type);
 }
