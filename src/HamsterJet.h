@@ -37,7 +37,7 @@ All rights reserved.
 #pragma endregion
 #pragma once
 
-#include "olcUTIL_Geometry2D.h"
+#include "olcPixelGameEngine.h"
 #include "Terrain.h"
 
 class Hamster;
@@ -79,7 +79,7 @@ private:
 public:
 	HamsterJet(Hamster&hamster);
 	void Update(const float fElapsedTime);
-	void Draw();
+	void Draw(const Pixel blendCol);
 	void DrawOverlay()const;
 	void HandlePlayerControls();
 	void HandleAIControls();

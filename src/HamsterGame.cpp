@@ -93,6 +93,8 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("radar.png");
 	_LoadImage("checkpoint_arrow.png");
 	_LoadImage("radaricons.png");
+	_LoadImage("boost.png");
+	_LoadImage("boost_outline.png");
 }
 
 void HamsterGame::LoadAnimations(){

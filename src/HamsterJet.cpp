@@ -133,7 +133,7 @@ void HamsterJet::Update(const float fElapsedTime){
 		}break;
 	}
 }
-void HamsterJet::Draw(){
+void HamsterJet::Draw(const Pixel blendCol){
 	float drawingOffsetY{0.f};
 	hamster.SetDrawingOffsetY(0.f);
 	if((state==HAMSTER_CONTROL||state==LANDING)&&z>2.f){
@@ -147,7 +147,7 @@ void HamsterJet::Draw(){
 	HamsterGame::Game().SetZ(z);
 	const Animate2D::FrameSequence&jetAnim{HamsterGame::Game().GetAnimation("hamster_jet.png",AnimationState::JET)};
 	const Animate2D::Frame&jetFrame{jetAnim.GetFrame(HamsterGame::Game().GetRuntime())};
-	HamsterGame::Game().tv.DrawPartialRotatedDecal(pos+vf2d{0,drawingOffsetY},jetFrame.GetSourceImage()->Decal(),0.f,jetFrame.GetSourceRect().size/2,jetFrame.GetSourceRect().pos,jetFrame.GetSourceRect().size);
+	HamsterGame::Game().tv.DrawPartialRotatedDecal(pos+vf2d{0,drawingOffsetY},jetFrame.GetSourceImage()->Decal(),0.f,jetFrame.GetSourceRect().size/2,jetFrame.GetSourceRect().pos,jetFrame.GetSourceRect().size,{1.f,1.f},blendCol);
 	const Animate2D::FrameSequence&flameAnim{HamsterGame::Game().GetAnimation("hamster_jet.png",AnimationState::JET_FLAMES)};
 	const Animate2D::Frame&flameFrame{flameAnim.GetFrame(HamsterGame::Game().GetRuntime())};
 	HamsterGame::Game().SetZ(z+0.01f);
@@ -264,14 +264,37 @@ void HamsterJet::HandleAIControls(){
 	if(GetState()==LANDING){
 		fallSpd=hamster.GetAILandingSpeed();
 	}
+	
+	vf2d targetLoc{action.pos};
+	if(action.type==HamsterAI::Action::MOVE)targetLoc+=hamster.GetAINodePositionVariance()*8.f;
+	if(hamster.temporaryNode.has_value())targetLoc=hamster.temporaryNode.value();
 
 	vf2d diff{action.pos-hamster.GetPos()};
-	if(diff.mag()<172.f){
+	float variance{hamster.GetAINodeDistanceVariance()*10.75f};
+	if(action.type!=HamsterAI::Action::MOVE)variance=172.f;
+	if(diff.mag()<variance){
 		if(action.type==HamsterAI::Action::LANDING){
 			state=LANDING;
 			easeInTimer=0.f;
 		}
 		hamster.ai.AdvanceToNextAction();
+		const HamsterAI::ActionOptRef&nextAction{hamster.ai.GetCurrentAction()};
+		if(nextAction.has_value()){
+			const HamsterAI::Action&futureAction{nextAction.value().get()};
+			if(futureAction.type==HamsterAI::Action::MOVE){
+				switch(hamster.ai.GetAIType()){
+					case HamsterAI::SMART:{
+						if(util::random()%100<2)hamster.ai.AdvanceToNextAction();
+					}break;
+					case HamsterAI::NORMAL:{
+						if(util::random()%100<25)hamster.ai.AdvanceToNextAction();
+					}break;
+					case HamsterAI::DUMB:{
+						if(util::random()%100<50)hamster.ai.AdvanceToNextAction();
+					}break;
+				}
+			}
+		}
 		if(hamster.chooseTemporaryNodeNext){
 			int MAX_SEARCH_AMT{100};
 			float SEARCH_RANGE{1.f};

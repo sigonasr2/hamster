@@ -126,6 +126,9 @@ class Hamster{
 	std::optional<vf2d>temporaryNode;
 	bool chooseTemporaryNodeNext{false};
 	int randomId{};
+	uint8_t boostCounter{};
+	float boostTimer{};
+	float canCollectWheelPowerupTimer{};
 public:
 	Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled=NPC);
 	static const Hamster&GetPlayer();
