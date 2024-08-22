@@ -63,12 +63,15 @@ public:
 	using ActionOptRef=std::optional<std::reference_wrapper<HamsterAI::Action>>;
 	const ActionOptRef GetCurrentAction();
 	const ActionOptRef AdvanceToNextAction();
-	const AIType GetAIType();
+	const ActionOptRef GetPreviousAction();
+	const ActionOptRef RevertToPreviousAction();
+	const AIType GetAIType()const;
 	void LoadAI(const std::string&mapName,AIType type);
 
 	static void OnMove(const vi2d pos);
 	static void OnPowerupCollection(const vi2d pos);
 	static void OnJetLaunch(const vi2d pos);
+	static void OnJetBeginLanding(const vi2d pos);
 	static void OnTunnelEnter(const vi2d pos);
 	static void OnCheckpointCollected(const vi2d pos);
 

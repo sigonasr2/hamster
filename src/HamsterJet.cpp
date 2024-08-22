@@ -88,9 +88,9 @@ void HamsterJet::Update(const float fElapsedTime){
 			easeInTimer=std::max(0.f,easeInTimer-fElapsedTime);
 			jetState[TOP_LEFT]=jetState[BOTTOM_LEFT]=jetState[BOTTOM_RIGHT]=jetState[TOP_RIGHT]=OFF;
 			if(hamster.CanMove()){
-				if(hamster.IsPlayerControlled)HandleJetControls();
+				if(hamster.IsPlayerControlled)HandlePlayerControls();
 				else{
-					//TODO: AI controls here!
+					HandleAIControls();
 				}
 			}
 		}break;
@@ -98,9 +98,9 @@ void HamsterJet::Update(const float fElapsedTime){
 			easeInTimer=std::min(0.6f,easeInTimer+fElapsedTime);
 			jetState[TOP_LEFT]=jetState[BOTTOM_LEFT]=jetState[BOTTOM_RIGHT]=jetState[TOP_RIGHT]=OFF;
 			if(hamster.CanMove()){
-				if(hamster.IsPlayerControlled)HandleJetControls();
+				if(hamster.IsPlayerControlled)HandlePlayerControls();
 				else{
-					//TODO: AI controls here!
+					HandleAIControls();
 				}
 			}
 			pos=hamster.GetPos();
@@ -162,7 +162,7 @@ void HamsterJet::Draw(){
 	HamsterGame::Game().SetZ(0.f);
 }
 
-void HamsterJet::HandleJetControls(){
+void HamsterJet::HandlePlayerControls(){
 	lastTappedSpace+=HamsterGame::Game().GetElapsedTime();
 	vf2d aimingDir{};
 	if(HamsterGame::Game().GetKey(W).bHeld){
@@ -199,9 +199,10 @@ void HamsterJet::HandleJetControls(){
 		fallSpd=std::max(1.f,fallSpd-5.f*HamsterGame::Game().GetElapsedTime());
 	}
 	if(HamsterGame::Game().GetKey(SPACE).bPressed){
-		if(lastTappedSpace<=0.6f){
+		if(lastTappedSpace<=0.6f&&state!=LANDING){
 			state=LANDING;
 			easeInTimer=0.f;
+			if(hamster.IsPlayerControlled)HamsterAI::OnJetBeginLanding(pos);
 		}
 		lastTappedSpace=0.f;
 	}
@@ -233,4 +234,76 @@ Terrain::CrashSpeed HamsterJet::GetLandingSpeed()const{
 
 const float HamsterJet::GetZ()const{
 	return z;
+}
+
+void HamsterJet::HandleAIControls(){
+	vf2d aimingDir{};
+	if(GetState()==LANDING)return;
+
+	const HamsterAI::ActionOptRef&currentAction{hamster.ai.GetCurrentAction()};
+	if(!currentAction.has_value())return;
+	const HamsterAI::Action&action{currentAction.value().get()};
+
+	if(hamster.aiNodeTime>hamster.GetAIAdjustNodeTime()){
+		if(hamster.ai.GetPreviousAction().has_value()&&hamster.ai.GetPreviousAction().value().get().type==HamsterAI::Action::MOVE){
+			hamster.ai.RevertToPreviousAction();
+			hamster.chooseTemporaryNodeNext=true;
+		}else{
+			int MAX_SEARCH_AMT{100};
+			float SEARCH_RANGE{1.f};
+			while(MAX_SEARCH_AMT>0){
+				hamster.temporaryNode=hamster.GetPos()+vf2d{util::random_range(-SEARCH_RANGE*16,SEARCH_RANGE*16),util::random_range(-SEARCH_RANGE*16,SEARCH_RANGE*16)};
+				if(!HamsterGame::Game().IsTerrainSolid(hamster.temporaryNode.value()))break;
+				SEARCH_RANGE+=1.25f;
+				MAX_SEARCH_AMT--;
+			}
+		}
+		hamster.aiNodeTime=0.f;
+	}
+
+	if(GetState()==LANDING){
+		fallSpd=hamster.GetAILandingSpeed();
+	}
+
+	vf2d diff{action.pos-hamster.GetPos()};
+	if(diff.mag()<172.f){
+		if(action.type==HamsterAI::Action::LANDING){
+			state=LANDING;
+			easeInTimer=0.f;
+		}
+		hamster.ai.AdvanceToNextAction();
+		if(hamster.chooseTemporaryNodeNext){
+			int MAX_SEARCH_AMT{100};
+			float SEARCH_RANGE{1.f};
+			while(MAX_SEARCH_AMT>0){
+				hamster.temporaryNode=hamster.GetPos()+vf2d{util::random_range(-SEARCH_RANGE*16,SEARCH_RANGE*16),util::random_range(-SEARCH_RANGE*16,SEARCH_RANGE*16)};
+				if(!HamsterGame::Game().IsTerrainSolid(hamster.temporaryNode.value()))break;
+				SEARCH_RANGE+=1.25f;
+				MAX_SEARCH_AMT--;
+			}
+		}else hamster.temporaryNode.reset();
+		hamster.chooseTemporaryNodeNext=false;
+		hamster.aiNodeTime=0.f;
+	}
+	const float moveThreshold{32.f};
+
+	if(diff.y<-moveThreshold){
+		aimingDir+=vf2d{0,-1};
+	}
+	if(diff.x>moveThreshold){
+		aimingDir+=vf2d{1,0};
+	}
+	if(diff.y>moveThreshold){
+		aimingDir+=vf2d{0,1};
+	}
+	if(diff.x<-moveThreshold){
+		aimingDir+=vf2d{-1,0};
+	}
+	if(aimingDir!=vf2d{}){
+		hamster.targetRot=aimingDir.norm().polar().y;
+		const vf2d currentVel{hamster.vel};
+		hamster.vel=vf2d{currentVel.polar().x+((hamster.GetMaxSpeed()/hamster.GetTimeToMaxSpeed())*HamsterGame::Game().GetElapsedTime()),hamster.rot}.cart();
+		hamster.vel=vf2d{std::min(hamster.GetMaxSpeed(),hamster.vel.polar().x),hamster.vel.polar().y}.cart();
+		hamster.frictionEnabled=false;
+	}
 }

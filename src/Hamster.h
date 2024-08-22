@@ -122,6 +122,9 @@ class Hamster{
 	float burrowImgShrinkTimer{};
 	uint16_t enteredTunnel{};
 	HamsterAI ai;
+	float aiNodeTime{0.f};
+	std::optional<vf2d>temporaryNode;
+	bool chooseTemporaryNodeNext{false};
 public:
 	Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled=NPC);
 	static const Hamster&GetPlayer();
@@ -133,7 +136,7 @@ public:
 	const vf2d&GetPos()const;
 	const float&GetZ()const;
 	void HandlePlayerControls();
-	void HandleNPCControls();
+	void HandleAIControls();
 	void TurnTowardsTargetDirection();
 	void MoveHamster();
 	void HandleCollision();
@@ -171,4 +174,7 @@ public:
 	const bool BurnedOrDrowned()const;
 	const bool CanMove()const;
 	const bool FlyingInTheAir()const;
+	const float GetAILandingSpeed()const;
+	const float GetAIAdjustNodeTime()const;
+	const bool IsBurrowed()const;
 };

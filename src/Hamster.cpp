@@ -63,6 +63,7 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 	for(Hamster&h:HAMSTER_LIST){
 		h.lastSafeLocationTimer=std::max(0.f,h.lastSafeLocationTimer-fElapsedTime);
 		h.animations.UpdateState(h.internalAnimState,fElapsedTime);
+		h.aiNodeTime+=fElapsedTime;
 		h.frictionEnabled=true;
 		h.bumpTimer-=fElapsedTime;
 		h.HandleCollision();
@@ -72,7 +73,7 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 					if(h.IsPlayerControlled){
 						h.HandlePlayerControls();
 					}else{
-						h.HandleNPCControls();
+						h.HandleAIControls();
 					}
 				}
 			}break;
@@ -132,14 +133,28 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 			}break;
 			case BURROW_WAIT:{
 				h.burrowTimer-=fElapsedTime;
+				const Tunnel&enteredTunnel{HamsterGame::Game().GetTunnels().at(h.enteredTunnel)};
+				const vf2d destinationTunnelPos{HamsterGame::Game().GetTunnels().at(enteredTunnel.linkedTo).worldPos+vi2d{8,8}};
 				if(h.burrowTimer<=0.f){
 					h.burrowTimer=1.f;
 					h.SetState(SURFACING);
 					h.imgScale=0.f;
 					h.burrowImgShrinkTimer=0.5f;
+					switch(HamsterGame::Game().GetTileFacingDirection(destinationTunnelPos)){
+						case Terrain::NORTH:{
+							h.targetRot=-geom2d::pi/2;
+						}break;
+						case Terrain::EAST:{
+							h.targetRot=0.f;
+						}break;
+						case Terrain::SOUTH:{
+							h.targetRot=geom2d::pi/2;
+						}break;
+						case Terrain::WEST:{
+							h.targetRot=geom2d::pi;
+						}break;
+					}
 				}
-				const Tunnel&enteredTunnel{HamsterGame::Game().GetTunnels().at(h.enteredTunnel)};
-				const vf2d destinationTunnelPos{HamsterGame::Game().GetTunnels().at(enteredTunnel.linkedTo).worldPos+vi2d{8,8}};
 				h.pos=destinationTunnelPos.lerp(enteredTunnel.worldPos+vi2d{8,8},h.burrowTimer/3.f);
 			}break;
 			case SURFACING:{
@@ -346,6 +361,7 @@ void Hamster::TurnTowardsTargetDirection(){
 }
 
 void Hamster::MoveHamster(){
+	if(IsBurrowed())return;
 	SetPos(GetPos()+vel*HamsterGame::Game().GetElapsedTime());
 	
 	distanceTravelled+=vel.mag()*HamsterGame::Game().GetElapsedTime();
@@ -363,8 +379,10 @@ void Hamster::MoveHamster(){
 }
 
 void Hamster::HandleCollision(){
+	if(IsBurrowed())return;
 	for(Hamster&h:HAMSTER_LIST){
 		if(this==&h)continue;
+		if(h.IsBurrowed())continue;
 		if(abs(z-h.z)<=0.1f&&geom2d::overlaps(geom2d::circle<float>(GetPos(),GetRadius()),geom2d::circle<float>(h.GetPos(),h.GetRadius()))){
 			if(geom2d::line<float>(GetPos(),h.GetPos()).length()==0.f){ //Push these two in random directions, they are on top of each other!
 				float randDir{util::random(2*geom2d::pi)};
@@ -373,7 +391,9 @@ void Hamster::HandleCollision(){
 				SetPos(collisionResolve1);
 				h.SetPos(collisionResolve2);
 				vel+=vf2d{GetBumpAmount(),randDir}.cart();
+				vel=vf2d{std::min(GetMaxSpeed(),vel.polar().x),vel.polar().y}.cart();
 				h.vel+=vf2d{GetBumpAmount(),float(randDir+geom2d::pi)}.cart();
+				h.vel=vf2d{std::min(h.GetMaxSpeed(),vel.polar().x),vel.polar().y}.cart();
 			}else{
 				geom2d::line<float>collisionLine{geom2d::line<float>(GetPos(),h.GetPos())};
 				float distance{collisionLine.length()};
@@ -384,7 +404,9 @@ void Hamster::HandleCollision(){
 				SetPos(collisionResolve1);
 				h.SetPos(collisionResolve2);
 				vel+=vf2d{GetBumpAmount(),float(collisionLine.vector().polar().y+geom2d::pi)}.cart();
+				vel=vf2d{std::min(GetMaxSpeed(),vel.polar().x),vel.polar().y}.cart();
 				h.vel+=vf2d{GetBumpAmount(),collisionLine.vector().polar().y}.cart();
+				h.vel=vf2d{std::min(h.GetMaxSpeed(),vel.polar().x),vel.polar().y}.cart();
 			}
 			bumpTimer=h.bumpTimer=0.12f;
 		}
@@ -403,7 +425,7 @@ void Hamster::HandleCollision(){
 			checkpointsCollected.insert(checkpoint.GetPos());
 			FloatingText::CreateFloatingText(pos,std::format("{} / {}",checkpointsCollected.size(),Checkpoint::GetCheckpoints().size()),{WHITE,GREEN},{1.5f,2.f});
 			if(IsPlayerControlled)HamsterAI::OnCheckpointCollected(this->pos);
-			checkpoint.OnCheckpointCollect();
+			if(IsPlayerControlled)checkpoint.OnCheckpointCollect();
 		}
 	}
 	if(GetState()==NORMAL){
@@ -413,6 +435,20 @@ void Hamster::HandleCollision(){
 				burrowTimer=1.f;
 				enteredTunnel=id;
 				burrowImgShrinkTimer=0.5f;
+				switch(HamsterGame::Game().GetTileFacingDirection(tunnel.worldPos)){
+					case Terrain::NORTH:{
+						targetRot=geom2d::pi/2;
+					}break;
+					case Terrain::EAST:{
+						targetRot=geom2d::pi;
+					}break;
+					case Terrain::SOUTH:{
+						targetRot=-geom2d::pi/2;
+					}break;
+					case Terrain::WEST:{
+						targetRot=0.;
+					}break;
+				}
 				if(IsPlayerControlled)HamsterAI::OnTunnelEnter(this->pos);
 			}
 		}
@@ -550,7 +586,7 @@ void Hamster::SetPos(const vf2d pos){
 		this->pos=vf2d{this->pos.x,pos.y};
 		movedY=true;
 	}
-	if(IsPlayerControlled&&(movedX||movedY))HamsterAI::OnMove(this->pos);
+	if(IsPlayerControlled&&(movedX||movedY)&&HamsterGame::Game().GetTerrainTypeAtPos(this->pos)!=Terrain::TUNNEL)HamsterAI::OnMove(this->pos);
 }
 
 void Hamster::SetZ(const float z){
@@ -659,24 +695,44 @@ const bool Hamster::BurnedOrDrowned()const{
 	return GetState()==WAIT;
 }
 const bool Hamster::CanMove()const{
-	return !CollectedAllCheckpoints();
+	return !CollectedAllCheckpoints()&&!IsBurrowed();
 }
 
 const bool Hamster::FlyingInTheAir()const{
 	return GetState()==FLYING&&hamsterJet.value().GetZ()>0.5f&&GetZ()>0.5f;
 }
 
-void Hamster::HandleNPCControls(){
+void Hamster::HandleAIControls(){
 	vf2d aimingDir{};
 
 	const HamsterAI::ActionOptRef&currentAction{ai.GetCurrentAction()};
 	if(!currentAction.has_value())return;
 	const HamsterAI::Action&action{currentAction.value().get()};
 
-	vf2d diff{action.pos-GetPos()};
+	if(aiNodeTime>GetAIAdjustNodeTime()){
+		if(ai.GetPreviousAction().has_value()&&ai.GetPreviousAction().value().get().type==HamsterAI::Action::MOVE){
+			ai.RevertToPreviousAction();
+			chooseTemporaryNodeNext=true;
+		}else{
+			int MAX_SEARCH_AMT{100};
+			float SEARCH_RANGE{1.f};
+			while(MAX_SEARCH_AMT>0){
+				temporaryNode=GetPos()+vf2d{util::random_range(-SEARCH_RANGE*16,SEARCH_RANGE*16),util::random_range(-SEARCH_RANGE*16,SEARCH_RANGE*16)};
+				if(!HamsterGame::Game().IsTerrainSolid(temporaryNode.value()))break;
+				SEARCH_RANGE+=1.25f;
+				MAX_SEARCH_AMT--;
+			}
+		}
+		aiNodeTime=0.f;
+	}
+
+	vf2d targetLoc{action.pos};
+	if(temporaryNode.has_value())targetLoc=temporaryNode.value();
+
+	vf2d diff{targetLoc-GetPos()};
 	if(diff.mag()<16.f){
 		if(action.type==HamsterAI::Action::LAUNCH_JET){
-			if(HasPowerup(Powerup::JET)){
+			if(true||HasPowerup(Powerup::JET)){ //Currently ignoring whether we have a jet or not...We can cheat!
 				SetState(FLYING);
 				lastSafeLocation.reset();
 				if(IsPlayerControlled)HamsterAI::OnJetLaunch(this->pos);
@@ -688,6 +744,18 @@ void Hamster::HandleNPCControls(){
 			}
 		}
 		ai.AdvanceToNextAction();
+		if(chooseTemporaryNodeNext){
+			int MAX_SEARCH_AMT{100};
+			float SEARCH_RANGE{1.f};
+			while(MAX_SEARCH_AMT>0){
+				temporaryNode=GetPos()+vf2d{util::random_range(-SEARCH_RANGE*16,SEARCH_RANGE*16),util::random_range(-SEARCH_RANGE*16,SEARCH_RANGE*16)};
+				if(!HamsterGame::Game().IsTerrainSolid(temporaryNode.value()))break;
+				SEARCH_RANGE+=1.25f;
+				MAX_SEARCH_AMT--;
+			}
+		}else temporaryNode.reset();
+		chooseTemporaryNodeNext=false;
+		aiNodeTime=0.f;
 	}
 	const float moveThreshold{4.f};
 
@@ -710,12 +778,38 @@ void Hamster::HandleNPCControls(){
 		vel=vf2d{std::min(GetMaxSpeed(),vel.polar().x),vel.polar().y}.cart();
 		frictionEnabled=false;
 	}
-	/* Initiating Flight
-	if(HasPowerup(Powerup::JET)){
-		SetState(FLYING);
-		lastSafeLocation.reset();
-		if(IsPlayerControlled)HamsterAI::OnJetLaunch(this->pos);
-		hamsterJet.emplace(*this);
+}
+
+const float Hamster::GetAILandingSpeed()const{
+	switch(ai.GetAIType()){
+		case HamsterAI::SMART:{
+			return 4.9f;
+		}break;
+		case HamsterAI::NORMAL:{
+			return 2.9f;
+		}break;
+		case HamsterAI::DUMB:{
+			return 1.2f;
+		}break;
 	}
-	*/
+	return 2.f;
+}
+
+const float Hamster::GetAIAdjustNodeTime()const{
+	switch(ai.GetAIType()){
+		case HamsterAI::SMART:{
+			return 5.f;
+		}break;
+		case HamsterAI::NORMAL:{
+			return 7.5f;
+		}break;
+		case HamsterAI::DUMB:{
+			return 10.f;
+		}break;
+	}
+	return 7.5f;
+}
+
+const bool Hamster::IsBurrowed()const{
+	return GetState()==BURROWING||GetState()==BURROW_WAIT||GetState()==SURFACING;
 }

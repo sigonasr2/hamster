@@ -81,7 +81,8 @@ public:
 	void Update(const float fElapsedTime);
 	void Draw();
 	void DrawOverlay()const;
-	void HandleJetControls();
+	void HandlePlayerControls();
+	void HandleAIControls();
 	const State GetState()const;
 	void SetPos(const vf2d pos);
 	Terrain::CrashSpeed GetLandingSpeed()const;

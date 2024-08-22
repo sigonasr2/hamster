@@ -133,6 +133,20 @@ void HamsterAI::LoadAI(const std::string&mapName,AIType type){
 	file.close();
 }
 
-const HamsterAI::AIType HamsterAI::GetAIType(){
+const HamsterAI::AIType HamsterAI::GetAIType()const{
 	return type;
+}
+
+void HamsterAI::OnJetBeginLanding(const vi2d pos){
+	recordedActions.emplace_back(pos,Action::LANDING);
+}
+
+
+const HamsterAI::ActionOptRef HamsterAI::GetPreviousAction(){
+	if(actionInd-1>0)return actionsToPerform[actionInd-1];
+	return {};
+}
+const HamsterAI::ActionOptRef HamsterAI::RevertToPreviousAction(){
+	if(actionInd-1>0)actionInd--;
+	return GetCurrentAction();
 }
