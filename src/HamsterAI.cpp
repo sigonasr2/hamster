@@ -88,7 +88,7 @@ void HamsterAI::OnTextEntryComplete(const std::string&enteredText){
 
 const HamsterAI::ActionOptRef HamsterAI::GetCurrentAction(){
 	if(actionInd<actionsToPerform.size())return ActionOptRef{actionsToPerform.at(actionInd)};
-
+	return {};
 }
 const HamsterAI::ActionOptRef HamsterAI::AdvanceToNextAction(){
 	actionInd++;
@@ -129,5 +129,10 @@ void HamsterAI::LoadAI(const std::string&mapName,AIType type){
 		newAction.type=HamsterAI::Action::ActionType(typeNum);
 		actionsToPerform.emplace_back(newAction);
 	}
+	this->type=type;
 	file.close();
+}
+
+const HamsterAI::AIType HamsterAI::GetAIType(){
+	return type;
 }

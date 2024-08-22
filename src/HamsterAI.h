@@ -57,11 +57,12 @@ public:
 		SMART,
 		NORMAL,
 		DUMB,
-		END, //NOTE: Not at AI type, just used for iteration detection.
+		END, //NOTE: Not an AI type, just used for iteration detection.
 	};
 	using ActionOptRef=std::optional<std::reference_wrapper<HamsterAI::Action>>;
 	const ActionOptRef GetCurrentAction();
 	const ActionOptRef AdvanceToNextAction();
+	const AIType GetAIType();
 	void LoadAI(const std::string&mapName,AIType type);
 
 	static void OnMove(const vi2d pos);
@@ -80,4 +81,5 @@ private:
 	std::vector<Action>actionsToPerform;
 	size_t actionInd{};
 	static std::optional<vi2d>lastTileWalkedOn; //In World Coords
+	AIType type{END};
 };

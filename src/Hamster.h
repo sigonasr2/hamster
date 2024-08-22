@@ -133,6 +133,7 @@ public:
 	const vf2d&GetPos()const;
 	const float&GetZ()const;
 	void HandlePlayerControls();
+	void HandleNPCControls();
 	void TurnTowardsTargetDirection();
 	void MoveHamster();
 	void HandleCollision();

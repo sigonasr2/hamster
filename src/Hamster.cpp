@@ -72,7 +72,7 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 					if(h.IsPlayerControlled){
 						h.HandlePlayerControls();
 					}else{
-						//TODO: NPC controls.
+						h.HandleNPCControls();
 					}
 				}
 			}break;
@@ -664,4 +664,58 @@ const bool Hamster::CanMove()const{
 
 const bool Hamster::FlyingInTheAir()const{
 	return GetState()==FLYING&&hamsterJet.value().GetZ()>0.5f&&GetZ()>0.5f;
+}
+
+void Hamster::HandleNPCControls(){
+	vf2d aimingDir{};
+
+	const HamsterAI::ActionOptRef&currentAction{ai.GetCurrentAction()};
+	if(!currentAction.has_value())return;
+	const HamsterAI::Action&action{currentAction.value().get()};
+
+	vf2d diff{action.pos-GetPos()};
+	if(diff.mag()<16.f){
+		if(action.type==HamsterAI::Action::LAUNCH_JET){
+			if(HasPowerup(Powerup::JET)){
+				SetState(FLYING);
+				lastSafeLocation.reset();
+				if(IsPlayerControlled)HamsterAI::OnJetLaunch(this->pos);
+				hamsterJet.emplace(*this);
+			}else{
+				//TODO
+				//If we don't have a Jet and it's required at this point, we must backtrack nodes until we get to a location where one is placed...
+				//This will be a separate behavioral AI node later on...
+			}
+		}
+		ai.AdvanceToNextAction();
+	}
+	const float moveThreshold{4.f};
+
+	if(diff.y<-moveThreshold){
+		aimingDir+=vf2d{0,-1};
+	}
+	if(diff.x>moveThreshold){
+		aimingDir+=vf2d{1,0};
+	}
+	if(diff.y>moveThreshold){
+		aimingDir+=vf2d{0,1};
+	}
+	if(diff.x<-moveThreshold){
+		aimingDir+=vf2d{-1,0};
+	}
+	if(aimingDir!=vf2d{}){
+		targetRot=aimingDir.norm().polar().y;
+		const vf2d currentVel{vel};
+		vel=vf2d{currentVel.polar().x+((GetMaxSpeed()/GetTimeToMaxSpeed())*HamsterGame::Game().GetElapsedTime()),rot}.cart();
+		vel=vf2d{std::min(GetMaxSpeed(),vel.polar().x),vel.polar().y}.cart();
+		frictionEnabled=false;
+	}
+	/* Initiating Flight
+	if(HasPowerup(Powerup::JET)){
+		SetState(FLYING);
+		lastSafeLocation.reset();
+		if(IsPlayerControlled)HamsterAI::OnJetLaunch(this->pos);
+		hamsterJet.emplace(*this);
+	}
+	*/
 }
