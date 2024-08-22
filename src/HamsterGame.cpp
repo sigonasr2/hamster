@@ -27,7 +27,7 @@ bool HamsterGame::OnUserCreate(){
 	LoadGraphics();
 	LoadAnimations();
 	currentTileset=TSXParser{ASSETS_DIR+std::string("Terrain.tsx")};
-	LoadLevel("TestLevel.tmx"); //THIS IS TEMPORARY.
+	LoadLevel("StageI.tmx"); //THIS IS TEMPORARY.
 
 	border.ChangeBorder(Border::DEFAULT);
 
@@ -118,8 +118,6 @@ void HamsterGame::LoadAnimations(){
 }
 
 void HamsterGame::LoadLevel(const std::string&mapName){
-	const vf2d levelSpawnLoc{50,50}; //TEMPORARY
-
 	currentMap=TMXParser{ASSETS_DIR+mapName};
 	currentMapName=mapName;
 	cloudSpd.x=util::random_range(-12.f,12.f);
@@ -127,9 +125,8 @@ void HamsterGame::LoadLevel(const std::string&mapName){
 	cloudOffset.x=util::random();
 	cloudOffset.y=util::random();
 
-	Hamster::LoadHamsters(levelSpawnLoc);
+	Hamster::LoadHamsters(currentMap.value().GetData().GetSpawnZone());
 	camera.SetTarget(Hamster::GetPlayer().GetPos());
-	
 	
 	mapImage.Create(currentMap.value().GetData().GetMapData().width*16,currentMap.value().GetData().GetMapData().height*16);
 	SetDrawTarget(mapImage.Sprite());
@@ -143,18 +140,23 @@ void HamsterGame::LoadLevel(const std::string&mapName){
 		for(const LayerTag&layer:currentMap.value().GetData().GetLayers()){
 			for(size_t y:std::ranges::iota_view(0U,layer.tiles.size())){
 				for(size_t x:std::ranges::iota_view(0U,layer.tiles[y].size())){
-					const int tileID{layer.tiles[y][x]-1};
+					unsigned int tileID{unsigned int(layer.tiles[y][x]-1)};
 					if(Powerup::TileIDIsUpperLeftPowerupTile(tileID))mapPowerups.emplace_back(vf2d{float(x),float(y)}*16+vf2d{16,16},Powerup::TileIDPowerupType(tileID));
 					
 					if(tileID==1484)checkpoints.emplace_back(vf2d{float(x),float(y)}*16+vf2d{64,64});
 					
 					const int numTilesWide{GetGFX("gametiles.png").Sprite()->width/16};
 					const int numTilesTall{GetGFX("gametiles.png").Sprite()->height/16};
+
+					Sprite::Flip flip{Sprite::Flip::NONE};
+					if(tileID&0x80'00'00'00)flip=Sprite::Flip::HORIZ;
+
+					tileID&=0x7FFFFFFF;
 					
-					int imgTileX{tileID%numTilesWide};
-					int imgTileY{tileID/numTilesWide};
+					int imgTileX{int(tileID%numTilesWide)};
+					int imgTileY{int(tileID/numTilesWide)};
 					if(tileID==-1||Powerup::TileIDIsPowerupTile(tileID))continue;
-					DrawPartialSprite(vf2d{float(x),float(y)}*16,GetGFX("gametiles.png").Sprite(),vf2d{float(imgTileX),float(imgTileY)}*16.f,vf2d{16.f,16.f});
+					DrawPartialSprite(vf2d{float(x),float(y)}*16,GetGFX("gametiles.png").Sprite(),vf2d{float(imgTileX),float(imgTileY)}*16.f,vf2d{16.f,16.f},1U,flip);
 				}
 			}
 		}

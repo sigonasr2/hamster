@@ -213,14 +213,14 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 	}
 }
 
-void Hamster::LoadHamsters(const vf2d startingLoc){
+void Hamster::LoadHamsters(const geom2d::rect<int>startingLoc){
 	HAMSTER_LIST.clear();
 	playerHamster.reset();
 	HAMSTER_LIST.reserve(MAX_HAMSTER_COUNT);
 	if(NPC_HAMSTER_COUNT+1>MAX_HAMSTER_COUNT)throw std::runtime_error{std::format("WARNING! Max hamster count is too high! Please expand the MAX_HAMSTER_COUNT if you want more hamsters. Requested {} hamsters.",MAX_HAMSTER_COUNT)};
-	playerHamster=&HAMSTER_LIST.emplace_back(startingLoc,PLAYER_HAMSTER_IMAGE,PLAYER_CONTROLLED);
+	playerHamster=&HAMSTER_LIST.emplace_back(vf2d{util::random_range(startingLoc.pos.x,startingLoc.pos.x+startingLoc.size.x),util::random_range(startingLoc.pos.y,startingLoc.pos.y+startingLoc.size.y)},PLAYER_HAMSTER_IMAGE,PLAYER_CONTROLLED);
 	for(int i:std::ranges::iota_view(0U,NPC_HAMSTER_COUNT)){
-		Hamster&npcHamster{HAMSTER_LIST.emplace_back(startingLoc,NPC_HAMSTER_IMAGES.at(util::random()%NPC_HAMSTER_IMAGES.size()),NPC)};
+		Hamster&npcHamster{HAMSTER_LIST.emplace_back(vf2d{util::random_range(startingLoc.pos.x,startingLoc.pos.x+startingLoc.size.x),util::random_range(startingLoc.pos.y,startingLoc.pos.y+startingLoc.size.y)},NPC_HAMSTER_IMAGES.at(util::random()%NPC_HAMSTER_IMAGES.size()),NPC)};
 		npcHamster.ai.LoadAI(HamsterGame::Game().GetCurrentMapName(),HamsterAI::AIType(util::random()%int(HamsterAI::AIType::END)));
 	}
 }

@@ -110,6 +110,7 @@ private:
     std::set<std::string>spawns;
     std::map<std::string,std::vector<::ZoneData>>ZoneData;
     std::unordered_map<TunnelId,Tunnel>TunnelData;
+    geom2d::rect<int>SpawnZone;
 public:
     Map();
     void _SetMapData(MapTag data);
@@ -122,6 +123,7 @@ public:
     const std::string_view GetMapDisplayName()const;
     const Renderable*const GetOptimizedMap()const;
     const std::map<std::string,std::vector<::ZoneData>>&GetZones()const;
+    const geom2d::rect<int>&GetSpawnZone()const;
     std::string FormatLayerData(std::ostream& os, std::vector<LayerTag>tiles);
     friend std::ostream& operator << (std::ostream& os, Map& rhs);
     friend std::ostream& operator << (std::ostream& os, std::vector<XMLTag>& rhs);
@@ -216,6 +218,9 @@ class TMXParser{
     Map::Map(){
         ZoneData["UpperZone"];
         ZoneData["LowerZone"];
+    }
+    const geom2d::rect<int>&Map::GetSpawnZone()const{
+        return SpawnZone;
     }
     MapTag::MapTag(){}
     MapTag::MapTag(int width,int height,int tilewidth,int tileheight)
@@ -356,6 +361,9 @@ class TMXParser{
             if (newTag.GetString("type")=="Tunnel"){
                 previousTunnelId=newTag.GetInteger("id");
                 parsedMapInfo.TunnelData.insert({previousTunnelId,Tunnel{vi2d{newTag.GetInteger("x"),newTag.GetInteger("y")}/16*16}});
+            }else
+               if (newTag.GetString("type")=="SpawnZone"){
+                parsedMapInfo.SpawnZone={vi2d{newTag.GetInteger("x"),newTag.GetInteger("y")},vi2d{newTag.GetInteger("width"),newTag.GetInteger("height")}};
             }else{
                 //This is an object with a type that doesn't fit into other categories, we can add it to ZoneData.
                 std::vector<ZoneData>&zones=parsedMapInfo.ZoneData[newTag.data["type"]];
@@ -402,10 +410,10 @@ class TMXParser{
                     while (data.find(",")!=std::string::npos) {
                         std::string datapiece = data.substr(0,data.find(","));
                         data = data.substr(data.find(",")+1,std::string::npos);
-                        rowData.push_back(stoi(datapiece));
+                        rowData.push_back(stoul(datapiece));
                     }
                     if (data.length()) {
-                        rowData.push_back(stoi(data));
+                        rowData.push_back(stoul(data));
                     }
                     parsedMapInfo.LayerData[parsedMapInfo.LayerData.size()-1].tiles.push_back(rowData);
                 }

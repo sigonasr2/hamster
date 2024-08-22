@@ -129,7 +129,7 @@ public:
 	Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled=NPC);
 	static const Hamster&GetPlayer();
 	static void UpdateHamsters(const float fElapsedTime);
-	static void LoadHamsters(const vf2d startingLoc);
+	static void LoadHamsters(const geom2d::rect<int>startingLoc);
 	static void DrawHamsters(TransformedView&tv);
 	static void DrawOverlay();
 	const Animate2D::Frame&GetCurrentAnimation()const;
