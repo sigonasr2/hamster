@@ -11,6 +11,18 @@
     ],
     "propertyTypes": [
         {
+            "id": 9,
+            "name": "Difficulty",
+            "storageType": "int",
+            "type": "enum",
+            "values": [
+                "EASY",
+                "MEDIUM",
+                "HARD"
+            ],
+            "valuesAsFlags": false
+        },
+        {
             "id": 6,
             "name": "FacingDirection",
             "storageType": "int",
@@ -22,6 +34,26 @@
                 "WEST"
             ],
             "valuesAsFlags": false
+        },
+        {
+            "color": "#ffa0a0a4",
+            "drawFill": true,
+            "id": 8,
+            "members": [
+                {
+                    "name": "AI Difficulty",
+                    "propertyType": "Difficulty",
+                    "type": "int",
+                    "value": 0
+                }
+            ],
+            "name": "Map",
+            "type": "class",
+            "useAs": [
+                "property",
+                "map",
+                "project"
+            ]
         },
         {
             "color": "#ffa0a0a4",

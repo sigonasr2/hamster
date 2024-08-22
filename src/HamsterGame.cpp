@@ -27,7 +27,7 @@ bool HamsterGame::OnUserCreate(){
 	LoadGraphics();
 	LoadAnimations();
 	currentTileset=TSXParser{ASSETS_DIR+std::string("Terrain.tsx")};
-	LoadLevel("StageI.tmx"); //THIS IS TEMPORARY.
+	LoadLevel("StageII.tmx"); //THIS IS TEMPORARY.
 
 	border.ChangeBorder(Border::DEFAULT);
 
@@ -540,6 +540,10 @@ const std::string&HamsterGame::GetCurrentMapName()const{
 
 void HamsterGame::OnTextEntryComplete(const std::string& sText){
 	HamsterAI::OnTextEntryComplete(sText);
+}
+
+const Difficulty&HamsterGame::GetMapDifficulty()const{
+	return currentMap.value().GetData().GetMapDifficulty();
 }
 
 int main()

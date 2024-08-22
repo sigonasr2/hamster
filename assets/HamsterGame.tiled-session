@@ -10,11 +10,22 @@
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "StageI.tmx": {
-            "scale": 3,
-            "selectedLayer": 3,
+            "expandedObjectLayers": [
+                12
+            ],
+            "scale": 0.75,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 473.16666666666663,
-                "y": -1766.8333333333333
+                "x": 844.6666666666665,
+                "y": 827.3333333333334
+            }
+        },
+        "StageII.tmx": {
+            "scale": 3,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": -159.83333333333331,
+                "y": -2171.833333333333
             }
         },
         "Terrain.tsx": {
@@ -35,7 +46,7 @@
         },
         "TreeTemplates.tmx": {
             "scale": 3,
-            "selectedLayer": 0,
+            "selectedLayer": 1,
             "viewCenter": {
                 "x": 250.49999999999997,
                 "y": 104.5
@@ -45,6 +56,7 @@
     "frame.defaultDuration": 200,
     "last.imagePath": "C:/Users/sigon/source/repos/hamster/assets",
     "last.objectTypesPath": "C:/Users/sigon/source/repos/hamster/assets/propertytypes.json",
+    "map.fixedSize": false,
     "map.height": 100,
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,
@@ -56,7 +68,7 @@
         "StageI.tmx"
     ],
     "project": "HamsterGame.tiled-project",
-    "property.type": "FacingDirection",
+    "property.type": "Difficulty",
     "recentFiles": [
         "StageI.tmx",
         "TestLevel.tmx",

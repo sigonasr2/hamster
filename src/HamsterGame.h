@@ -48,6 +48,7 @@ All rights reserved.
 #include "olcPGEX_Graphics3D.h"
 #include "AnimationState.h"
 #include "olcPGEX_Viewport.h"
+#include "Difficulty.h"
 
 struct Letter{
 	vf2d pos;
@@ -83,6 +84,7 @@ public:
 	const Terrain::Direction&GetTileFacingDirection(const vf2d worldPos)const;
 	const std::string&GetCurrentMapName()const;
 	virtual void OnTextEntryComplete(const std::string& sText)override;
+	const Difficulty&GetMapDifficulty()const;
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();

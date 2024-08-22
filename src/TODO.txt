@@ -101,9 +101,11 @@ A couple villain/scientist hamsters realize that this has become a stubby legs r
 
 Stage II - Branching
 
-Stage III - Swamp/Ice
+Stage III - Swamp/Ice/Tunnels
 
 Stage IV - Hamster Jet
+
+Hamster Boost - Provides 3 Speed Boosts that can be activated with a key. Obtained when running over a Hamster Wheel powerup. Recharge boosts by running over another one.
 
 
 

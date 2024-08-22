@@ -41,6 +41,7 @@ All rights reserved.
 #include <sstream>
 #include <set>
 #include <queue>
+#include "Difficulty.h"
 
 using MapName=std::string;
 using namespace olc;
@@ -111,6 +112,7 @@ private:
     std::map<std::string,std::vector<::ZoneData>>ZoneData;
     std::unordered_map<TunnelId,Tunnel>TunnelData;
     geom2d::rect<int>SpawnZone;
+    Difficulty mapDifficulty{Difficulty::EASY};
 public:
     Map();
     void _SetMapData(MapTag data);
@@ -127,6 +129,7 @@ public:
     std::string FormatLayerData(std::ostream& os, std::vector<LayerTag>tiles);
     friend std::ostream& operator << (std::ostream& os, Map& rhs);
     friend std::ostream& operator << (std::ostream& os, std::vector<XMLTag>& rhs);
+    const Difficulty&GetMapDifficulty()const;
 };
 
 struct Property{
@@ -239,6 +242,9 @@ class TMXParser{
             displayStr+=LayerData[i].str();
         }
         return displayStr;
+    }
+    const Difficulty&Map::GetMapDifficulty()const{
+        return mapDifficulty;
     }
     const std::string_view Map::GetMapType()const{
         return mapType;
@@ -356,6 +362,9 @@ class TMXParser{
         }else
         if(newTag.tag=="property"&&newTag.GetString("name")=="Link"){
             TunnelLinks.emplace_back(previousTunnelId,newTag.GetInteger("value"));
+        }else
+        if(newTag.tag=="property"&&newTag.GetString("name")=="AI Difficulty"){
+            parsedMapInfo.mapDifficulty=Difficulty(newTag.GetInteger("value"));
         }else
         if (newTag.tag=="object"&&newTag.data.find("type")!=newTag.data.end()){
             if (newTag.GetString("type")=="Tunnel"){
