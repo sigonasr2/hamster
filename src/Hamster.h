@@ -125,6 +125,7 @@ class Hamster{
 	float aiNodeTime{0.f};
 	std::optional<vf2d>temporaryNode;
 	bool chooseTemporaryNodeNext{false};
+	int randomId{};
 public:
 	Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled=NPC);
 	static const Hamster&GetPlayer();
@@ -176,5 +177,7 @@ public:
 	const bool FlyingInTheAir()const;
 	const float GetAILandingSpeed()const;
 	const float GetAIAdjustNodeTime()const;
+	const float GetAINodeDistanceVariance()const;
+	const vf2d GetAINodePositionVariance()const;
 	const bool IsBurrowed()const;
 };

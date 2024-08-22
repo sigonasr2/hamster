@@ -43,7 +43,7 @@ bool HamsterGame::OnUserCreate(){
 	LoadSound("nene - Boss Battle #3 Alternate.ogg");
 	LoadSound("nene - Boss Battle #5 V2.ogg");
 
-	LoadLevel("StageII.tmx"); //THIS IS TEMPORARY.
+	LoadLevel("StageI.tmx"); //THIS IS TEMPORARY.
 
 	border.ChangeBorder(Border::DEFAULT);
 

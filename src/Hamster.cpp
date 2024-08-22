@@ -54,7 +54,7 @@ const std::string Hamster::PLAYER_HAMSTER_IMAGE{"hamster.png"};
 std::optional<Hamster*>Hamster::playerHamster;
 
 Hamster::Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled)
-:pos(spawnPos),IsPlayerControlled(IsPlayerControlled){
+:pos(spawnPos),IsPlayerControlled(IsPlayerControlled),randomId(util::random()){
 	animations=HamsterGame::GetAnimations(img);
 	animations.ChangeState(internalAnimState,AnimationState::DEFAULT);
 }
@@ -258,7 +258,7 @@ void Hamster::LoadHamsters(const geom2d::rect<int>startingLoc){
 			}
 		}
 
-		npcHamster.ai.LoadAI(HamsterGame::Game().GetCurrentMapName(),possibleAIs[util::random()%possibleAIs.size()]);
+		if(possibleAIs.size()>0)npcHamster.ai.LoadAI(HamsterGame::Game().GetCurrentMapName(),possibleAIs[util::random()%possibleAIs.size()]);
 	}
 }
 
@@ -429,8 +429,8 @@ void Hamster::HandleCollision(){
 				h.SetPos(collisionResolve2);
 				vel+=vf2d{GetBumpAmount(),randDir}.cart();
 				vel=vf2d{std::min(GetMaxSpeed(),vel.polar().x),vel.polar().y}.cart();
-				h.vel+=vf2d{GetBumpAmount(),float(randDir+geom2d::pi)}.cart();
-				h.vel=vf2d{std::min(h.GetMaxSpeed(),vel.polar().x),vel.polar().y}.cart();
+				h.vel+=vf2d{h.GetBumpAmount(),float(randDir+geom2d::pi)}.cart();
+				h.vel=vf2d{std::min(h.GetMaxSpeed(),h.vel.polar().x),h.vel.polar().y}.cart();
 			}else{
 				geom2d::line<float>collisionLine{geom2d::line<float>(GetPos(),h.GetPos())};
 				float distance{collisionLine.length()};
@@ -442,8 +442,8 @@ void Hamster::HandleCollision(){
 				h.SetPos(collisionResolve2);
 				vel+=vf2d{GetBumpAmount(),float(collisionLine.vector().polar().y+geom2d::pi)}.cart();
 				vel=vf2d{std::min(GetMaxSpeed(),vel.polar().x),vel.polar().y}.cart();
-				h.vel+=vf2d{GetBumpAmount(),collisionLine.vector().polar().y}.cart();
-				h.vel=vf2d{std::min(h.GetMaxSpeed(),vel.polar().x),vel.polar().y}.cart();
+				h.vel+=vf2d{h.GetBumpAmount(),collisionLine.vector().polar().y}.cart();
+				h.vel=vf2d{std::min(h.GetMaxSpeed(),h.vel.polar().x),h.vel.polar().y}.cart();
 			}
 			bumpTimer=h.bumpTimer=0.12f;
 		}
@@ -552,6 +552,19 @@ const float Hamster::GetMaxSpeed()const{
 	if(hamsterJet.has_value()){
 		if(hamsterJet.value().GetState()==HamsterJet::LANDING)finalMaxSpd*=1.5f;
 		else if(FlyingInTheAir())finalMaxSpd*=8.f;
+	}
+	if(!IsPlayerControlled){
+		switch(ai.GetAIType()){
+			case HamsterAI::SMART:{
+				finalMaxSpd*=0.99f;
+			}break;
+			case HamsterAI::NORMAL:{
+				finalMaxSpd*=0.92f;
+			}break;
+			case HamsterAI::DUMB:{
+				finalMaxSpd*=0.85f;
+			}break;
+		}
 	}
 	return finalMaxSpd;
 }
@@ -764,10 +777,15 @@ void Hamster::HandleAIControls(){
 	}
 
 	vf2d targetLoc{action.pos};
+	if(action.type==HamsterAI::Action::MOVE)targetLoc+=GetAINodePositionVariance();
 	if(temporaryNode.has_value())targetLoc=temporaryNode.value();
 
 	vf2d diff{targetLoc-GetPos()};
-	if(diff.mag()<16.f){
+
+	float variance{GetAINodeDistanceVariance()};
+	if(action.type!=HamsterAI::Action::MOVE)variance=12.f;
+
+	if(diff.mag()<variance){
 		if(action.type==HamsterAI::Action::LAUNCH_JET){
 			if(true||HasPowerup(Powerup::JET)){ //Currently ignoring whether we have a jet or not...We can cheat!
 				SetState(FLYING);
@@ -781,6 +799,23 @@ void Hamster::HandleAIControls(){
 			}
 		}
 		ai.AdvanceToNextAction();
+		const HamsterAI::ActionOptRef&nextAction{ai.GetCurrentAction()};
+		if(nextAction.has_value()){
+			const HamsterAI::Action&futureAction{nextAction.value().get()};
+			if(futureAction.type==HamsterAI::Action::MOVE){
+				switch(ai.GetAIType()){
+					case HamsterAI::SMART:{
+						if(util::random()%100<2)ai.AdvanceToNextAction();
+					}break;
+					case HamsterAI::NORMAL:{
+						if(util::random()%100<25)ai.AdvanceToNextAction();
+					}break;
+					case HamsterAI::DUMB:{
+						if(util::random()%100<50)ai.AdvanceToNextAction();
+					}break;
+				}
+			}
+		}
 		if(chooseTemporaryNodeNext){
 			int MAX_SEARCH_AMT{100};
 			float SEARCH_RANGE{1.f};
@@ -849,4 +884,40 @@ const float Hamster::GetAIAdjustNodeTime()const{
 
 const bool Hamster::IsBurrowed()const{
 	return GetState()==BURROWING||GetState()==BURROW_WAIT||GetState()==SURFACING;
+}
+
+const float Hamster::GetAINodeDistanceVariance()const{
+	switch(ai.GetAIType()){
+		case HamsterAI::SMART:{
+			return 12.f*float(randomId%100)/100.f+12.f;
+		}break;
+		case HamsterAI::NORMAL:{
+			return 18.f*float(randomId%100)/100.f+18.f;
+		}break;
+		case HamsterAI::DUMB:{
+			return 24.f*float(randomId%100)/100.f+24.f;
+		}break;
+	}
+	return 12.f*float(randomId%100)/100.f+12.f;
+}
+
+const vf2d Hamster::GetAINodePositionVariance()const{
+	vf2d finalOffset{};
+	float seedX{float(randomId%100)/100.f};
+	float seedY{float((randomId*457)%100)/100.f};
+	switch(ai.GetAIType()){
+		case HamsterAI::SMART:{
+			finalOffset.x=seedX*16.f-8.f;
+			finalOffset.y=seedY*16.f-8.f;
+		}break;
+		case HamsterAI::NORMAL:{
+			finalOffset.x=seedX*32.f-16.f;
+			finalOffset.y=seedY*32.f-16.f;
+		}break;
+		case HamsterAI::DUMB:{
+			finalOffset.x=seedX*48.f-24.f;
+			finalOffset.y=seedY*48.f-24.f;
+		}break;
+	}
+	return finalOffset;
 }
