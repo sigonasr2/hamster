@@ -50,6 +50,7 @@ public:
 			LANDING,
 			ENTER_TUNNEL,
 			CHECKPOINT_COLLECTED,
+			BOOST,
 		};
 		vi2d pos;
 		ActionType type;
@@ -74,6 +75,7 @@ public:
 	static void OnJetBeginLanding(const vi2d pos);
 	static void OnTunnelEnter(const vi2d pos);
 	static void OnCheckpointCollected(const vi2d pos);
+	static void OnBoost(const vi2d pos);
 
 	static void OnTextEntryComplete(const std::string&enteredText);
 

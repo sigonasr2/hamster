@@ -150,3 +150,7 @@ const HamsterAI::ActionOptRef HamsterAI::RevertToPreviousAction(){
 	if(actionInd-1>0)actionInd--;
 	return GetCurrentAction();
 }
+
+void HamsterAI::OnBoost(const vi2d pos){
+	recordedActions.emplace_back(pos,Action::BOOST);
+}

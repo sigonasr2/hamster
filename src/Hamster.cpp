@@ -398,6 +398,7 @@ void Hamster::HandlePlayerControls(){
 	if(HamsterGame::Game().GetKey(R).bPressed&&boostCounter>0){
 		boostCounter--;
 		boostTimer=1.f;
+		if(IsPlayerControlled)HamsterAI::OnBoost(this->pos);
 	}
 	if(HamsterGame::Game().GetKey(SPACE).bPressed){
 		if(lastTappedSpace<=0.6f&&HasPowerup(Powerup::JET)){
@@ -824,6 +825,12 @@ void Hamster::HandleAIControls(){
 				//TODO
 				//If we don't have a Jet and it's required at this point, we must backtrack nodes until we get to a location where one is placed...
 				//This will be a separate behavioral AI node later on...
+			}
+		}else
+		if(action.type==HamsterAI::Action::BOOST){
+			if(boostCounter>0){
+				boostCounter--;
+				boostTimer=1.f;
 			}
 		}
 		ai.AdvanceToNextAction();
