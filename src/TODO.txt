@@ -105,6 +105,24 @@ Stage III - Swamp/Ice/Tunnels
 
 Stage IV - Hamster Jet
 
+Stage V - Beach / Waters
+
+Stage VI - Forest Maze
+
+Stage VII - Snowy Dunes
+
+Stage VIII - Endless Marsh
+
+Stage IX - Wide Chasm
+
+Stage X - Hamster Island
+
+Stage XI - Lava Panic
+
+Stage X - Hamster Island
+
+Stage XII - The Great Plunge
+
 Hamster Boost - Provides 3 Speed Boosts that can be activated with a key. Obtained when running over a Hamster Wheel powerup. Recharge boosts by running over another one.
 
 
@@ -117,9 +135,25 @@ Hamsters from all around Hamster planet have been recruited to scavenge for
 
 ============================
 
+Title Screen: Guinea Pig Hero. When start, seek to 1:09:55.
+
+
+TalkingCuteChiptune - 7 Tutorial
+
+Stage 1: Fields of Ice - 8 Stage (Jonathan So)
+Stage 2: Juhani Junkala [Chiptune Adventures] Stage 2 - 9 Stage
+Stage 3: Moonlight - 5 Stage (Loop @ 26.210) shiru8bit
+Stage 4: Spring Came - 6 Stage shiru8bit
+Stage 5: Proper Summer - 8 Stage shiru8bit
+Stage 6: Enchanted Woods - 6 Stage shiru8bit
+Stage 7: A Little Journey - 7 Stage shiru8bit
+Stage 8: Fields of Ice - 8 Stage (Jonathan So)
+Stage 9: Juhani Junkala [Chiptune Adventures] Stage 2
+Stage 10: Proper Summer - 8 Stage shiru8bit
+Stage 11: Boss Battle #3 Alternate - nene
+Stage 12: Boss Battle #5 V2 - nene
+
+
 Settings
 ========
 Keybind Rebinds
-
-============================
-olcPGEX_ViewPort - Submit a PR where the offset is subtracted instead of added to determine clip region cutoffs.

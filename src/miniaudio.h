@@ -3711,6 +3711,8 @@ See below for some tips on improving performance.
   is due to 64-bit file APIs not being available.
 */
 
+#include "stb_vorbis.h"
+
 #ifndef miniaudio_h
 #define miniaudio_h
 

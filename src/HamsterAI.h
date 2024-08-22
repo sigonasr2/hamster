@@ -66,7 +66,7 @@ public:
 	const ActionOptRef GetPreviousAction();
 	const ActionOptRef RevertToPreviousAction();
 	const AIType GetAIType()const;
-	void LoadAI(const std::string&mapName,AIType type);
+	void LoadAI(const std::string&mapName,int numb);
 
 	static void OnMove(const vi2d pos);
 	static void OnPowerupCollection(const vi2d pos);

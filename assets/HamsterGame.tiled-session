@@ -16,16 +16,19 @@
             "scale": 0.75,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 844.6666666666665,
-                "y": 827.3333333333334
+                "x": 843.3333333333335,
+                "y": 2534
             }
         },
         "StageII.tmx": {
-            "scale": 3,
-            "selectedLayer": 2,
+            "expandedObjectLayers": [
+                5
+            ],
+            "scale": 1,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": -159.83333333333331,
-                "y": -2171.833333333333
+                "x": 789.5,
+                "y": 1266.5
             }
         },
         "Terrain.tsx": {
@@ -68,7 +71,7 @@
         "StageI.tmx"
     ],
     "project": "HamsterGame.tiled-project",
-    "property.type": "Difficulty",
+    "property.type": "BGM",
     "recentFiles": [
         "StageI.tmx",
         "TestLevel.tmx",

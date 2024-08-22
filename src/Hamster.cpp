@@ -221,7 +221,44 @@ void Hamster::LoadHamsters(const geom2d::rect<int>startingLoc){
 	playerHamster=&HAMSTER_LIST.emplace_back(vf2d{util::random_range(startingLoc.pos.x,startingLoc.pos.x+startingLoc.size.x),util::random_range(startingLoc.pos.y,startingLoc.pos.y+startingLoc.size.y)},PLAYER_HAMSTER_IMAGE,PLAYER_CONTROLLED);
 	for(int i:std::ranges::iota_view(0U,NPC_HAMSTER_COUNT)){
 		Hamster&npcHamster{HAMSTER_LIST.emplace_back(vf2d{util::random_range(startingLoc.pos.x,startingLoc.pos.x+startingLoc.size.x),util::random_range(startingLoc.pos.y,startingLoc.pos.y+startingLoc.size.y)},NPC_HAMSTER_IMAGES.at(util::random()%NPC_HAMSTER_IMAGES.size()),NPC)};
-		npcHamster.ai.LoadAI(HamsterGame::Game().GetCurrentMapName(),HamsterAI::AIType(util::random()%int(HamsterAI::AIType::END)));
+		int MAX_AI_FILES{100};
+		int aiFileCount{0};
+		while(MAX_AI_FILES>0){
+			if(!std::filesystem::exists(std::format("{}{}.{}",HamsterGame::ASSETS_DIR,HamsterGame::Game().GetCurrentMapName(),aiFileCount)))break;
+			aiFileCount++;
+			MAX_AI_FILES--;
+		}
+		HamsterAI::AIType typeChosen{HamsterAI::DUMB};
+		int randPct{util::random()%100};
+		switch(HamsterGame::Game().GetMapDifficulty()){
+			case Difficulty::EASY:{
+				if(randPct<=0.4f&&randPct>0.2f)typeChosen=HamsterAI::NORMAL;
+				else if(randPct<=0.2f)typeChosen=HamsterAI::SMART;
+			}break;
+			case Difficulty::MEDIUM:{
+				typeChosen=HamsterAI::NORMAL;
+				if(randPct<=1.f&&randPct>0.8f)typeChosen=HamsterAI::DUMB;
+				else if(randPct<=0.2f)typeChosen=HamsterAI::SMART;
+			}break;
+			case Difficulty::HARD:{
+				typeChosen=HamsterAI::SMART;
+				if(randPct<=0.2f)typeChosen=HamsterAI::NORMAL;
+			}break;
+		}
+
+		std::vector<int>possibleAIs{};
+		for(int i:std::ranges::iota_view(0,aiFileCount)){
+			if(i%3==int(typeChosen))possibleAIs.emplace_back(i);
+		}
+
+		if(possibleAIs.size()==0){
+			std::cout<<"WARNING! No AI files for AI Type "<<int(typeChosen)<<" currently exist! Consider adding them! Rolling with whatever exists..."<<std::endl;
+			for(int i:std::ranges::iota_view(0,aiFileCount)){
+				possibleAIs.emplace_back(i);
+			}
+		}
+
+		npcHamster.ai.LoadAI(HamsterGame::Game().GetCurrentMapName(),possibleAIs[util::random()%possibleAIs.size()]);
 	}
 }
 

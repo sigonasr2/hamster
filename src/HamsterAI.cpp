@@ -76,7 +76,7 @@ void HamsterAI::DrawOverlay(){
 }
 void HamsterAI::OnTextEntryComplete(const std::string&enteredText){
 	if(recordingMode){
-		std::ofstream file{std::format("{}.{}",HamsterGame::Game().GetCurrentMapName(),stoi(enteredText))};
+		std::ofstream file{std::format("{}{}.{}",HamsterGame::ASSETS_DIR,HamsterGame::Game().GetCurrentMapName(),stoi(enteredText))};
 		for(const Action&action:recordedActions){
 			file<<action.pos.x<<' '<<action.pos.y<<' '<<int(action.type)<<' ';
 		}
@@ -117,8 +117,8 @@ void HamsterAI::OnCheckpointCollected(const vi2d pos){
 	recordedActions.emplace_back(pos,Action::CHECKPOINT_COLLECTED);
 }
 
-void HamsterAI::LoadAI(const std::string&mapName,AIType type){
-	std::ifstream file{std::format("{}.{}",HamsterGame::Game().GetCurrentMapName(),int(type))};
+void HamsterAI::LoadAI(const std::string&mapName,int numb){
+	std::ifstream file{std::format("{}{}.{}",HamsterGame::ASSETS_DIR,HamsterGame::Game().GetCurrentMapName(),numb)};
 	actionsToPerform.clear();
 	while(file.good()){
 		Action newAction;
@@ -129,7 +129,7 @@ void HamsterAI::LoadAI(const std::string&mapName,AIType type){
 		newAction.type=HamsterAI::Action::ActionType(typeNum);
 		actionsToPerform.emplace_back(newAction);
 	}
-	this->type=type;
+	this->type=AIType(numb%3);
 	file.close();
 }
 

@@ -11,6 +11,24 @@
     ],
     "propertyTypes": [
         {
+            "id": 10,
+            "name": "BGM",
+            "storageType": "string",
+            "type": "enum",
+            "values": [
+                "Jonathan So - Fields of Ice.ogg",
+                "Juhani Junkala - Stage 2.ogg",
+                "shiru8bit - Moonlight.ogg",
+                "shiru8bit - Spring Came.ogg",
+                "shiru8bit - Proper Summer.ogg",
+                "shiru8bit - Enchanted Woods.ogg",
+                "shiru8bit - A Little Journey.ogg",
+                "nene - Boss Battle #3 Alternate.ogg",
+                "nene - Boss Battle #5 V2.ogg"
+            ],
+            "valuesAsFlags": false
+        },
+        {
             "id": 9,
             "name": "Difficulty",
             "storageType": "int",
@@ -45,6 +63,12 @@
                     "propertyType": "Difficulty",
                     "type": "int",
                     "value": 0
+                },
+                {
+                    "name": "BGM",
+                    "propertyType": "BGM",
+                    "type": "string",
+                    "value": "Jonathan So - Fields of Ice.ogg"
                 }
             ],
             "name": "Map",

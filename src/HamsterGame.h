@@ -49,6 +49,7 @@ All rights reserved.
 #include "AnimationState.h"
 #include "olcPGEX_Viewport.h"
 #include "Difficulty.h"
+#include "olcPGEX_MiniAudio.h"
 
 struct Letter{
 	vf2d pos;
@@ -58,8 +59,8 @@ struct Letter{
 
 class HamsterGame : public olc::PixelGameEngine
 {
-	const static std::string ASSETS_DIR;
 public:
+	const static std::string ASSETS_DIR;
 	HamsterGame()=delete;
 	HamsterGame(const std::string&appName);
 	static geom2d::rect<float>SCREEN_FRAME;
@@ -108,7 +109,7 @@ private:
 	virtual void Apply3DTransform(std::vector<DecalInstance>&decals)override final;
 	float zoom{1.f}; //Increase to zoom out, decrease to zoom in (this is the overhead distance from the player).
 	GFX3D::vec3d vUp{0,-1,0};
-	GFX3D::vec3d vEye{0.f,0,1};
+	GFX3D::vec3d vEye{0.f,0,2.f};
 	GFX3D::vec3d vLookDir{0,0,-1};
 	const float fLazyFollowRate{4.0f};
 	vf2d cloudSpd{};
@@ -119,4 +120,6 @@ private:
 	float radarScale{48.f};
 	std::vector<Renderable>waterTiles;
 	std::string currentMapName;
+	MiniAudio audio;
+	std::unordered_map<std::string,int>bgm;
 };

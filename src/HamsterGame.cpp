@@ -20,6 +20,7 @@ HamsterGame::HamsterGame(const std::string&appName){
 }
 
 bool HamsterGame::OnUserCreate(){
+	audio.SetBackgroundPlay(true);
 	olc::GFX3D::ConfigureDisplay();
 	camera=Camera2D{SCREEN_FRAME.size};
 	camera.SetMode(Camera2D::Mode::LazyFollow);
@@ -27,6 +28,21 @@ bool HamsterGame::OnUserCreate(){
 	LoadGraphics();
 	LoadAnimations();
 	currentTileset=TSXParser{ASSETS_DIR+std::string("Terrain.tsx")};
+
+	const auto LoadSound=[this](const std::string&filename){
+		bgm.insert({filename,audio.LoadSound(ASSETS_DIR+filename)});
+	};
+
+	LoadSound("Jonathan So - Fields of Ice.ogg"); 
+	LoadSound("Juhani Junkala - Stage 2.ogg");
+	LoadSound("shiru8bit - Moonlight.ogg");
+	LoadSound("shiru8bit - Spring Came.ogg");
+	LoadSound("shiru8bit - Proper Summer.ogg");
+	LoadSound("shiru8bit - Enchanted Woods.ogg");
+	LoadSound("shiru8bit - A Little Journey.ogg");
+	LoadSound("nene - Boss Battle #3 Alternate.ogg");
+	LoadSound("nene - Boss Battle #5 V2.ogg");
+
 	LoadLevel("StageII.tmx"); //THIS IS TEMPORARY.
 
 	border.ChangeBorder(Border::DEFAULT);
@@ -125,6 +141,11 @@ void HamsterGame::LoadLevel(const std::string&mapName){
 	cloudOffset.x=util::random();
 	cloudOffset.y=util::random();
 
+	camera.SetMode(Camera2D::Mode::Simple);
+	camera.SetTarget(currentMap.value().GetData().GetSpawnZone().middle());
+	camera.Update(0.f);
+	camera.SetMode(Camera2D::Mode::LazyFollow);
+
 	Hamster::LoadHamsters(currentMap.value().GetData().GetSpawnZone());
 	camera.SetTarget(Hamster::GetPlayer().GetPos());
 	
@@ -168,6 +189,8 @@ void HamsterGame::LoadLevel(const std::string&mapName){
 	mapImage.Decal()->Update();
 	SetPixelMode(Pixel::NORMAL);
 	SetDrawTarget(nullptr);
+
+	audio.Play(bgm.at(currentMap.value().GetData().GetBGM()),true);
 }
 
 void HamsterGame::UpdateGame(const float fElapsedTime){

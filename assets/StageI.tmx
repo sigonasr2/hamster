@@ -2,6 +2,7 @@
 <map version="1.10" tiledversion="1.10.2" class="Map" orientation="orthogonal" renderorder="right-down" width="102" height="262" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#55aaff" nextlayerid="13" nextobjectid="2">
  <properties>
   <property name="AI Difficulty" type="int" propertytype="Difficulty" value="0"/>
+  <property name="BGM" propertytype="BGM" value="Jonathan So - Fields of Ice.ogg"/>
  </properties>
  <tileset firstgid="1" source="Terrain.tsx"/>
  <layer id="10" name="Tile Layer 1" width="102" height="262">

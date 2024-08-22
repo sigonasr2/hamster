@@ -113,6 +113,7 @@ private:
     std::unordered_map<TunnelId,Tunnel>TunnelData;
     geom2d::rect<int>SpawnZone;
     Difficulty mapDifficulty{Difficulty::EASY};
+    std::string bgm{};
 public:
     Map();
     void _SetMapData(MapTag data);
@@ -130,6 +131,7 @@ public:
     friend std::ostream& operator << (std::ostream& os, Map& rhs);
     friend std::ostream& operator << (std::ostream& os, std::vector<XMLTag>& rhs);
     const Difficulty&GetMapDifficulty()const;
+    const std::string&GetBGM()const;
 };
 
 struct Property{
@@ -284,6 +286,9 @@ class TMXParser{
     const Map&TMXParser::GetData()const{
         return parsedMapInfo;
     }
+    const std::string&Map::GetBGM()const{
+        return bgm;
+    }
     void TMXParser::ParseTag(std::string tag) {
         auto ReadNextTag=[&](){
             XMLTag newTag;
@@ -340,38 +345,34 @@ class TMXParser{
             return monsterName;
         };
 
-        if (newTag.tag=="map"){
+        if(newTag.tag=="map"){
             if(stoi(newTag.data["infinite"])==1){
                 infiniteMap=true;
                 throw std::runtime_error{std::format("WARNING! Infinite maps are not supported! Invalid map: {}",fileName)};
                 return;
             }
             parsedMapInfo.MapData={stoi(newTag.data["width"]),stoi(newTag.data["height"]),stoi(newTag.data["tilewidth"]),stoi(newTag.data["tileheight"])};
-        }else
-        if (newTag.tag=="tileset"){
+        }else if(newTag.tag=="tileset"){
             parsedMapInfo.TilesetData.push_back(newTag);
-        }else
-        if (newTag.tag=="layer"){
+        }else if(newTag.tag=="layer"){
             LayerTag l = {newTag};
             parsedMapInfo.LayerData.push_back(l);
             currentLayerTag=&parsedMapInfo.LayerData.back();
-        }else 
-        if(newTag.tag=="property"&&prevZoneData!=nullptr){
+        }else if(newTag.tag=="property"&&prevZoneData!=nullptr){
             //This is a property for a zone that doesn't fit into the other categories, we add it to the previous zone data encountered.
             prevZoneData->properties.push_back(newTag);
-        }else
-        if(newTag.tag=="property"&&newTag.GetString("name")=="Link"){
+        }else if(newTag.tag=="property"&&newTag.GetString("name")=="Link"){
             TunnelLinks.emplace_back(previousTunnelId,newTag.GetInteger("value"));
-        }else
-        if(newTag.tag=="property"&&newTag.GetString("name")=="AI Difficulty"){
+        }else if(newTag.tag=="property"&&newTag.GetString("name")=="AI Difficulty"){
             parsedMapInfo.mapDifficulty=Difficulty(newTag.GetInteger("value"));
+        }else if(newTag.tag=="property"&&newTag.GetString("name")=="BGM"){
+            parsedMapInfo.bgm=newTag.GetString("value");
         }else
         if (newTag.tag=="object"&&newTag.data.find("type")!=newTag.data.end()){
-            if (newTag.GetString("type")=="Tunnel"){
+            if(newTag.GetString("type")=="Tunnel"){
                 previousTunnelId=newTag.GetInteger("id");
                 parsedMapInfo.TunnelData.insert({previousTunnelId,Tunnel{vi2d{newTag.GetInteger("x"),newTag.GetInteger("y")}/16*16}});
-            }else
-               if (newTag.GetString("type")=="SpawnZone"){
+            }else if(newTag.GetString("type")=="SpawnZone"){
                 parsedMapInfo.SpawnZone={vi2d{newTag.GetInteger("x"),newTag.GetInteger("y")},vi2d{newTag.GetInteger("width"),newTag.GetInteger("height")}};
             }else{
                 //This is an object with a type that doesn't fit into other categories, we can add it to ZoneData.
