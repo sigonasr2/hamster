@@ -372,8 +372,8 @@ void Hamster::HandleCollision(){
 				vf2d collisionResolve2{h.GetPos()+vf2d{h.GetRadius(),float(randDir+geom2d::pi)}.cart()};
 				SetPos(collisionResolve1);
 				h.SetPos(collisionResolve2);
-				vel=vf2d{GetBumpAmount(),randDir}.cart();
-				h.vel=vf2d{GetBumpAmount(),float(randDir+geom2d::pi)}.cart();
+				vel+=vf2d{GetBumpAmount(),randDir}.cart();
+				h.vel+=vf2d{GetBumpAmount(),float(randDir+geom2d::pi)}.cart();
 			}else{
 				geom2d::line<float>collisionLine{geom2d::line<float>(GetPos(),h.GetPos())};
 				float distance{collisionLine.length()};
@@ -383,8 +383,8 @@ void Hamster::HandleCollision(){
 				vf2d collisionResolve2{h.GetPos()+vf2d{bumpDistance/2.f,collisionLine.vector().polar().y}.cart()};
 				SetPos(collisionResolve1);
 				h.SetPos(collisionResolve2);
-				vel=vf2d{GetBumpAmount(),float(collisionLine.vector().polar().y+geom2d::pi)}.cart();
-				h.vel=vf2d{GetBumpAmount(),collisionLine.vector().polar().y}.cart();
+				vel+=vf2d{GetBumpAmount(),float(collisionLine.vector().polar().y+geom2d::pi)}.cart();
+				h.vel+=vf2d{GetBumpAmount(),collisionLine.vector().polar().y}.cart();
 			}
 			bumpTimer=h.bumpTimer=0.12f;
 		}
@@ -659,7 +659,7 @@ const bool Hamster::BurnedOrDrowned()const{
 	return GetState()==WAIT;
 }
 const bool Hamster::CanMove()const{
-	return bumpTimer<=0.f&&!CollectedAllCheckpoints();
+	return !CollectedAllCheckpoints();
 }
 
 const bool Hamster::FlyingInTheAir()const{
