@@ -42,6 +42,7 @@ All rights reserved.
 #include <ranges>
 #include "AnimationState.h"
 #include "FloatingText.h"
+#include "HamsterAI.h"
 
 std::vector<Hamster>Hamster::HAMSTER_LIST;
 const uint8_t Hamster::MAX_HAMSTER_COUNT{100U};
@@ -71,14 +72,6 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 					if(h.IsPlayerControlled){
 						h.HandlePlayerControls();
 					}else{
-						if(!h.hamsterJet.has_value()){
-							h.ObtainPowerup(Powerup::JET);
-							Powerup tempJetPowerup{{},Powerup::JET};
-							tempJetPowerup.OnPowerupObtain(h);
-							h.SetState(FLYING);
-							h.lastSafeLocation.reset();
-							h.hamsterJet.emplace(h);
-						}
 						//TODO: NPC controls.
 					}
 				}
@@ -212,7 +205,8 @@ void Hamster::LoadHamsters(const vf2d startingLoc){
 	if(NPC_HAMSTER_COUNT+1>MAX_HAMSTER_COUNT)throw std::runtime_error{std::format("WARNING! Max hamster count is too high! Please expand the MAX_HAMSTER_COUNT if you want more hamsters. Requested {} hamsters.",MAX_HAMSTER_COUNT)};
 	playerHamster=&HAMSTER_LIST.emplace_back(startingLoc,PLAYER_HAMSTER_IMAGE,PLAYER_CONTROLLED);
 	for(int i:std::ranges::iota_view(0U,NPC_HAMSTER_COUNT)){
-		HAMSTER_LIST.emplace_back(startingLoc,NPC_HAMSTER_IMAGES.at(util::random()%NPC_HAMSTER_IMAGES.size()),NPC);
+		Hamster&npcHamster{HAMSTER_LIST.emplace_back(startingLoc,NPC_HAMSTER_IMAGES.at(util::random()%NPC_HAMSTER_IMAGES.size()),NPC)};
+		npcHamster.ai.LoadAI(HamsterGame::Game().GetCurrentMapName(),HamsterAI::AIType(util::random()%int(HamsterAI::AIType::END)));
 	}
 }
 
@@ -335,6 +329,7 @@ void Hamster::HandlePlayerControls(){
 		if(lastTappedSpace<=0.6f&&HasPowerup(Powerup::JET)){
 			SetState(FLYING);
 			lastSafeLocation.reset();
+			if(IsPlayerControlled)HamsterAI::OnJetLaunch(this->pos);
 			hamsterJet.emplace(*this);
 		}
 		lastTappedSpace=0.f;
@@ -399,6 +394,7 @@ void Hamster::HandleCollision(){
 			(!HasPowerup(powerup.GetType())||HasPowerup(Powerup::JET)&&powerup.GetType()==Powerup::JET&&jetFuel!=1.f)
 			&&geom2d::overlaps(geom2d::circle<float>(GetPos(),collisionRadius),geom2d::circle<float>(powerup.GetPos(),20.f))){
 			ObtainPowerup(powerup.GetType());
+			if(IsPlayerControlled)HamsterAI::OnPowerupCollection(this->pos);
 			powerup.OnPowerupObtain(*this);
 		}
 	}
@@ -406,6 +402,7 @@ void Hamster::HandleCollision(){
 		if(z<=0.1f&&geom2d::overlaps(geom2d::rect<float>(checkpoint.GetPos()-vf2d{62,60},{122.f,113.f}),geom2d::circle<float>(GetPos(),collisionRadius))&&!checkpointsCollected.count(checkpoint.GetPos())){
 			checkpointsCollected.insert(checkpoint.GetPos());
 			FloatingText::CreateFloatingText(pos,std::format("{} / {}",checkpointsCollected.size(),Checkpoint::GetCheckpoints().size()),{WHITE,GREEN},{1.5f,2.f});
+			if(IsPlayerControlled)HamsterAI::OnCheckpointCollected(this->pos);
 			checkpoint.OnCheckpointCollect();
 		}
 	}
@@ -416,6 +413,7 @@ void Hamster::HandleCollision(){
 				burrowTimer=1.f;
 				enteredTunnel=id;
 				burrowImgShrinkTimer=0.5f;
+				if(IsPlayerControlled)HamsterAI::OnTunnelEnter(this->pos);
 			}
 		}
 	}
@@ -539,12 +537,20 @@ const float&Hamster::GetZ()const{
 
 void Hamster::SetPos(const vf2d pos){
 	bool movedY{false};
+	bool movedX{false};
 	if(state==FLYING&&HamsterGame::Game().IsInBounds(vf2d{this->pos.x,pos.y})||!HamsterGame::Game().IsTerrainSolid(vf2d{this->pos.x,pos.y})){
 		this->pos=vf2d{this->pos.x,pos.y};
 		movedY=true;
 	}
-	if(state==FLYING&&HamsterGame::Game().IsInBounds(vf2d{pos.x,this->pos.y})||!HamsterGame::Game().IsTerrainSolid(vf2d{pos.x,this->pos.y}))this->pos=vf2d{pos.x,this->pos.y};
-	if (!movedY&&(state==FLYING&&HamsterGame::Game().IsInBounds(vf2d{this->pos.x,pos.y})||!HamsterGame::Game().IsTerrainSolid(vf2d{this->pos.x,pos.y})))this->pos=vf2d{this->pos.x,pos.y};
+	if(state==FLYING&&HamsterGame::Game().IsInBounds(vf2d{pos.x,this->pos.y})||!HamsterGame::Game().IsTerrainSolid(vf2d{pos.x,this->pos.y})){
+		this->pos=vf2d{pos.x,this->pos.y};
+		movedX=true;
+	}
+	if (!movedY&&(state==FLYING&&HamsterGame::Game().IsInBounds(vf2d{this->pos.x,pos.y})||!HamsterGame::Game().IsTerrainSolid(vf2d{this->pos.x,pos.y}))){
+		this->pos=vf2d{this->pos.x,pos.y};
+		movedY=true;
+	}
+	if(IsPlayerControlled&&(movedX||movedY))HamsterAI::OnMove(this->pos);
 }
 
 void Hamster::SetZ(const float z){

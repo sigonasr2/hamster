@@ -5,6 +5,7 @@
 #include "util.h"
 #include "Checkpoint.h"
 #include "FloatingText.h"
+#include "HamsterAI.h"
 
 geom2d::rect<float>HamsterGame::SCREEN_FRAME{{96,0},{320,288}};
 std::unordered_map<std::string,Animate2D::Animation<AnimationState::AnimationState>>HamsterGame::ANIMATIONS;
@@ -120,6 +121,7 @@ void HamsterGame::LoadLevel(const std::string&mapName){
 	const vf2d levelSpawnLoc{50,50}; //TEMPORARY
 
 	currentMap=TMXParser{ASSETS_DIR+mapName};
+	currentMapName=mapName;
 	cloudSpd.x=util::random_range(-12.f,12.f);
 	cloudSpd.y=util::random_range(-0.3f,0.3f);
 	cloudOffset.x=util::random();
@@ -181,6 +183,7 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 	camera.SetLazyFollowRate(4.f*Hamster::GetPlayer().GetMaxSpeed()/128.f);
 	tv.SetWorldOffset(tv.ScaleToWorld(-SCREEN_FRAME.pos)+camera.GetViewPosition());
 	Hamster::UpdateHamsters(fElapsedTime);
+	HamsterAI::Update(fElapsedTime);
 	Powerup::UpdatePowerups(fElapsedTime);
 	Checkpoint::UpdateCheckpoints(fElapsedTime);
 	FloatingText::UpdateFloatingText(fElapsedTime);
@@ -209,6 +212,7 @@ void HamsterGame::DrawGame(){
 	FloatingText::DrawFloatingText(tv);
 	border.Draw();
 	Hamster::DrawOverlay();
+	HamsterAI::DrawOverlay();
 	#pragma region Powerup Display
 		for(int y:std::ranges::iota_view(0,4)){
 			for(int x:std::ranges::iota_view(0,2)){
@@ -526,6 +530,14 @@ const Terrain::Direction&HamsterGame::GetTileFacingDirection(const vf2d worldPos
 		tileFacingDir=currentTileset.value().GetData().GetTerrainData().at(tileID).facing;
 	}
 	return tileFacingDir;
+}
+
+const std::string&HamsterGame::GetCurrentMapName()const{
+	return currentMapName;
+}
+
+void HamsterGame::OnTextEntryComplete(const std::string& sText){
+	HamsterAI::OnTextEntryComplete(sText);
 }
 
 int main()

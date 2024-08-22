@@ -81,6 +81,8 @@ public:
 	const float GetCameraZ()const;
 	const std::unordered_map<TunnelId,Tunnel>&GetTunnels()const;
 	const Terrain::Direction&GetTileFacingDirection(const vf2d worldPos)const;
+	const std::string&GetCurrentMapName()const;
+	virtual void OnTextEntryComplete(const std::string& sText)override;
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -114,4 +116,5 @@ private:
 	void DrawRadar();
 	float radarScale{48.f};
 	std::vector<Renderable>waterTiles;
+	std::string currentMapName;
 };

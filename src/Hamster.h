@@ -45,6 +45,7 @@ All rights reserved.
 #include "HamsterJet.h"
 #include "HamsterGame.h"
 #include "Checkpoint.h"
+#include "HamsterAI.h"
 
 using Timer=float;
 
@@ -120,6 +121,7 @@ class Hamster{
 	float burrowTimer{};
 	float burrowImgShrinkTimer{};
 	uint16_t enteredTunnel{};
+	HamsterAI ai;
 public:
 	Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled=NPC);
 	static const Hamster&GetPlayer();

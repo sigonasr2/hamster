@@ -79,6 +79,15 @@ AI will move towards those nodes as best they can. If they get stuck for some am
 Record each collection of a powerup/launch moment as these are important nodes for AI to be on. (Maybe "Cheat" the AI a little if thier stuck node counte i really high by teleporting them when they are off-screen)
 
 
+Important Events:
+
+Powerup Collection
+Jet Launch
+Tunnel Enter
+New Tile Traversal
+
+Be careful about changing maps as AI must then be re-recorded!!!
+
 
 LORE
 ===================
