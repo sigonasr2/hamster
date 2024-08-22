@@ -72,6 +72,20 @@
             "valuesAsFlags": false
         },
         {
+            "color": "#ff00ff00",
+            "drawFill": true,
+            "id": 7,
+            "members": [
+            ],
+            "name": "SpawnZone",
+            "type": "class",
+            "useAs": [
+                "property",
+                "object",
+                "project"
+            ]
+        },
+        {
             "id": 1,
             "name": "TerrainType",
             "storageType": "int",

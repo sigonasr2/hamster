@@ -5070,7 +5070,11 @@
  <tile id="1033" type="TileProps"/>
  <tile id="1034" type="TileProps"/>
  <tile id="1035" type="TileProps"/>
- <tile id="1036" type="TileProps"/>
+ <tile id="1036" type="TileProps" probability="10">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="1"/>
+  </properties>
+ </tile>
  <tile id="1037" type="TileProps">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="1"/>
@@ -5096,7 +5100,11 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="1"/>
   </properties>
  </tile>
- <tile id="1042" type="TileProps"/>
+ <tile id="1042" type="TileProps" probability="10">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="10"/>
+  </properties>
+ </tile>
  <tile id="1043" type="TileProps">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="10"/>
@@ -5122,7 +5130,11 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="10"/>
   </properties>
  </tile>
- <tile id="1048" type="TileProps"/>
+ <tile id="1048" type="TileProps" probability="10">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="3"/>
+  </properties>
+ </tile>
  <tile id="1049" type="TileProps">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="3"/>
@@ -5182,7 +5194,11 @@
  <tile id="1061" type="TileProps"/>
  <tile id="1062" type="TileProps"/>
  <tile id="1063" type="TileProps"/>
- <tile id="1064" type="TileProps"/>
+ <tile id="1064" type="TileProps" probability="20">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="1"/>
+  </properties>
+ </tile>
  <tile id="1065" type="TileProps">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="1"/>
@@ -5208,7 +5224,11 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="1"/>
   </properties>
  </tile>
- <tile id="1070" type="TileProps"/>
+ <tile id="1070" type="TileProps" probability="20">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="10"/>
+  </properties>
+ </tile>
  <tile id="1071" type="TileProps">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="10"/>
@@ -5234,7 +5254,11 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="10"/>
   </properties>
  </tile>
- <tile id="1076" type="TileProps"/>
+ <tile id="1076" type="TileProps" probability="20">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="3"/>
+  </properties>
+ </tile>
  <tile id="1077" type="TileProps">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="3"/>
@@ -5260,7 +5284,11 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="3"/>
   </properties>
  </tile>
- <tile id="1082" type="TileProps"/>
+ <tile id="1082" type="TileProps" probability="10">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="2"/>
+  </properties>
+ </tile>
  <tile id="1083" type="TileProps">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="2"/>
@@ -5368,7 +5396,11 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="3"/>
   </properties>
  </tile>
- <tile id="1110" type="TileProps"/>
+ <tile id="1110" type="TileProps" probability="20">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="2"/>
+  </properties>
+ </tile>
  <tile id="1111" type="TileProps">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="2"/>
@@ -5596,7 +5628,7 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="4"/>
   </properties>
  </tile>
- <tile id="1166" type="TileProps" probability="10">
+ <tile id="1166" type="TileProps" probability="20">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="4"/>
   </properties>
@@ -5726,7 +5758,11 @@
  <tile id="1201" type="TileProps"/>
  <tile id="1202" type="TileProps"/>
  <tile id="1203" type="TileProps"/>
- <tile id="1204" type="TileProps"/>
+ <tile id="1204" type="TileProps" probability="20">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="2"/>
+  </properties>
+ </tile>
  <tile id="1205" type="TileProps">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="2"/>
@@ -5799,7 +5835,11 @@
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="5"/>
   </properties>
  </tile>
- <tile id="1221" type="TileProps"/>
+ <tile id="1221" type="TileProps" probability="10">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="4"/>
+  </properties>
+ </tile>
  <tile id="1222" type="TileProps">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="4"/>
@@ -5830,7 +5870,11 @@
  <tile id="1229" type="TileProps"/>
  <tile id="1230" type="TileProps"/>
  <tile id="1231" type="TileProps"/>
- <tile id="1232" type="TileProps"/>
+ <tile id="1232" type="TileProps" probability="10">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="2"/>
+  </properties>
+ </tile>
  <tile id="1233" type="TileProps">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="2"/>
@@ -6067,17 +6111,41 @@
  <tile id="1290" type="TileProps"/>
  <tile id="1291" type="TileProps"/>
  <tile id="1292" type="TileProps"/>
- <tile id="1293" type="TileProps"/>
- <tile id="1294" type="TileProps"/>
- <tile id="1295" type="TileProps"/>
+ <tile id="1293" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+  </properties>
+ </tile>
+ <tile id="1294" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+  </properties>
+ </tile>
+ <tile id="1295" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+  </properties>
+ </tile>
  <tile id="1296" type="TileProps">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
   </properties>
  </tile>
- <tile id="1297" type="TileProps"/>
- <tile id="1298" type="TileProps"/>
- <tile id="1299" type="TileProps"/>
+ <tile id="1297" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+  </properties>
+ </tile>
+ <tile id="1298" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="0"/>
+  </properties>
+ </tile>
+ <tile id="1299" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="0"/>
+  </properties>
+ </tile>
  <tile id="1300" type="TileProps">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="8"/>
@@ -6151,9 +6219,21 @@
  <tile id="1318" type="TileProps"/>
  <tile id="1319" type="TileProps"/>
  <tile id="1320" type="TileProps"/>
- <tile id="1321" type="TileProps"/>
- <tile id="1322" type="TileProps"/>
- <tile id="1323" type="TileProps"/>
+ <tile id="1321" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+  </properties>
+ </tile>
+ <tile id="1322" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+  </properties>
+ </tile>
+ <tile id="1323" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+  </properties>
+ </tile>
  <tile id="1324" type="TileProps">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
@@ -6166,7 +6246,7 @@
  </tile>
  <tile id="1326" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="0"/>
   </properties>
  </tile>
  <tile id="1327" type="TileProps">
@@ -6195,11 +6275,19 @@
  <tile id="1346" type="TileProps"/>
  <tile id="1347" type="TileProps"/>
  <tile id="1348" type="TileProps"/>
- <tile id="1349" type="TileProps"/>
- <tile id="1350" type="TileProps"/>
+ <tile id="1349" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+  </properties>
+ </tile>
+ <tile id="1350" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+  </properties>
+ </tile>
  <tile id="1351" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="0"/>
   </properties>
  </tile>
  <tile id="1352" type="TileProps">
@@ -6209,12 +6297,12 @@
  </tile>
  <tile id="1353" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
   </properties>
  </tile>
  <tile id="1354" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="0"/>
   </properties>
  </tile>
  <tile id="1355" type="TileProps">
@@ -6285,32 +6373,32 @@
  <tile id="1376" type="TileProps"/>
  <tile id="1377" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
   </properties>
  </tile>
  <tile id="1378" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
   </properties>
  </tile>
  <tile id="1379" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
   </properties>
  </tile>
  <tile id="1380" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
   </properties>
  </tile>
  <tile id="1381" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
   </properties>
  </tile>
  <tile id="1382" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="0"/>
   </properties>
  </tile>
  <tile id="1383" type="TileProps">
@@ -6389,25 +6477,41 @@
  <tile id="1402" type="TileProps"/>
  <tile id="1403" type="TileProps"/>
  <tile id="1404" type="TileProps"/>
- <tile id="1405" type="TileProps"/>
- <tile id="1406" type="TileProps"/>
+ <tile id="1405" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+  </properties>
+ </tile>
+ <tile id="1406" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+  </properties>
+ </tile>
  <tile id="1407" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
   </properties>
  </tile>
  <tile id="1408" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
   </properties>
  </tile>
  <tile id="1409" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
   </properties>
  </tile>
- <tile id="1410" type="TileProps"/>
- <tile id="1411" type="TileProps"/>
+ <tile id="1410" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="0"/>
+  </properties>
+ </tile>
+ <tile id="1411" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="0"/>
+  </properties>
+ </tile>
  <tile id="1412" type="TileProps">
   <properties>
    <property name="Terrain Type" type="int" propertytype="TerrainType" value="5"/>
@@ -6476,12 +6580,24 @@
  <tile id="1430" type="TileProps"/>
  <tile id="1431" type="TileProps"/>
  <tile id="1432" type="TileProps"/>
- <tile id="1433" type="TileProps"/>
- <tile id="1434" type="TileProps"/>
- <tile id="1435" type="TileProps"/>
+ <tile id="1433" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="0"/>
+  </properties>
+ </tile>
+ <tile id="1434" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="0"/>
+  </properties>
+ </tile>
+ <tile id="1435" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="0"/>
+  </properties>
+ </tile>
  <tile id="1436" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="0"/>
   </properties>
  </tile>
  <tile id="1437" type="PowerupProps">
@@ -6580,12 +6696,24 @@
  <tile id="1458" type="TileProps"/>
  <tile id="1459" type="TileProps"/>
  <tile id="1460" type="TileProps"/>
- <tile id="1461" type="TileProps"/>
- <tile id="1462" type="TileProps"/>
- <tile id="1463" type="TileProps"/>
+ <tile id="1461" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="0"/>
+  </properties>
+ </tile>
+ <tile id="1462" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="0"/>
+  </properties>
+ </tile>
+ <tile id="1463" type="TileProps">
+  <properties>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="0"/>
+  </properties>
+ </tile>
  <tile id="1464" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
   </properties>
  </tile>
  <tile id="1465" type="PowerupProps">
@@ -6672,68 +6800,241 @@
  <tile id="1482" type="TileProps"/>
  <tile id="1483" type="TileProps"/>
  <wangsets>
-  <wangset name="Sand" type="corner" tile="-1">
-   <wangcolor name="Desert" color="#ff0000" tile="-1" probability="1"/>
-   <wangcolor name="" color="#00ff00" tile="-1" probability="1"/>
-   <wangtile tileid="297" wangid="0,2,0,2,0,2,0,2"/>
-   <wangtile tileid="992" wangid="0,2,0,2,0,2,0,2"/>
-   <wangtile tileid="1020" wangid="0,2,0,2,0,2,0,2"/>
-   <wangtile tileid="1021" wangid="0,1,0,2,0,1,0,1"/>
-   <wangtile tileid="1022" wangid="0,1,0,2,0,2,0,1"/>
-   <wangtile tileid="1023" wangid="0,1,0,2,0,2,0,1"/>
-   <wangtile tileid="1024" wangid="0,1,0,2,0,2,0,1"/>
-   <wangtile tileid="1025" wangid="0,1,0,1,0,2,0,1"/>
-   <wangtile tileid="1049" wangid="0,2,0,2,0,1,0,1"/>
-   <wangtile tileid="1050" wangid="0,2,0,1,0,2,0,2"/>
-   <wangtile tileid="1051" wangid="0,2,0,1,0,1,0,2"/>
-   <wangtile tileid="1052" wangid="0,2,0,2,0,1,0,2"/>
-   <wangtile tileid="1053" wangid="0,1,0,1,0,2,0,2"/>
-   <wangtile tileid="1077" wangid="0,2,0,2,0,1,0,1"/>
-   <wangtile tileid="1078" wangid="0,1,0,1,0,2,0,2"/>
-   <wangtile tileid="1080" wangid="0,2,0,2,0,1,0,1"/>
-   <wangtile tileid="1081" wangid="0,1,0,1,0,2,0,2"/>
-   <wangtile tileid="1105" wangid="0,2,0,2,0,1,0,1"/>
-   <wangtile tileid="1106" wangid="0,1,0,2,0,2,0,2"/>
-   <wangtile tileid="1107" wangid="0,1,0,2,0,2,0,1"/>
-   <wangtile tileid="1108" wangid="0,2,0,2,0,2,0,1"/>
-   <wangtile tileid="1109" wangid="0,1,0,1,0,2,0,2"/>
-   <wangtile tileid="1133" wangid="0,2,0,1,0,1,0,1"/>
-   <wangtile tileid="1134" wangid="0,2,0,1,0,1,0,2"/>
-   <wangtile tileid="1135" wangid="0,2,0,1,0,1,0,2"/>
-   <wangtile tileid="1136" wangid="0,2,0,1,0,1,0,2"/>
-   <wangtile tileid="1137" wangid="0,1,0,1,0,1,0,2"/>
-  </wangset>
-  <wangset name="Grass" type="corner" tile="-1">
-   <wangcolor name="" color="#ff0000" tile="-1" probability="1"/>
-   <wangcolor name="" color="#00ff00" tile="-1" probability="1"/>
+  <wangset name="Terrain" type="corner" tile="1207">
+   <wangcolor name="Sand" color="#ff0000" tile="1079" probability="1"/>
+   <wangcolor name="Grass" color="#00ff00" tile="1207" probability="1"/>
+   <wangcolor name="Grass Border" color="#0000ff" tile="1265" probability="1"/>
+   <wangcolor name="Sand Border" color="#ff7700" tile="1137" probability="1"/>
+   <wangcolor name="Rock" color="#000000" tile="1067" probability="1"/>
+   <wangcolor name="Rock Border" color="#ff00d8" tile="1125" probability="1"/>
+   <wangcolor name="Ice" color="#00ffff" tile="1073" probability="1"/>
+   <wangcolor name="Ice Border" color="#a000ff" tile="1131" probability="1"/>
+   <wangcolor name="Grass 2" color="#00ffa1" tile="1085" probability="1"/>
+   <wangcolor name="Lava" color="#ffa8a8" tile="1191" probability="1"/>
+   <wangcolor name="Grass 2 Border" color="#b4a8ff" tile="1143" probability="1"/>
+   <wangcolor name="Swamp" color="#96ffa7" tile="1252" probability="1"/>
+   <wangcolor name="Swamp Border" color="#8e7848" tile="1310" probability="1"/>
+   <wangcolor name="Shore" color="#5a5a5a" tile="1325" probability="1"/>
+   <wangcolor name="Deep Water" color="#0e7a46" tile="1354" probability="1"/>
+   <wangtile tileid="101" wangid="0,5,0,5,0,5,0,5"/>
+   <wangtile tileid="297" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="479" wangid="0,7,0,7,0,7,0,7"/>
    <wangtile tileid="493" wangid="0,2,0,2,0,2,0,2"/>
+   <wangtile tileid="980" wangid="0,5,0,5,0,5,0,5"/>
+   <wangtile tileid="986" wangid="0,7,0,7,0,7,0,7"/>
+   <wangtile tileid="992" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="998" wangid="0,9,0,9,0,9,0,9"/>
+   <wangtile tileid="1008" wangid="0,5,0,5,0,5,0,5"/>
+   <wangtile tileid="1009" wangid="0,6,0,5,0,6,0,6"/>
+   <wangtile tileid="1010" wangid="0,6,0,5,0,5,0,6"/>
+   <wangtile tileid="1011" wangid="0,6,0,5,0,5,0,6"/>
+   <wangtile tileid="1012" wangid="0,6,0,5,0,5,0,6"/>
+   <wangtile tileid="1013" wangid="0,6,0,6,0,5,0,6"/>
+   <wangtile tileid="1014" wangid="0,7,0,7,0,7,0,7"/>
+   <wangtile tileid="1015" wangid="0,8,0,7,0,8,0,8"/>
+   <wangtile tileid="1016" wangid="0,8,0,7,0,7,0,8"/>
+   <wangtile tileid="1017" wangid="0,8,0,7,0,7,0,8"/>
+   <wangtile tileid="1018" wangid="0,8,0,7,0,7,0,8"/>
+   <wangtile tileid="1019" wangid="0,8,0,8,0,7,0,8"/>
+   <wangtile tileid="1020" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="1021" wangid="0,4,0,1,0,4,0,4"/>
+   <wangtile tileid="1022" wangid="0,4,0,1,0,1,0,4"/>
+   <wangtile tileid="1023" wangid="0,4,0,1,0,1,0,4"/>
+   <wangtile tileid="1024" wangid="0,4,0,1,0,1,0,4"/>
+   <wangtile tileid="1025" wangid="0,4,0,4,0,1,0,4"/>
+   <wangtile tileid="1026" wangid="0,9,0,9,0,9,0,9"/>
+   <wangtile tileid="1027" wangid="0,11,0,9,0,11,0,11"/>
+   <wangtile tileid="1028" wangid="0,11,0,9,0,9,0,11"/>
+   <wangtile tileid="1029" wangid="0,11,0,9,0,9,0,11"/>
+   <wangtile tileid="1030" wangid="0,11,0,9,0,9,0,11"/>
+   <wangtile tileid="1031" wangid="0,11,0,11,0,9,0,11"/>
+   <wangtile tileid="1036" wangid="0,5,0,5,0,5,0,5"/>
+   <wangtile tileid="1037" wangid="0,5,0,5,0,6,0,6"/>
+   <wangtile tileid="1038" wangid="0,5,0,6,0,5,0,5"/>
+   <wangtile tileid="1039" wangid="0,5,0,6,0,6,0,5"/>
+   <wangtile tileid="1040" wangid="0,5,0,5,0,6,0,5"/>
+   <wangtile tileid="1041" wangid="0,6,0,6,0,5,0,5"/>
+   <wangtile tileid="1042" wangid="0,7,0,7,0,7,0,7"/>
+   <wangtile tileid="1043" wangid="0,7,0,7,0,8,0,8"/>
+   <wangtile tileid="1044" wangid="0,7,0,0,0,7,0,7"/>
+   <wangtile tileid="1045" wangid="0,7,0,0,0,0,0,7"/>
+   <wangtile tileid="1046" wangid="0,7,0,7,0,0,0,7"/>
+   <wangtile tileid="1047" wangid="0,8,0,8,0,7,0,7"/>
+   <wangtile tileid="1048" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="1049" wangid="0,1,0,1,0,4,0,4"/>
+   <wangtile tileid="1050" wangid="0,1,0,4,0,1,0,1"/>
+   <wangtile tileid="1051" wangid="0,1,0,4,0,4,0,1"/>
+   <wangtile tileid="1052" wangid="0,1,0,1,0,4,0,1"/>
+   <wangtile tileid="1053" wangid="0,4,0,4,0,1,0,1"/>
+   <wangtile tileid="1054" wangid="0,9,0,9,0,9,0,9"/>
+   <wangtile tileid="1055" wangid="0,9,0,9,0,11,0,11"/>
+   <wangtile tileid="1056" wangid="0,9,0,11,0,9,0,9"/>
+   <wangtile tileid="1057" wangid="0,9,0,11,0,11,0,9"/>
+   <wangtile tileid="1058" wangid="0,9,0,9,0,11,0,9"/>
+   <wangtile tileid="1059" wangid="0,11,0,11,0,9,0,9"/>
+   <wangtile tileid="1064" wangid="0,5,0,5,0,5,0,5"/>
+   <wangtile tileid="1065" wangid="0,5,0,5,0,6,0,6"/>
+   <wangtile tileid="1066" wangid="0,6,0,6,0,5,0,5"/>
+   <wangtile tileid="1067" wangid="0,5,0,5,0,5,0,5"/>
+   <wangtile tileid="1068" wangid="0,5,0,5,0,6,0,6"/>
+   <wangtile tileid="1069" wangid="0,6,0,6,0,5,0,5"/>
+   <wangtile tileid="1070" wangid="0,7,0,7,0,7,0,7"/>
+   <wangtile tileid="1071" wangid="0,7,0,7,0,8,0,8"/>
+   <wangtile tileid="1072" wangid="0,0,0,0,0,7,0,7"/>
+   <wangtile tileid="1073" wangid="0,7,0,7,0,7,0,7"/>
+   <wangtile tileid="1074" wangid="0,7,0,7,0,0,0,0"/>
+   <wangtile tileid="1075" wangid="0,8,0,8,0,7,0,7"/>
+   <wangtile tileid="1076" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="1077" wangid="0,1,0,1,0,4,0,4"/>
+   <wangtile tileid="1078" wangid="0,4,0,4,0,1,0,1"/>
+   <wangtile tileid="1079" wangid="0,1,0,1,0,1,0,1"/>
+   <wangtile tileid="1080" wangid="0,1,0,1,0,4,0,4"/>
+   <wangtile tileid="1081" wangid="0,4,0,4,0,1,0,1"/>
+   <wangtile tileid="1082" wangid="0,9,0,9,0,9,0,9"/>
+   <wangtile tileid="1083" wangid="0,9,0,9,0,11,0,11"/>
+   <wangtile tileid="1084" wangid="0,11,0,11,0,9,0,9"/>
+   <wangtile tileid="1085" wangid="0,9,0,9,0,9,0,9"/>
+   <wangtile tileid="1086" wangid="0,9,0,9,0,11,0,11"/>
+   <wangtile tileid="1087" wangid="0,11,0,11,0,9,0,9"/>
+   <wangtile tileid="1093" wangid="0,5,0,5,0,6,0,6"/>
+   <wangtile tileid="1094" wangid="0,6,0,5,0,5,0,5"/>
+   <wangtile tileid="1095" wangid="0,6,0,5,0,5,0,6"/>
+   <wangtile tileid="1096" wangid="0,5,0,5,0,5,0,6"/>
+   <wangtile tileid="1097" wangid="0,6,0,6,0,5,0,5"/>
+   <wangtile tileid="1099" wangid="0,7,0,7,0,8,0,8"/>
+   <wangtile tileid="1100" wangid="0,0,0,7,0,7,0,7"/>
+   <wangtile tileid="1101" wangid="0,0,0,7,0,7,0,0"/>
+   <wangtile tileid="1102" wangid="0,7,0,7,0,7,0,0"/>
+   <wangtile tileid="1103" wangid="0,8,0,8,0,7,0,7"/>
+   <wangtile tileid="1105" wangid="0,1,0,1,0,4,0,4"/>
+   <wangtile tileid="1106" wangid="0,4,0,1,0,1,0,1"/>
+   <wangtile tileid="1107" wangid="0,4,0,1,0,1,0,4"/>
+   <wangtile tileid="1108" wangid="0,1,0,1,0,1,0,4"/>
+   <wangtile tileid="1109" wangid="0,4,0,4,0,1,0,1"/>
+   <wangtile tileid="1110" wangid="0,9,0,9,0,9,0,9"/>
+   <wangtile tileid="1111" wangid="0,9,0,9,0,11,0,11"/>
+   <wangtile tileid="1112" wangid="0,11,0,9,0,9,0,9"/>
+   <wangtile tileid="1113" wangid="0,11,0,9,0,9,0,11"/>
+   <wangtile tileid="1114" wangid="0,9,0,9,0,9,0,11"/>
+   <wangtile tileid="1115" wangid="0,11,0,11,0,9,0,9"/>
    <wangtile tileid="1120" wangid="0,2,0,2,0,2,0,2"/>
+   <wangtile tileid="1121" wangid="0,5,0,6,0,6,0,6"/>
+   <wangtile tileid="1122" wangid="0,5,0,6,0,6,0,5"/>
+   <wangtile tileid="1123" wangid="0,5,0,6,0,6,0,5"/>
+   <wangtile tileid="1124" wangid="0,5,0,6,0,6,0,5"/>
+   <wangtile tileid="1125" wangid="0,6,0,6,0,6,0,5"/>
+   <wangtile tileid="1127" wangid="0,7,0,8,0,8,0,8"/>
+   <wangtile tileid="1128" wangid="0,7,0,8,0,8,0,7"/>
+   <wangtile tileid="1129" wangid="0,7,0,8,0,8,0,7"/>
+   <wangtile tileid="1130" wangid="0,7,0,8,0,8,0,7"/>
+   <wangtile tileid="1131" wangid="0,8,0,8,0,8,0,7"/>
+   <wangtile tileid="1133" wangid="0,1,0,4,0,4,0,4"/>
+   <wangtile tileid="1134" wangid="0,1,0,4,0,4,0,1"/>
+   <wangtile tileid="1135" wangid="0,1,0,4,0,4,0,1"/>
+   <wangtile tileid="1136" wangid="0,1,0,4,0,4,0,1"/>
+   <wangtile tileid="1137" wangid="0,4,0,4,0,4,0,1"/>
+   <wangtile tileid="1139" wangid="0,9,0,11,0,11,0,11"/>
+   <wangtile tileid="1140" wangid="0,9,0,11,0,11,0,9"/>
+   <wangtile tileid="1141" wangid="0,9,0,11,0,11,0,9"/>
+   <wangtile tileid="1142" wangid="0,9,0,11,0,11,0,9"/>
+   <wangtile tileid="1143" wangid="0,11,0,11,0,11,0,9"/>
    <wangtile tileid="1148" wangid="0,2,0,2,0,2,0,2"/>
-   <wangtile tileid="1149" wangid="0,1,0,2,0,1,0,1"/>
-   <wangtile tileid="1150" wangid="0,1,0,2,0,2,0,1"/>
-   <wangtile tileid="1151" wangid="0,1,0,2,0,2,0,1"/>
-   <wangtile tileid="1152" wangid="0,1,0,2,0,2,0,1"/>
-   <wangtile tileid="1153" wangid="0,1,0,1,0,2,0,1"/>
+   <wangtile tileid="1149" wangid="0,3,0,2,0,3,0,3"/>
+   <wangtile tileid="1150" wangid="0,3,0,2,0,2,0,3"/>
+   <wangtile tileid="1151" wangid="0,3,0,2,0,2,0,3"/>
+   <wangtile tileid="1152" wangid="0,3,0,2,0,2,0,3"/>
+   <wangtile tileid="1153" wangid="0,3,0,3,0,2,0,3"/>
+   <wangtile tileid="1162" wangid="0,5,0,10,0,5,0,5"/>
+   <wangtile tileid="1163" wangid="0,5,0,10,0,10,0,5"/>
+   <wangtile tileid="1164" wangid="0,5,0,5,0,10,0,5"/>
+   <wangtile tileid="1165" wangid="0,12,0,12,0,12,0,12"/>
+   <wangtile tileid="1166" wangid="0,12,0,12,0,12,0,12"/>
    <wangtile tileid="1176" wangid="0,2,0,2,0,2,0,2"/>
-   <wangtile tileid="1177" wangid="0,2,0,2,0,1,0,1"/>
-   <wangtile tileid="1178" wangid="0,2,0,1,0,2,0,2"/>
-   <wangtile tileid="1179" wangid="0,2,0,1,0,1,0,2"/>
-   <wangtile tileid="1180" wangid="0,2,0,2,0,1,0,2"/>
-   <wangtile tileid="1181" wangid="0,1,0,1,0,2,0,2"/>
-   <wangtile tileid="1205" wangid="0,2,0,2,0,1,0,1"/>
-   <wangtile tileid="1206" wangid="0,1,0,1,0,2,0,2"/>
-   <wangtile tileid="1208" wangid="0,2,0,2,0,1,0,1"/>
-   <wangtile tileid="1209" wangid="0,1,0,1,0,2,0,2"/>
-   <wangtile tileid="1233" wangid="0,2,0,2,0,1,0,1"/>
-   <wangtile tileid="1234" wangid="0,1,0,2,0,2,0,2"/>
-   <wangtile tileid="1235" wangid="0,1,0,2,0,2,0,1"/>
-   <wangtile tileid="1236" wangid="0,2,0,2,0,2,0,1"/>
-   <wangtile tileid="1237" wangid="0,1,0,1,0,2,0,2"/>
-   <wangtile tileid="1261" wangid="0,2,0,1,0,1,0,1"/>
-   <wangtile tileid="1262" wangid="0,2,0,1,0,1,0,2"/>
-   <wangtile tileid="1263" wangid="0,2,0,1,0,1,0,2"/>
-   <wangtile tileid="1264" wangid="0,2,0,1,0,1,0,2"/>
-   <wangtile tileid="1265" wangid="0,1,0,1,0,1,0,2"/>
+   <wangtile tileid="1177" wangid="0,2,0,2,0,3,0,3"/>
+   <wangtile tileid="1178" wangid="0,2,0,3,0,2,0,2"/>
+   <wangtile tileid="1179" wangid="0,2,0,3,0,3,0,2"/>
+   <wangtile tileid="1180" wangid="0,2,0,2,0,3,0,2"/>
+   <wangtile tileid="1181" wangid="0,3,0,3,0,2,0,2"/>
+   <wangtile tileid="1190" wangid="0,10,0,10,0,5,0,5"/>
+   <wangtile tileid="1191" wangid="0,10,0,10,0,10,0,10"/>
+   <wangtile tileid="1192" wangid="0,5,0,5,0,10,0,10"/>
+   <wangtile tileid="1193" wangid="0,12,0,12,0,12,0,12"/>
+   <wangtile tileid="1194" wangid="0,13,0,12,0,13,0,13"/>
+   <wangtile tileid="1195" wangid="0,13,0,12,0,12,0,13"/>
+   <wangtile tileid="1196" wangid="0,13,0,12,0,12,0,13"/>
+   <wangtile tileid="1197" wangid="0,13,0,12,0,12,0,13"/>
+   <wangtile tileid="1198" wangid="0,13,0,13,0,12,0,13"/>
+   <wangtile tileid="1204" wangid="0,2,0,2,0,2,0,2"/>
+   <wangtile tileid="1205" wangid="0,2,0,2,0,3,0,3"/>
+   <wangtile tileid="1206" wangid="0,3,0,3,0,2,0,2"/>
+   <wangtile tileid="1207" wangid="0,2,0,2,0,2,0,2"/>
+   <wangtile tileid="1208" wangid="0,2,0,2,0,3,0,3"/>
+   <wangtile tileid="1209" wangid="0,3,0,3,0,2,0,2"/>
+   <wangtile tileid="1218" wangid="0,10,0,5,0,5,0,5"/>
+   <wangtile tileid="1219" wangid="0,10,0,5,0,5,0,10"/>
+   <wangtile tileid="1220" wangid="0,5,0,5,0,5,0,10"/>
+   <wangtile tileid="1221" wangid="0,12,0,12,0,12,0,12"/>
+   <wangtile tileid="1222" wangid="0,12,0,12,0,13,0,13"/>
+   <wangtile tileid="1223" wangid="0,12,0,13,0,12,0,12"/>
+   <wangtile tileid="1224" wangid="0,12,0,13,0,13,0,12"/>
+   <wangtile tileid="1225" wangid="0,12,0,12,0,13,0,12"/>
+   <wangtile tileid="1226" wangid="0,13,0,13,0,12,0,12"/>
+   <wangtile tileid="1232" wangid="0,2,0,2,0,2,0,2"/>
+   <wangtile tileid="1233" wangid="0,2,0,2,0,3,0,3"/>
+   <wangtile tileid="1234" wangid="0,3,0,2,0,2,0,2"/>
+   <wangtile tileid="1235" wangid="0,3,0,2,0,2,0,3"/>
+   <wangtile tileid="1236" wangid="0,2,0,2,0,2,0,3"/>
+   <wangtile tileid="1237" wangid="0,3,0,3,0,2,0,2"/>
+   <wangtile tileid="1250" wangid="0,12,0,12,0,13,0,13"/>
+   <wangtile tileid="1251" wangid="0,13,0,13,0,12,0,12"/>
+   <wangtile tileid="1252" wangid="0,12,0,12,0,12,0,12"/>
+   <wangtile tileid="1253" wangid="0,12,0,12,0,13,0,13"/>
+   <wangtile tileid="1254" wangid="0,13,0,13,0,12,0,12"/>
+   <wangtile tileid="1261" wangid="0,2,0,3,0,3,0,3"/>
+   <wangtile tileid="1262" wangid="0,2,0,3,0,3,0,2"/>
+   <wangtile tileid="1263" wangid="0,2,0,3,0,3,0,2"/>
+   <wangtile tileid="1264" wangid="0,2,0,3,0,3,0,2"/>
+   <wangtile tileid="1265" wangid="0,3,0,3,0,3,0,2"/>
+   <wangtile tileid="1278" wangid="0,12,0,12,0,13,0,13"/>
+   <wangtile tileid="1279" wangid="0,13,0,12,0,12,0,12"/>
+   <wangtile tileid="1280" wangid="0,13,0,12,0,12,0,13"/>
+   <wangtile tileid="1281" wangid="0,12,0,12,0,12,0,13"/>
+   <wangtile tileid="1282" wangid="0,13,0,13,0,12,0,12"/>
+   <wangtile tileid="1293" wangid="0,15,0,14,0,15,0,15"/>
+   <wangtile tileid="1294" wangid="0,15,0,14,0,14,0,15"/>
+   <wangtile tileid="1295" wangid="0,15,0,14,0,14,0,15"/>
+   <wangtile tileid="1296" wangid="0,15,0,14,0,14,0,15"/>
+   <wangtile tileid="1297" wangid="0,15,0,15,0,14,0,15"/>
+   <wangtile tileid="1306" wangid="0,12,0,13,0,13,0,13"/>
+   <wangtile tileid="1307" wangid="0,12,0,13,0,13,0,12"/>
+   <wangtile tileid="1308" wangid="0,12,0,13,0,13,0,12"/>
+   <wangtile tileid="1309" wangid="0,12,0,13,0,13,0,12"/>
+   <wangtile tileid="1310" wangid="0,13,0,13,0,13,0,12"/>
+   <wangtile tileid="1321" wangid="0,14,0,14,0,15,0,15"/>
+   <wangtile tileid="1322" wangid="0,14,0,15,0,14,0,14"/>
+   <wangtile tileid="1323" wangid="0,14,0,15,0,15,0,14"/>
+   <wangtile tileid="1324" wangid="0,14,0,14,0,15,0,14"/>
+   <wangtile tileid="1325" wangid="0,15,0,15,0,14,0,14"/>
+   <wangtile tileid="1327" wangid="0,14,0,14,0,14,0,14"/>
+   <wangtile tileid="1349" wangid="0,14,0,14,0,15,0,15"/>
+   <wangtile tileid="1350" wangid="0,15,0,15,0,14,0,14"/>
+   <wangtile tileid="1352" wangid="0,14,0,14,0,15,0,15"/>
+   <wangtile tileid="1353" wangid="0,15,0,15,0,14,0,14"/>
+   <wangtile tileid="1364" wangid="0,14,0,14,0,14,0,14"/>
+   <wangtile tileid="1365" wangid="0,14,0,14,0,14,0,14"/>
+   <wangtile tileid="1377" wangid="0,14,0,14,0,15,0,15"/>
+   <wangtile tileid="1378" wangid="0,15,0,14,0,14,0,14"/>
+   <wangtile tileid="1379" wangid="0,15,0,14,0,14,0,15"/>
+   <wangtile tileid="1380" wangid="0,14,0,14,0,14,0,15"/>
+   <wangtile tileid="1381" wangid="0,15,0,15,0,14,0,14"/>
+   <wangtile tileid="1392" wangid="0,14,0,14,0,14,0,14"/>
+   <wangtile tileid="1393" wangid="0,14,0,14,0,14,0,14"/>
+   <wangtile tileid="1405" wangid="0,14,0,15,0,15,0,15"/>
+   <wangtile tileid="1406" wangid="0,14,0,15,0,15,0,14"/>
+   <wangtile tileid="1407" wangid="0,14,0,15,0,15,0,14"/>
+   <wangtile tileid="1408" wangid="0,14,0,15,0,15,0,14"/>
+   <wangtile tileid="1409" wangid="0,15,0,15,0,15,0,14"/>
+   <wangtile tileid="1412" wangid="0,10,0,10,0,10,0,10"/>
   </wangset>
  </wangsets>
 </tileset>
