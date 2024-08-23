@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.10.2" name="Terrain" tilewidth="16" tileheight="16" tilecount="1708" columns="28">
+<tileset version="1.10" tiledversion="1.11.0" name="Terrain" tilewidth="16" tileheight="16" tilecount="1708" columns="28">
  <image source="gametiles.png" width="448" height="976"/>
  <tile id="0" type="TileProps">
   <properties>
@@ -6856,9 +6856,9 @@
    <wangtile tileid="1041" wangid="0,6,0,6,0,5,0,5"/>
    <wangtile tileid="1042" wangid="0,7,0,7,0,7,0,7"/>
    <wangtile tileid="1043" wangid="0,7,0,7,0,8,0,8"/>
-   <wangtile tileid="1044" wangid="0,7,0,0,0,7,0,7"/>
-   <wangtile tileid="1045" wangid="0,7,0,0,0,0,0,7"/>
-   <wangtile tileid="1046" wangid="0,7,0,7,0,0,0,7"/>
+   <wangtile tileid="1044" wangid="0,7,0,8,0,7,0,7"/>
+   <wangtile tileid="1045" wangid="0,7,0,8,0,8,0,7"/>
+   <wangtile tileid="1046" wangid="0,7,0,7,0,8,0,7"/>
    <wangtile tileid="1047" wangid="0,8,0,8,0,7,0,7"/>
    <wangtile tileid="1048" wangid="0,1,0,1,0,1,0,1"/>
    <wangtile tileid="1049" wangid="0,1,0,1,0,4,0,4"/>
@@ -6880,9 +6880,9 @@
    <wangtile tileid="1069" wangid="0,6,0,6,0,5,0,5"/>
    <wangtile tileid="1070" wangid="0,7,0,7,0,7,0,7"/>
    <wangtile tileid="1071" wangid="0,7,0,7,0,8,0,8"/>
-   <wangtile tileid="1072" wangid="0,0,0,0,0,7,0,7"/>
+   <wangtile tileid="1072" wangid="0,8,0,8,0,7,0,7"/>
    <wangtile tileid="1073" wangid="0,7,0,7,0,7,0,7"/>
-   <wangtile tileid="1074" wangid="0,7,0,7,0,0,0,0"/>
+   <wangtile tileid="1074" wangid="0,7,0,7,0,8,0,8"/>
    <wangtile tileid="1075" wangid="0,8,0,8,0,7,0,7"/>
    <wangtile tileid="1076" wangid="0,1,0,1,0,1,0,1"/>
    <wangtile tileid="1077" wangid="0,1,0,1,0,4,0,4"/>
@@ -6902,9 +6902,9 @@
    <wangtile tileid="1096" wangid="0,5,0,5,0,5,0,6"/>
    <wangtile tileid="1097" wangid="0,6,0,6,0,5,0,5"/>
    <wangtile tileid="1099" wangid="0,7,0,7,0,8,0,8"/>
-   <wangtile tileid="1100" wangid="0,0,0,7,0,7,0,7"/>
-   <wangtile tileid="1101" wangid="0,0,0,7,0,7,0,0"/>
-   <wangtile tileid="1102" wangid="0,7,0,7,0,7,0,0"/>
+   <wangtile tileid="1100" wangid="0,8,0,7,0,7,0,7"/>
+   <wangtile tileid="1101" wangid="0,8,0,7,0,7,0,8"/>
+   <wangtile tileid="1102" wangid="0,7,0,7,0,7,0,8"/>
    <wangtile tileid="1103" wangid="0,8,0,8,0,7,0,7"/>
    <wangtile tileid="1105" wangid="0,1,0,1,0,4,0,4"/>
    <wangtile tileid="1106" wangid="0,4,0,1,0,1,0,1"/>
@@ -6944,9 +6944,6 @@
    <wangtile tileid="1151" wangid="0,3,0,2,0,2,0,3"/>
    <wangtile tileid="1152" wangid="0,3,0,2,0,2,0,3"/>
    <wangtile tileid="1153" wangid="0,3,0,3,0,2,0,3"/>
-   <wangtile tileid="1162" wangid="0,5,0,10,0,5,0,5"/>
-   <wangtile tileid="1163" wangid="0,5,0,10,0,10,0,5"/>
-   <wangtile tileid="1164" wangid="0,5,0,5,0,10,0,5"/>
    <wangtile tileid="1165" wangid="0,12,0,12,0,12,0,12"/>
    <wangtile tileid="1166" wangid="0,12,0,12,0,12,0,12"/>
    <wangtile tileid="1176" wangid="0,2,0,2,0,2,0,2"/>
@@ -6955,9 +6952,6 @@
    <wangtile tileid="1179" wangid="0,2,0,3,0,3,0,2"/>
    <wangtile tileid="1180" wangid="0,2,0,2,0,3,0,2"/>
    <wangtile tileid="1181" wangid="0,3,0,3,0,2,0,2"/>
-   <wangtile tileid="1190" wangid="0,10,0,10,0,5,0,5"/>
-   <wangtile tileid="1191" wangid="0,10,0,10,0,10,0,10"/>
-   <wangtile tileid="1192" wangid="0,5,0,5,0,10,0,10"/>
    <wangtile tileid="1193" wangid="0,12,0,12,0,12,0,12"/>
    <wangtile tileid="1194" wangid="0,13,0,12,0,13,0,13"/>
    <wangtile tileid="1195" wangid="0,13,0,12,0,12,0,13"/>
@@ -6970,9 +6964,6 @@
    <wangtile tileid="1207" wangid="0,2,0,2,0,2,0,2"/>
    <wangtile tileid="1208" wangid="0,2,0,2,0,3,0,3"/>
    <wangtile tileid="1209" wangid="0,3,0,3,0,2,0,2"/>
-   <wangtile tileid="1218" wangid="0,10,0,5,0,5,0,5"/>
-   <wangtile tileid="1219" wangid="0,10,0,5,0,5,0,10"/>
-   <wangtile tileid="1220" wangid="0,5,0,5,0,5,0,10"/>
    <wangtile tileid="1221" wangid="0,12,0,12,0,12,0,12"/>
    <wangtile tileid="1222" wangid="0,12,0,12,0,13,0,13"/>
    <wangtile tileid="1223" wangid="0,12,0,13,0,12,0,12"/>

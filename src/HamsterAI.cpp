@@ -151,6 +151,11 @@ const HamsterAI::ActionOptRef HamsterAI::RevertToPreviousAction(){
 	return GetCurrentAction();
 }
 
+const HamsterAI::ActionOptRef HamsterAI::PeekNextAction(){
+	if(actionInd+1<actionsToPerform.size())return actionsToPerform[actionInd+1];
+	return {};
+}
+
 void HamsterAI::OnBoost(const vi2d pos){
 	recordedActions.emplace_back(pos,Action::BOOST);
 }

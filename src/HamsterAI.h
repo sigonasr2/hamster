@@ -66,6 +66,7 @@ public:
 	const ActionOptRef AdvanceToNextAction();
 	const ActionOptRef GetPreviousAction();
 	const ActionOptRef RevertToPreviousAction();
+	const ActionOptRef PeekNextAction();
 	const AIType GetAIType()const;
 	void LoadAI(const std::string&mapName,int numb);
 

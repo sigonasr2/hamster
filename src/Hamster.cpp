@@ -46,7 +46,7 @@ All rights reserved.
 
 std::vector<Hamster>Hamster::HAMSTER_LIST;
 const uint8_t Hamster::MAX_HAMSTER_COUNT{100U};
-const uint8_t Hamster::NPC_HAMSTER_COUNT{5U};
+const uint8_t Hamster::NPC_HAMSTER_COUNT{1U};
 const std::vector<std::string>Hamster::NPC_HAMSTER_IMAGES{
 	"hamster.png",
 };
@@ -562,7 +562,8 @@ const float Hamster::GetMaxSpeed()const{
 			finalMaxSpd*=0.10f;
 		}break;
 		case Terrain::LAVA:{
-			finalMaxSpd*=0.6f;
+			if(HasPowerup(Powerup::LAVA))finalMaxSpd*=1.f;
+			else finalMaxSpd*=0.6f;
 		}break;
 		case Terrain::FOREST:{
 			if(!HasPowerup(Powerup::FOREST))finalMaxSpd*=0.50f;
@@ -789,16 +790,27 @@ void Hamster::HandleAIControls(){
 	const HamsterAI::Action&action{currentAction.value().get()};
 
 	if(aiNodeTime>GetAIAdjustNodeTime()){
-		if(ai.GetPreviousAction().has_value()&&ai.GetPreviousAction().value().get().type==HamsterAI::Action::MOVE){
-			ai.RevertToPreviousAction();
-			chooseTemporaryNodeNext=true;
-		}else{
+		geom2d::line<float>playerToHamster{GetPlayer().GetPos(),GetPos()};
+		const float screenDistance{playerToHamster.length()*(1.325f/(HamsterGame::Game().GetCameraZ()))};
+		if(temporaryNode.has_value()&&screenDistance>226){
+			//Let's cheat, hehe.
+			if(ai.PeekNextAction().has_value()&&ai.PeekNextAction().value().get().type==HamsterAI::Action::MOVE){
+				pos=ai.AdvanceToNextAction().value().get().pos;
+				temporaryNode.reset();
+				SEARCH_RANGE=1.f;
+			}else if(ai.PeekNextAction().has_value()&&ai.PeekNextAction().value().get().type==HamsterAI::Action::MOVE){
+				pos=ai.AdvanceToNextAction().value().get().pos;
+				temporaryNode.reset();
+				SEARCH_RANGE=1.f;
+			}
+		}else if(!temporaryNode.has_value()&&ai.GetPreviousAction().has_value()&&ai.GetPreviousAction().value().get().type==HamsterAI::Action::MOVE){
 			int MAX_SEARCH_AMT{100};
-			float SEARCH_RANGE{1.f};
 			while(MAX_SEARCH_AMT>0){
 				temporaryNode=GetPos()+vf2d{util::random_range(-SEARCH_RANGE*16,SEARCH_RANGE*16),util::random_range(-SEARCH_RANGE*16,SEARCH_RANGE*16)};
+				randomId=util::random(); //Shuffle this in hopes it sprouts better RNG.
 				if(!HamsterGame::Game().IsTerrainSolid(temporaryNode.value()))break;
-				SEARCH_RANGE+=1.25f;
+				SEARCH_RANGE+=1.f;
+				SEARCH_RANGE=std::min(64.f,SEARCH_RANGE);
 				MAX_SEARCH_AMT--;
 			}
 		}
@@ -851,17 +863,8 @@ void Hamster::HandleAIControls(){
 				}
 			}
 		}
-		if(chooseTemporaryNodeNext){
-			int MAX_SEARCH_AMT{100};
-			float SEARCH_RANGE{1.f};
-			while(MAX_SEARCH_AMT>0){
-				temporaryNode=GetPos()+vf2d{util::random_range(-SEARCH_RANGE*16,SEARCH_RANGE*16),util::random_range(-SEARCH_RANGE*16,SEARCH_RANGE*16)};
-				if(!HamsterGame::Game().IsTerrainSolid(temporaryNode.value()))break;
-				SEARCH_RANGE+=1.25f;
-				MAX_SEARCH_AMT--;
-			}
-		}else temporaryNode.reset();
-		chooseTemporaryNodeNext=false;
+		temporaryNode.reset();
+		SEARCH_RANGE=1.f;
 		aiNodeTime=0.f;
 	}
 	const float moveThreshold{4.f};

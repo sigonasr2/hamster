@@ -124,11 +124,11 @@ class Hamster{
 	HamsterAI ai;
 	float aiNodeTime{0.f};
 	std::optional<vf2d>temporaryNode;
-	bool chooseTemporaryNodeNext{false};
 	int randomId{};
 	uint8_t boostCounter{};
 	float boostTimer{};
 	float canCollectWheelPowerupTimer{};
+	float SEARCH_RANGE{1.f};
 public:
 	Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled=NPC);
 	static const Hamster&GetPlayer();

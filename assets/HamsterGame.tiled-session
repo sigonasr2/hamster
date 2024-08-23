@@ -16,8 +16,8 @@
             "scale": 0.75,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 843.3333333333335,
-                "y": 2534
+                "x": 843.3333333333333,
+                "y": 2534.6666666666665
             }
         },
         "StageII.tmx": {
@@ -31,8 +31,16 @@
                 "y": 1266.5
             }
         },
+        "StageIII.tmx": {
+            "scale": 4,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 661.75,
+                "y": 2534.75
+            }
+        },
         "Terrain.tsx": {
-            "dynamicWrapping": true,
+            "dynamicWrapping": false,
             "scaleInDock": 1,
             "scaleInEditor": 5.5
         },
@@ -43,8 +51,8 @@
             "scale": 1,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 516.5,
-                "y": 578.5
+                "x": 516,
+                "y": 579
             }
         },
         "TreeTemplates.tmx": {
