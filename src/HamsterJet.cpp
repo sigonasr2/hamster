@@ -247,9 +247,11 @@ void HamsterJet::HandleAIControls(){
 	if(hamster.aiNodeTime>hamster.GetAIAdjustNodeTime()){
 		geom2d::line<float>playerToHamster{Hamster::GetPlayer().GetPos(),hamster.GetPos()};
 		const float screenDistance{playerToHamster.length()*(1.325f/(HamsterGame::Game().GetCameraZ()))};
-		if(hamster.temporaryNode.has_value()&&screenDistance>226){
+		if(screenDistance>226){
 			//Let's cheat, hehe.
+			hamster.pos=action.pos;
 			pos=action.pos;
+			hamster.temporaryNode.reset();
 		}else{
 			int MAX_SEARCH_AMT{100};
 			while(MAX_SEARCH_AMT>0){

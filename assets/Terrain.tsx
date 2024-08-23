@@ -6113,27 +6113,27 @@
  <tile id="1292" type="TileProps"/>
  <tile id="1293" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
   </properties>
  </tile>
  <tile id="1294" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
   </properties>
  </tile>
  <tile id="1295" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
   </properties>
  </tile>
  <tile id="1296" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
   </properties>
  </tile>
  <tile id="1297" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
   </properties>
  </tile>
  <tile id="1298" type="TileProps">
@@ -6221,7 +6221,7 @@
  <tile id="1320" type="TileProps"/>
  <tile id="1321" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
   </properties>
  </tile>
  <tile id="1322" type="TileProps">
@@ -6241,7 +6241,7 @@
  </tile>
  <tile id="1325" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
   </properties>
  </tile>
  <tile id="1326" type="TileProps">
@@ -6277,7 +6277,7 @@
  <tile id="1348" type="TileProps"/>
  <tile id="1349" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
   </properties>
  </tile>
  <tile id="1350" type="TileProps">
@@ -6297,7 +6297,7 @@
  </tile>
  <tile id="1353" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
   </properties>
  </tile>
  <tile id="1354" type="TileProps">
@@ -6373,7 +6373,7 @@
  <tile id="1376" type="TileProps"/>
  <tile id="1377" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
   </properties>
  </tile>
  <tile id="1378" type="TileProps">
@@ -6393,7 +6393,7 @@
  </tile>
  <tile id="1381" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
   </properties>
  </tile>
  <tile id="1382" type="TileProps">
@@ -6479,27 +6479,27 @@
  <tile id="1404" type="TileProps"/>
  <tile id="1405" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
   </properties>
  </tile>
  <tile id="1406" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
   </properties>
  </tile>
  <tile id="1407" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
   </properties>
  </tile>
  <tile id="1408" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
   </properties>
  </tile>
  <tile id="1409" type="TileProps">
   <properties>
-   <property name="Terrain Type" type="int" propertytype="TerrainType" value="6"/>
+   <property name="Terrain Type" type="int" propertytype="TerrainType" value="7"/>
   </properties>
  </tile>
  <tile id="1410" type="TileProps">

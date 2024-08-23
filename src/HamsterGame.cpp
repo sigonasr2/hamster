@@ -43,7 +43,7 @@ bool HamsterGame::OnUserCreate(){
 	LoadSound("nene - Boss Battle #3 Alternate.ogg");
 	LoadSound("nene - Boss Battle #5 V2.ogg");
 
-	LoadLevel("StageIV.tmx"); //THIS IS TEMPORARY.
+	LoadLevel("StageV.tmx"); //THIS IS TEMPORARY.
 
 	border.ChangeBorder(Border::DEFAULT);
 
@@ -313,7 +313,13 @@ const Terrain::TerrainType HamsterGame::GetTerrainTypeAtPos(const vf2d pos)const
 		int tileY{int(floor(pos.y)/16)};
 		int tileID{layer.tiles[tileY][tileX]-1};
 		if(tileID==-1)continue;
-		if(currentTileset.value().GetData().GetTerrainData().count(tileID))tileType=currentTileset.value().GetData().GetTerrainData().at(tileID).type;
+		if(currentTileset.value().GetData().GetTerrainData().count(tileID)){
+			if(currentTileset.value().GetData().GetTerrainData().at(tileID).type==Terrain::FOREST&&
+				tileType!=Terrain::SWAMP&&tileType!=Terrain::SHORE&&tileType!=Terrain::OCEAN&&tileType!=Terrain::LAVA&&tileType!=Terrain::VOID
+				||currentTileset.value().GetData().GetTerrainData().at(tileID).type!=Terrain::FOREST){//These are overrides.
+				tileType=currentTileset.value().GetData().GetTerrainData().at(tileID).type;
+			}
+		}
 	}
 	return tileType;
 }

@@ -583,6 +583,7 @@ const float Hamster::GetMaxSpeed()const{
 		else if(FlyingInTheAir())finalMaxSpd*=8.f;
 	}
 	if(!IsPlayerControlled){
+		if(aiNodeTime>0.3f)finalMaxSpd*=0.8f; //Slow down a bit...
 		if(temporaryNode.has_value()||aiNodeTime>3.f)finalMaxSpd*=0.5f; //Slow down a bit...
 		//if((temporaryNode.has_value()||aiNodeTime>3.f)&&hamsterJet.has_value())finalMaxSpd*=0.5f; //Slow down A LOT...
 		switch(ai.GetAIType()){
@@ -797,9 +798,10 @@ void Hamster::HandleAIControls(){
 	if(aiNodeTime>GetAIAdjustNodeTime()){
 		geom2d::line<float>playerToHamster{GetPlayer().GetPos(),GetPos()};
 		const float screenDistance{playerToHamster.length()*(1.325f/(HamsterGame::Game().GetCameraZ()))};
-		if(temporaryNode.has_value()&&screenDistance>226){
+		if(screenDistance>226){
 			//Let's cheat, hehe.
 			pos=action.pos;
+			temporaryNode.reset();
 		}else{
 			int MAX_SEARCH_AMT{100};
 			while(MAX_SEARCH_AMT>0){
@@ -905,16 +907,16 @@ const float Hamster::GetAILandingSpeed()const{
 const float Hamster::GetAIAdjustNodeTime()const{
 	switch(ai.GetAIType()){
 		case HamsterAI::SMART:{
-			return 5.f;
+			return 0.5f;
 		}break;
 		case HamsterAI::NORMAL:{
-			return 7.5f;
+			return 2.f;
 		}break;
 		case HamsterAI::DUMB:{
-			return 10.f;
+			return 3.5f;
 		}break;
 	}
-	return 7.5f;
+	return 3.5f;
 }
 
 const bool Hamster::IsBurrowed()const{
