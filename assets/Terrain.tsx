@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.11.0" name="Terrain" tilewidth="16" tileheight="16" tilecount="1708" columns="28">
+<tileset version="1.10" tiledversion="1.10.2" name="Terrain" tilewidth="16" tileheight="16" tilecount="1708" columns="28">
  <image source="gametiles.png" width="448" height="976"/>
  <tile id="0" type="TileProps">
   <properties>
@@ -6816,6 +6816,7 @@
    <wangcolor name="Swamp Border" color="#8e7848" tile="1310" probability="1"/>
    <wangcolor name="Shore" color="#5a5a5a" tile="1325" probability="1"/>
    <wangcolor name="Deep Water" color="#0e7a46" tile="1354" probability="1"/>
+   <wangcolor name="Sand Cliff" color="#00000000" tile="-1" probability="1"/>
    <wangtile tileid="101" wangid="0,5,0,5,0,5,0,5"/>
    <wangtile tileid="297" wangid="0,1,0,1,0,1,0,1"/>
    <wangtile tileid="479" wangid="0,7,0,7,0,7,0,7"/>

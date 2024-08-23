@@ -117,7 +117,7 @@ private:
 	float speedometerDisplayAmt{0.f};
 	ViewPort radar;
 	void DrawRadar();
-	float radarScale{48.f};
+	float radarScale{36.f};
 	std::vector<Renderable>waterTiles;
 	std::string currentMapName;
 	MiniAudio audio;

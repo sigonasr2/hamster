@@ -46,7 +46,7 @@ All rights reserved.
 
 std::vector<Hamster>Hamster::HAMSTER_LIST;
 const uint8_t Hamster::MAX_HAMSTER_COUNT{100U};
-const uint8_t Hamster::NPC_HAMSTER_COUNT{1U};
+const uint8_t Hamster::NPC_HAMSTER_COUNT{5U};
 const std::vector<std::string>Hamster::NPC_HAMSTER_IMAGES{
 	"hamster.png",
 };
@@ -102,9 +102,13 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 					if(!h.lastSafeLocation.has_value()){
 						h.lastSafeLocation=h.GetNearestSafeLocation();
 					}
-					h.SetPos(h.lastSafeLocation.value());
+					if(h.IsPlayerControlled)h.SetPos(h.lastSafeLocation.value());
+					else{
+						if(h.ai.GetCurrentAction().has_value())h.SetPos(h.ai.GetCurrentAction().value().get().pos);
+						else h.SetPos(h.lastSafeLocation.value());
+					}
 					h.SetState(NORMAL);
-					h.RemoveAllPowerups();
+					if(h.IsPlayerControlled)h.RemoveAllPowerups();
 				}
 			}break;
 			case BURNING:{
@@ -234,17 +238,17 @@ void Hamster::LoadHamsters(const geom2d::rect<int>startingLoc){
 		int randPct{util::random()%100};
 		switch(HamsterGame::Game().GetMapDifficulty()){
 			case Difficulty::EASY:{
-				if(randPct<=0.4f&&randPct>0.2f)typeChosen=HamsterAI::NORMAL;
-				else if(randPct<=0.2f)typeChosen=HamsterAI::SMART;
+				if(randPct<=40&&randPct>20)typeChosen=HamsterAI::NORMAL;
+				else if(randPct<=20)typeChosen=HamsterAI::SMART;
 			}break;
 			case Difficulty::MEDIUM:{
 				typeChosen=HamsterAI::NORMAL;
-				if(randPct<=1.f&&randPct>0.8f)typeChosen=HamsterAI::DUMB;
-				else if(randPct<=0.2f)typeChosen=HamsterAI::SMART;
+				if(randPct<=100&&randPct>80)typeChosen=HamsterAI::DUMB;
+				else if(randPct<=20)typeChosen=HamsterAI::SMART;
 			}break;
 			case Difficulty::HARD:{
 				typeChosen=HamsterAI::SMART;
-				if(randPct<=0.2f)typeChosen=HamsterAI::NORMAL;
+				if(randPct<=20)typeChosen=HamsterAI::NORMAL;
 			}break;
 		}
 
@@ -376,16 +380,16 @@ const vf2d&Hamster::GetPos()const{
 void Hamster::HandlePlayerControls(){
 	lastTappedSpace+=HamsterGame::Game().GetElapsedTime();
 	vf2d aimingDir{};
-	if(HamsterGame::Game().GetKey(W).bHeld){
+	if(HamsterGame::Game().GetKey(W).bHeld||HamsterGame::Game().GetKey(UP).bHeld){
 		aimingDir+=vf2d{0,-1};
 	}
-	if(HamsterGame::Game().GetKey(D).bHeld){
+	if(HamsterGame::Game().GetKey(D).bHeld||HamsterGame::Game().GetKey(RIGHT).bHeld){
 		aimingDir+=vf2d{1,0};
 	}
-	if(HamsterGame::Game().GetKey(S).bHeld){
+	if(HamsterGame::Game().GetKey(S).bHeld||HamsterGame::Game().GetKey(DOWN).bHeld){
 		aimingDir+=vf2d{0,1};
 	}
-	if(HamsterGame::Game().GetKey(A).bHeld){
+	if(HamsterGame::Game().GetKey(A).bHeld||HamsterGame::Game().GetKey(LEFT).bHeld){
 		aimingDir+=vf2d{-1,0};
 	}
 	if(aimingDir!=vf2d{}){
@@ -580,6 +584,7 @@ const float Hamster::GetMaxSpeed()const{
 	}
 	if(!IsPlayerControlled){
 		if(temporaryNode.has_value()||aiNodeTime>3.f)finalMaxSpd*=0.5f; //Slow down a bit...
+		//if((temporaryNode.has_value()||aiNodeTime>3.f)&&hamsterJet.has_value())finalMaxSpd*=0.5f; //Slow down A LOT...
 		switch(ai.GetAIType()){
 			case HamsterAI::SMART:{
 				finalMaxSpd*=0.99f;
@@ -794,16 +799,8 @@ void Hamster::HandleAIControls(){
 		const float screenDistance{playerToHamster.length()*(1.325f/(HamsterGame::Game().GetCameraZ()))};
 		if(temporaryNode.has_value()&&screenDistance>226){
 			//Let's cheat, hehe.
-			if(ai.PeekNextAction().has_value()&&ai.PeekNextAction().value().get().type==HamsterAI::Action::MOVE){
-				pos=ai.AdvanceToNextAction().value().get().pos;
-				temporaryNode.reset();
-				SEARCH_RANGE=1.f;
-			}else if(ai.PeekNextAction().has_value()&&ai.PeekNextAction().value().get().type==HamsterAI::Action::MOVE){
-				pos=ai.AdvanceToNextAction().value().get().pos;
-				temporaryNode.reset();
-				SEARCH_RANGE=1.f;
-			}
-		}else if(!temporaryNode.has_value()&&ai.GetPreviousAction().has_value()&&ai.GetPreviousAction().value().get().type==HamsterAI::Action::MOVE){
+			pos=action.pos;
+		}else{
 			int MAX_SEARCH_AMT{100};
 			while(MAX_SEARCH_AMT>0){
 				temporaryNode=GetPos()+vf2d{util::random_range(-SEARCH_RANGE*16,SEARCH_RANGE*16),util::random_range(-SEARCH_RANGE*16,SEARCH_RANGE*16)};

@@ -165,22 +165,22 @@ void HamsterJet::Draw(const Pixel blendCol){
 void HamsterJet::HandlePlayerControls(){
 	lastTappedSpace+=HamsterGame::Game().GetElapsedTime();
 	vf2d aimingDir{};
-	if(HamsterGame::Game().GetKey(W).bHeld){
+	if(HamsterGame::Game().GetKey(W).bHeld||GetState()!=LANDING&&HamsterGame::Game().GetKey(UP).bHeld){
 		aimingDir+=vf2d{0,-1};
 		jetState[BOTTOM_RIGHT]=ON;
 		jetState[BOTTOM_LEFT]=ON;
 	}
-	if(HamsterGame::Game().GetKey(D).bHeld){
+	if(HamsterGame::Game().GetKey(D).bHeld||GetState()!=LANDING&&HamsterGame::Game().GetKey(RIGHT).bHeld){
 		aimingDir+=vf2d{1,0};
 		jetState[BOTTOM_LEFT]=ON;
 		jetState[TOP_LEFT]=ON;
 	}
-	if(HamsterGame::Game().GetKey(S).bHeld){
+	if(HamsterGame::Game().GetKey(S).bHeld||GetState()!=LANDING&&HamsterGame::Game().GetKey(DOWN).bHeld){
 		aimingDir+=vf2d{0,1};
 		jetState[TOP_LEFT]=ON;
 		jetState[TOP_RIGHT]=ON;
 	}
-	if(HamsterGame::Game().GetKey(A).bHeld){
+	if(HamsterGame::Game().GetKey(A).bHeld||GetState()!=LANDING&&HamsterGame::Game().GetKey(LEFT).bHeld){
 		aimingDir+=vf2d{-1,0};
 		jetState[BOTTOM_RIGHT]=ON;
 		jetState[TOP_RIGHT]=ON;
@@ -249,10 +249,8 @@ void HamsterJet::HandleAIControls(){
 		const float screenDistance{playerToHamster.length()*(1.325f/(HamsterGame::Game().GetCameraZ()))};
 		if(hamster.temporaryNode.has_value()&&screenDistance>226){
 			//Let's cheat, hehe.
-			if(hamster.ai.PeekNextAction().has_value()&&hamster.ai.PeekNextAction().value().get().type==HamsterAI::Action::MOVE)pos=hamster.ai.PeekNextAction().value().get().pos;
-			hamster.temporaryNode.reset();
-			hamster.SEARCH_RANGE=1.f;
-		}else if(!hamster.temporaryNode.has_value()&&hamster.ai.GetPreviousAction().has_value()&&hamster.ai.GetPreviousAction().value().get().type==HamsterAI::Action::MOVE){
+			pos=action.pos;
+		}else{
 			int MAX_SEARCH_AMT{100};
 			while(MAX_SEARCH_AMT>0){
 				hamster.temporaryNode=hamster.GetPos()+vf2d{util::random_range(-hamster.SEARCH_RANGE*16,hamster.SEARCH_RANGE*16),util::random_range(-hamster.SEARCH_RANGE*16,hamster.SEARCH_RANGE*16)};
@@ -271,11 +269,11 @@ void HamsterJet::HandleAIControls(){
 	}
 	
 	vf2d targetLoc{action.pos};
-	if(action.type==HamsterAI::Action::MOVE)targetLoc+=hamster.GetAINodePositionVariance()*8.f;
+	if(action.type==HamsterAI::Action::MOVE)targetLoc+=hamster.GetAINodePositionVariance();
 	if(hamster.temporaryNode.has_value())targetLoc=hamster.temporaryNode.value();
 
 	vf2d diff{action.pos-hamster.GetPos()};
-	float variance{hamster.GetAINodeDistanceVariance()*10.75f};
+	float variance{hamster.GetAINodeDistanceVariance()};
 	if(action.type!=HamsterAI::Action::MOVE)variance=172.f;
 	if(diff.mag()<variance){
 		if(action.type==HamsterAI::Action::LANDING){

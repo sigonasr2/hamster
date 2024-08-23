@@ -43,7 +43,7 @@ bool HamsterGame::OnUserCreate(){
 	LoadSound("nene - Boss Battle #3 Alternate.ogg");
 	LoadSound("nene - Boss Battle #5 V2.ogg");
 
-	LoadLevel("StageIII.tmx"); //THIS IS TEMPORARY.
+	LoadLevel("StageIV.tmx"); //THIS IS TEMPORARY.
 
 	border.ChangeBorder(Border::DEFAULT);
 
@@ -200,9 +200,9 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 	speedometerDisplayAmt+=(Hamster::GetPlayer().GetSpeed()-speedometerDisplayAmt)*fLazyFollowRate*fElapsedTime;
 
 	if(GetMouseWheel()>0){
-		radarScale=std::clamp(radarScale/2.f,6.f,96.f);
+		radarScale=std::clamp(radarScale/2.f,9.f,144.f);
 	}else if(GetMouseWheel()<0){
-		radarScale=std::clamp(radarScale*2.f,6.f,96.f);
+		radarScale=std::clamp(radarScale*2.f,9.f,144.f);
 	}
 	cloudOffset+=cloudSpd*fElapsedTime;
 	camera.SetViewSize(tv.GetWorldVisibleArea());
@@ -525,7 +525,7 @@ void HamsterGame::DrawRadar(){
 	for(const Powerup&powerup:Powerup::GetPowerups()){
 		IconType powerupIcon{IconType(int(powerup.GetType())+1)};
 		uint8_t iconAlpha{255U};
-		if(Hamster::GetPlayer().HasPowerup(powerup.GetType()))iconAlpha=64U;
+		if(Hamster::GetPlayer().HasPowerup(powerup.GetType())&&powerup.GetType()!=Powerup::JET&&powerup.GetType()!=Powerup::WHEEL)iconAlpha=64U;
 		DeferRenderingBasedOnPosition(WorldToRadar(powerup.GetPos()),powerupIcon,iconAlpha);
 	}
 	for(const Checkpoint&cp:Checkpoint::GetCheckpoints()){
