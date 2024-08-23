@@ -163,7 +163,7 @@ void HamsterGame::LoadLevel(const std::string&mapName){
 		for(const LayerTag&layer:currentMap.value().GetData().GetLayers()){
 			for(size_t y:std::ranges::iota_view(0U,layer.tiles.size())){
 				for(size_t x:std::ranges::iota_view(0U,layer.tiles[y].size())){
-					unsigned int tileID{static_cast<unsigned int>(layer.tiles[y][x]-1)};
+					unsigned int tileID{(unsigned int)(layer.tiles[y][x]-1)};
 					if(Powerup::TileIDIsUpperLeftPowerupTile(tileID))mapPowerups.emplace_back(vf2d{float(x),float(y)}*16+vf2d{16,16},Powerup::TileIDPowerupType(tileID));
 					
 					if(tileID==1484)checkpoints.emplace_back(vf2d{float(x),float(y)}*16+vf2d{64,64});
