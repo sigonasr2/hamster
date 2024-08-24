@@ -60,6 +60,13 @@ struct Letter{
 class HamsterGame : public olc::PixelGameEngine
 {
 public:
+	enum class GameMode{
+		GRAND_PRIX_1,
+		GRAND_PRIX_2,
+		GRAND_PRIX_3,
+		SINGLE_RACE,
+		MARATHON,
+	};
 	const static std::string ASSETS_DIR;
 	HamsterGame()=delete;
 	HamsterGame(const std::string&appName);
@@ -122,4 +129,5 @@ private:
 	std::string currentMapName;
 	MiniAudio audio;
 	std::unordered_map<std::string,int>bgm;
+	GameMode mode{GameMode::SINGLE_RACE};
 };

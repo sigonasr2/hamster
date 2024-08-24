@@ -49,8 +49,15 @@ const uint8_t Hamster::MAX_HAMSTER_COUNT{100U};
 const uint8_t Hamster::NPC_HAMSTER_COUNT{5U};
 const std::vector<std::string>Hamster::NPC_HAMSTER_IMAGES{
 	"hamster.png",
+	"hamster2.png",
+	"hamster3.png",
+	"hamster4.png",
+	"hamster5.png",
+	"hamster6.png",
+	"hamster7.png",
+	"hamster8.png",
 };
-const std::string Hamster::PLAYER_HAMSTER_IMAGE{"hamster.png"};
+std::string Hamster::PLAYER_HAMSTER_IMAGE{"hamster.png"};
 std::optional<Hamster*>Hamster::playerHamster;
 
 Hamster::Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled)
@@ -219,52 +226,92 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 	}
 }
 
-void Hamster::LoadHamsters(const geom2d::rect<int>startingLoc){
+void Hamster::CreateHamsters(const HamsterGame::GameMode mode){
 	HAMSTER_LIST.clear();
 	playerHamster.reset();
 	HAMSTER_LIST.reserve(MAX_HAMSTER_COUNT);
 	if(NPC_HAMSTER_COUNT+1>MAX_HAMSTER_COUNT)throw std::runtime_error{std::format("WARNING! Max hamster count is too high! Please expand the MAX_HAMSTER_COUNT if you want more hamsters. Requested {} hamsters.",MAX_HAMSTER_COUNT)};
-	playerHamster=&HAMSTER_LIST.emplace_back(vf2d{util::random_range(startingLoc.pos.x,startingLoc.pos.x+startingLoc.size.x),util::random_range(startingLoc.pos.y,startingLoc.pos.y+startingLoc.size.y)},PLAYER_HAMSTER_IMAGE,PLAYER_CONTROLLED);
+	playerHamster=&HAMSTER_LIST.emplace_back(vf2d{},PLAYER_HAMSTER_IMAGE,PLAYER_CONTROLLED);
+	std::vector<std::string>hamsterColorChoices{NPC_HAMSTER_IMAGES};
+	std::erase(hamsterColorChoices,PLAYER_HAMSTER_IMAGE);
 	for(int i:std::ranges::iota_view(0U,NPC_HAMSTER_COUNT)){
-		Hamster&npcHamster{HAMSTER_LIST.emplace_back(vf2d{util::random_range(startingLoc.pos.x,startingLoc.pos.x+startingLoc.size.x),util::random_range(startingLoc.pos.y,startingLoc.pos.y+startingLoc.size.y)},NPC_HAMSTER_IMAGES.at(util::random()%NPC_HAMSTER_IMAGES.size()),NPC)};
-		int MAX_AI_FILES{100};
-		int aiFileCount{0};
-		while(MAX_AI_FILES>0){
-			if(!std::filesystem::exists(std::format("{}{}.{}",HamsterGame::ASSETS_DIR,HamsterGame::Game().GetCurrentMapName(),aiFileCount)))break;
-			aiFileCount++;
-			MAX_AI_FILES--;
-		}
+		std::string colorChoice{hamsterColorChoices.at(util::random()%hamsterColorChoices.size())};
+		std::erase(hamsterColorChoices,colorChoice);
+		Hamster&npcHamster{HAMSTER_LIST.emplace_back(vf2d{},colorChoice,NPC)};
 		HamsterAI::AIType typeChosen{HamsterAI::DUMB};
-		int randPct{util::random()%100};
-		switch(HamsterGame::Game().GetMapDifficulty()){
-			case Difficulty::EASY:{
-				if(randPct<=40&&randPct>20)typeChosen=HamsterAI::NORMAL;
-				else if(randPct<=20)typeChosen=HamsterAI::SMART;
+		switch(mode){
+			case HamsterGame::GameMode::GRAND_PRIX_1:{
+				int randPct{util::random()%100};
+				if(randPct<=25)typeChosen=HamsterAI::DUMB;
+				else if(randPct<=75)typeChosen=HamsterAI::NORMAL;
+				else typeChosen=HamsterAI::SMART;
 			}break;
-			case Difficulty::MEDIUM:{
-				typeChosen=HamsterAI::NORMAL;
-				if(randPct<=100&&randPct>80)typeChosen=HamsterAI::DUMB;
-				else if(randPct<=20)typeChosen=HamsterAI::SMART;
+			case HamsterGame::GameMode::GRAND_PRIX_2:{
+				int randPct{util::random()%100};
+				if(randPct<=10)typeChosen=HamsterAI::DUMB;
+				else if(randPct<=2)typeChosen=HamsterAI::NORMAL;
+				else typeChosen=HamsterAI::SMART;
 			}break;
-			case Difficulty::HARD:{
-				typeChosen=HamsterAI::SMART;
-				if(randPct<=20)typeChosen=HamsterAI::NORMAL;
+			case HamsterGame::GameMode::GRAND_PRIX_3:{
+				int randPct{util::random()%100};
+				if(randPct<=1)typeChosen=HamsterAI::DUMB;
+				else if(randPct<=20)typeChosen=HamsterAI::NORMAL;
+				else typeChosen=HamsterAI::SMART;
+			}break;
+			case HamsterGame::GameMode::SINGLE_RACE:{
+				int randPct{util::random()%100};
+				switch(HamsterGame::Game().GetMapDifficulty()){
+					case Difficulty::EASY:{
+						if(randPct<=40&&randPct>20)typeChosen=HamsterAI::NORMAL;
+						else if(randPct<=20)typeChosen=HamsterAI::SMART;
+					}break;
+					case Difficulty::MEDIUM:{
+						typeChosen=HamsterAI::NORMAL;
+						if(randPct<=100&&randPct>80)typeChosen=HamsterAI::DUMB;
+						else if(randPct<=20)typeChosen=HamsterAI::SMART;
+					}break;
+					case Difficulty::HARD:{
+						typeChosen=HamsterAI::SMART;
+						if(randPct<=20)typeChosen=HamsterAI::NORMAL;
+					}break;
+				}
+			}break;
+			case HamsterGame::GameMode::MARATHON:{
+				int randPct{util::random()%100};
+				if(randPct<=1)typeChosen=HamsterAI::DUMB;
+				else if(randPct<=20)typeChosen=HamsterAI::NORMAL;
+				else typeChosen=HamsterAI::SMART;
 			}break;
 		}
+
+		npcHamster.aiLevel=typeChosen;
+	}
+}
+
+void Hamster::MoveHamstersToSpawn(const geom2d::rect<int>startingLoc){
+	int MAX_AI_FILES{100};
+	int aiFileCount{0};
+	while(MAX_AI_FILES>0){
+		if(!std::filesystem::exists(std::format("{}{}.{}",HamsterGame::ASSETS_DIR,HamsterGame::Game().GetCurrentMapName(),aiFileCount)))break;
+		aiFileCount++;
+		MAX_AI_FILES--;
+	}
+	for(Hamster&hamster:HAMSTER_LIST){
+		hamster.SetPos(vf2d{util::random_range(startingLoc.pos.x,startingLoc.pos.x+startingLoc.size.x),util::random_range(startingLoc.pos.y,startingLoc.pos.y+startingLoc.size.y)});
 
 		std::vector<int>possibleAIs{};
 		for(int i:std::ranges::iota_view(0,aiFileCount)){
-			if(i%3==int(typeChosen))possibleAIs.emplace_back(i);
+			if(i%3==hamster.aiLevel)possibleAIs.emplace_back(i);
 		}
 
 		if(possibleAIs.size()==0){
-			std::cout<<"WARNING! No AI files for AI Type "<<int(typeChosen)<<" currently exist! Consider adding them! Rolling with whatever exists..."<<std::endl;
+			std::cout<<"WARNING! No AI files for AI Type "<<int(hamster.aiLevel)<<" currently exist! Consider adding them! Rolling with whatever exists..."<<std::endl;
 			for(int i:std::ranges::iota_view(0,aiFileCount)){
 				possibleAIs.emplace_back(i);
 			}
 		}
 
-		if(possibleAIs.size()>0)npcHamster.ai.LoadAI(HamsterGame::Game().GetCurrentMapName(),possibleAIs[util::random()%possibleAIs.size()]);
+		if(possibleAIs.size()>0)hamster.ai.LoadAI(HamsterGame::Game().GetCurrentMapName(),possibleAIs[util::random()%possibleAIs.size()]);
 	}
 }
 

@@ -42,8 +42,11 @@ bool HamsterGame::OnUserCreate(){
 	LoadSound("shiru8bit - A Little Journey.ogg");
 	LoadSound("nene - Boss Battle #3 Alternate.ogg");
 	LoadSound("nene - Boss Battle #5 V2.ogg");
-
+	
 	LoadLevel("StageV.tmx"); //THIS IS TEMPORARY.
+	Hamster::CreateHamsters(mode);
+	Hamster::MoveHamstersToSpawn(currentMap.value().GetData().GetSpawnZone());
+	camera.SetTarget(Hamster::GetPlayer().GetPos());
 
 	border.ChangeBorder(Border::DEFAULT);
 
@@ -119,6 +122,13 @@ void HamsterGame::LoadAnimations(){
 	LoadAnimation(AnimationState::WHEEL_BOTTOM,"hamster.png",{{64,96},{96,96}},0.1f);
 	LoadAnimation(AnimationState::KNOCKOUT,"hamster.png",{{64,32},{96,32}},0.2f);
 	LoadAnimation(AnimationState::SIDE_VIEW,"hamster.png",{{0,0},{32,0}},0.3f);
+	for(int i:std::ranges::iota_view(2,9)){
+		LoadAnimation(AnimationState::DEFAULT,std::format("hamster{}.png",i),{{0,32},{32,32}},0.3f);
+		LoadAnimation(AnimationState::WHEEL_TOP,std::format("hamster{}.png",i),{{0,96},{32,96}},0.1f);
+		LoadAnimation(AnimationState::WHEEL_BOTTOM,std::format("hamster{}.png",i),{{64,96},{96,96}},0.1f);
+		LoadAnimation(AnimationState::KNOCKOUT,std::format("hamster{}.png",i),{{64,32},{96,32}},0.2f);
+		LoadAnimation(AnimationState::SIDE_VIEW,std::format("hamster{}.png",i),{{0,0},{32,0}},0.3f);
+	}
 	Animate2D::FrameSequence&waterAnimFrames{(*ANIMATED_TILE_IDS.insert({1384,Animate2D::FrameSequence{0.2f}}).first).second};
 	for(vf2d&sourcePos:std::vector<vf2d>{{192+16*0,784},{192+16*1,784},{192+16*2,784},{192+16*3,784},{192+16*4,784},{192+16*5,784},{192+16*6,784},{192+16*7,784}}){
 		waterAnimFrames.AddFrame(Animate2D::Frame{&GetGFX("gametiles.png"),{sourcePos,{16,16}}});
@@ -147,9 +157,6 @@ void HamsterGame::LoadLevel(const std::string&mapName){
 	camera.SetTarget(currentMap.value().GetData().GetSpawnZone().middle());
 	camera.Update(0.f);
 	camera.SetMode(Camera2D::Mode::LazyFollow);
-
-	Hamster::LoadHamsters(currentMap.value().GetData().GetSpawnZone());
-	camera.SetTarget(Hamster::GetPlayer().GetPos());
 	
 	mapImage.Create(currentMap.value().GetData().GetMapData().width*16,currentMap.value().GetData().GetMapData().height*16);
 	SetDrawTarget(mapImage.Sprite());

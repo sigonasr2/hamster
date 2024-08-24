@@ -75,7 +75,7 @@ class Hamster{
 	static const uint8_t NPC_HAMSTER_COUNT;
 
 	static const std::vector<std::string>NPC_HAMSTER_IMAGES;
-	static const std::string PLAYER_HAMSTER_IMAGE;
+	static std::string PLAYER_HAMSTER_IMAGE;
 
 	const float DEFAULT_MAX_SPD{128.f};
 	const float DEFAULT_TIME_TO_MAX_SPD{0.3f};
@@ -129,11 +129,13 @@ class Hamster{
 	float boostTimer{};
 	float canCollectWheelPowerupTimer{};
 	float SEARCH_RANGE{1.f};
+	HamsterAI::AIType aiLevel;
 public:
 	Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled=NPC);
 	static const Hamster&GetPlayer();
 	static void UpdateHamsters(const float fElapsedTime);
-	static void LoadHamsters(const geom2d::rect<int>startingLoc);
+	static void CreateHamsters(const HamsterGame::GameMode mode);
+	static void MoveHamstersToSpawn(const geom2d::rect<int>startingLoc);
 	static void DrawHamsters(TransformedView&tv);
 	static void DrawOverlay();
 	const Animate2D::Frame&GetCurrentAnimation()const;
