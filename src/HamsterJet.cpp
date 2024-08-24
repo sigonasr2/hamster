@@ -192,10 +192,10 @@ void HamsterJet::HandlePlayerControls(){
 		hamster.vel=vf2d{std::min(hamster.GetMaxSpeed(),hamster.vel.polar().x),hamster.vel.polar().y}.cart();
 		hamster.frictionEnabled=false;
 	}
-	if(HamsterGame::Game().GetKey(UP).bHeld){
+	if(GetState()==LANDING&&HamsterGame::Game().GetKey(UP).bHeld){
 		fallSpd=std::min(5.f,fallSpd+5.f*HamsterGame::Game().GetElapsedTime());
 	}
-	if(HamsterGame::Game().GetKey(DOWN).bHeld){
+	if(GetState()==LANDING&&HamsterGame::Game().GetKey(DOWN).bHeld){
 		fallSpd=std::max(1.f,fallSpd-5.f*HamsterGame::Game().GetElapsedTime());
 	}
 	if(HamsterGame::Game().GetKey(SPACE).bPressed){

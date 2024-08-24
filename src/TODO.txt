@@ -154,6 +154,85 @@ Stage 11: Boss Battle #3 Alternate - nene
 Stage 12: Boss Battle #5 V2 - nene
 
 
+Live Placement Tracking
+Pulsating Animation based on terrain walking across
+
+Sound Effects
+
+Footstep sounds(Grass, Sand, Rock, Shore (Shared with Lava and Swamp), Ocean)
+Hamster Wheel sounds (Rolling)
+Hamster Jet Idle Sound
+Hamster Jet Rockets Sound
+Hamster Jet Landing Sound
+Powerup Collection Sound
+Hamster Wheel Boost Sound
+Checkpoint Collection Sound
+
+Hamster Jet Launch Command Sound
+Fail to Boost/Jet Launch command sound
+
+Race Finish sound
+Race Start sound
+Race Countdown timer sound
+
+Menu Select/Back Sound
+
+==========================
+Stages VI - XII: 7 Stages (1 hour each, 7 hours total)
+Menu Navigations (2 hours)
+Grand Prix Management (1 hour)
+Unlocks (1 hour)
+Leaderboard Management (1 hour)
+
+Menus
+===========
+Title Screen
+Main Menu
+	Grand Prix
+	Single Race (Locked behind Grand Prix I)
+	Options
+	Quit
+	(Bottom of Main Menu shows Research Progress)
+
+	Races:
+	1st - 10
+	2nd - 7
+	3rd - 5
+	4th - 3
+	5th - 2
+	6th - 1
+
+	Research Progress: Each Grand Prix has up to 40 points to earn, thus you need 120 Research points to beat the game.
+		
+Grand Prix
+	Grand Prix I
+	Grand Prix II (Locked behind Grand Prix I)
+	Grand Prix III (Locked behind Grand Prix II)
+	Marathon (Locked behind Game Completion)
+
+Single Race
+	Track I
+	Track II
+	Track III
+	Track IV
+	Track V
+	Track VI
+	Track VII
+	Track VIII
+	Track IX
+	Track X
+	Track XI
+	Track XII
+
+Options 
+	Volume Control
+	Remap R / Space to different keys.
+
+Racing
+
+
+
+
 Settings
 ========
 Keybind Rebinds

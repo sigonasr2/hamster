@@ -29,7 +29,7 @@ public:
 
     bool StartRace(const std::string& map);
     using FinishTime=int;
-    int GetCurrentRaceTime(const std::string& map);
+    int GetCurrentRaceTime();
     std::pair<FinishTime,bool> FinishRace();
 
     std::vector<LeaderboardEntry> GetLeaderboard(const std::string& map, const int offset = 0, const int limit = 100, const std::string& sortBy = "time", bool ascending = true);

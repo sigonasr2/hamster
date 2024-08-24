@@ -96,6 +96,11 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("radaricons.png");
 	_LoadImage("boost.png");
 	_LoadImage("boost_outline.png");
+	_LoadImage("background1.png");
+	_LoadImage("background2.png");
+	_LoadImage("background3.png");
+	_LoadImage("background4.png");
+	_LoadImage("background5.png");
 }
 
 void HamsterGame::LoadAnimations(){
@@ -114,13 +119,7 @@ void HamsterGame::LoadAnimations(){
 		}
 		ANIMATIONS[std::string(img)].AddState(state,newAnimation);
 	};
-
-	LoadAnimation(AnimationState::DEFAULT,"hamster.png",{{0,32},{32,32}},0.3f);
-	LoadAnimation(AnimationState::WHEEL_TOP,"hamster.png",{{0,96},{32,96}},0.1f);
-	LoadAnimation(AnimationState::WHEEL_BOTTOM,"hamster.png",{{64,96},{96,96}},0.1f);
-	LoadAnimation(AnimationState::KNOCKOUT,"hamster.png",{{64,32},{96,32}},0.2f);
-	LoadAnimation(AnimationState::SIDE_VIEW,"hamster.png",{{0,0},{32,0}},0.3f);
-	for(int i:std::ranges::iota_view(2,9)){
+	for(int i:std::ranges::iota_view(1,9)){
 		LoadAnimation(AnimationState::DEFAULT,std::format("hamster{}.png",i),{{0,32},{32,32}},0.3f);
 		LoadAnimation(AnimationState::WHEEL_TOP,std::format("hamster{}.png",i),{{0,96},{32,96}},0.1f);
 		LoadAnimation(AnimationState::WHEEL_BOTTOM,std::format("hamster{}.png",i),{{64,96},{96,96}},0.1f);
@@ -369,11 +368,9 @@ bool HamsterGame::OnUserUpdate(float fElapsedTime){
 		net.InitSession();
 		netInitialized=true;
 	
-		net.SetName("Sig");
-		net.SetColor("Yellow");
-		LoadLevel("StageV.tmx"); //THIS IS TEMPORARY.
-		camera.SetTarget(Hamster::GetPlayer().GetPos());
-		net.StartRace(currentMapName);
+		net.SetName("OneLoneHamster");
+		net.SetColor(hamsterColorNames[0]);
+		SetupAndStartRace();
 	}
 
 	runTime+=fElapsedTime;
@@ -656,6 +653,16 @@ void HamsterGame::LoadPBs(){
 
 const HamsterGame::GameMode HamsterGame::GetGameMode(){
 	return mode;
+}
+
+void HamsterGame::SetupAndStartRace(){
+	LoadLevel("StageV.tmx"); //THIS IS TEMPORARY.
+	camera.SetTarget(Hamster::GetPlayer().GetPos());
+	net.StartRace(currentMapName);
+}
+
+const int HamsterGame::GetRaceTime(){
+	return net.GetCurrentRaceTime();
 }
 
 int main()

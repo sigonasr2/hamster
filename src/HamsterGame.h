@@ -101,6 +101,7 @@ public:
 	const GameMode GetGameMode();
 	static void SavePB(const std::string&mapName,int ms);
 	static void LoadPBs();
+	const int GetRaceTime();
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -113,6 +114,7 @@ private:
 	static HamsterGame*self;
 	Border border;
 	void DrawLevelTiles();
+	void SetupAndStartRace();
 	std::optional<TMXParser>currentMap;
 	std::optional<TSXParser>currentTileset;
 	double runTime{};
@@ -158,6 +160,19 @@ private:
 		"StageX.tmx",
 		"StageXI.tmx",
 		"StageXII.tmx",
+		"Grand Prix I",
+		"Grand Prix II",
+		"Grand Prix III",
 	};
 	std::string emscripten_temp_val{"123456"};
+	std::vector<std::string>hamsterColorNames{
+		"Yellow",
+		"Pink",
+		"Cyan",
+		"Black",
+		"Green",
+		"Purple"
+		"Red",
+		"Blue",
+	};
 };

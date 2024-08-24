@@ -227,7 +227,7 @@ bool HamsterNet::StartRace(const std::string& map)
     return (hamsterNet__startRace() == 1);
 }
 
-int HamsterNet::GetCurrentRaceTime(const std::string& map){
+int HamsterNet::GetCurrentRaceTime(){
     std::chrono::duration<double, std::milli> duration = std::chrono::system_clock::now() - m_tp1;
     return static_cast<int>(duration.count());
 }

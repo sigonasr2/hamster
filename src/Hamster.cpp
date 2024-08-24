@@ -48,7 +48,7 @@ std::vector<Hamster>Hamster::HAMSTER_LIST;
 const uint8_t Hamster::MAX_HAMSTER_COUNT{100U};
 const uint8_t Hamster::NPC_HAMSTER_COUNT{5U};
 const std::vector<std::string>Hamster::NPC_HAMSTER_IMAGES{
-	"hamster.png",
+	"hamster1.png",
 	"hamster2.png",
 	"hamster3.png",
 	"hamster4.png",
@@ -57,11 +57,11 @@ const std::vector<std::string>Hamster::NPC_HAMSTER_IMAGES{
 	"hamster7.png",
 	"hamster8.png",
 };
-std::string Hamster::PLAYER_HAMSTER_IMAGE{"hamster.png"};
+std::string Hamster::PLAYER_HAMSTER_IMAGE{"hamster1.png"};
 std::optional<Hamster*>Hamster::playerHamster;
 
 Hamster::Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled)
-:pos(spawnPos),IsPlayerControlled(IsPlayerControlled),randomId(util::random()){
+:pos(spawnPos),IsPlayerControlled(IsPlayerControlled),randomId(util::random()),colorFilename(img){
 	animations=HamsterGame::GetAnimations(img);
 	animations.ChangeState(internalAnimState,AnimationState::DEFAULT);
 }
@@ -297,6 +297,28 @@ void Hamster::MoveHamstersToSpawn(const geom2d::rect<int>startingLoc){
 		aiFileCount++;
 		MAX_AI_FILES--;
 	}
+
+	struct HamsterPersistentData{
+		HamsterAI::AIType aiLevel;
+		std::string colorFilename;
+		Hamster::PlayerControlled IsPlayerControlled;
+		int points;
+	};
+
+	std::vector<HamsterPersistentData>persistentData;
+	size_t previousHamsterCount{HAMSTER_LIST.size()};
+	for(int i:std::ranges::iota_view(0U,HAMSTER_LIST.size())){
+		Hamster&hamster{HAMSTER_LIST[i]};
+		//Keep persistent data available and reset Hamster.
+		persistentData.emplace_back(hamster.aiLevel,hamster.colorFilename,hamster.IsPlayerControlled,hamster.points);
+	}
+	
+	HAMSTER_LIST.clear();
+	for(HamsterPersistentData&data:persistentData){
+		Hamster&newHamster{HAMSTER_LIST.emplace_back(vf2d{},data.colorFilename,data.IsPlayerControlled)};
+		newHamster.points=data.points;
+	}
+
 	for(Hamster&hamster:HAMSTER_LIST){
 		hamster.SetPos(vf2d{util::random_range(startingLoc.pos.x,startingLoc.pos.x+startingLoc.size.x),util::random_range(startingLoc.pos.y,startingLoc.pos.y+startingLoc.size.y)});
 
@@ -538,6 +560,7 @@ void Hamster::HandleCollision(){
 			FloatingText::CreateFloatingText(pos,std::format("{} / {}",checkpointsCollected.size(),Checkpoint::GetCheckpoints().size()),{WHITE,GREEN},{1.5f,2.f});
 			if(IsPlayerControlled)HamsterAI::OnCheckpointCollected(this->pos);
 			if(IsPlayerControlled)checkpoint.OnCheckpointCollect();
+			if(CollectedAllCheckpoints()){finishedRaceTime=HamsterGame::Game().GetRaceTime();}
 		}
 	}
 	if(GetState()==NORMAL){
