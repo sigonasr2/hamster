@@ -287,7 +287,7 @@ std::vector<LeaderboardEntry> HamsterNet::GetLeaderboard(const std::string& map,
         std::cout << "get leaderboard successful\n";
         
         #else
-        std::cout << "HamsterNet::GetLeaderboard is not implemented for this platform\n"
+        std::cout << "HamsterNet::GetLeaderboard is not implemented for this platform\n";
         #endif
     }
 

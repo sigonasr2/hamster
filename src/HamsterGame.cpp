@@ -42,11 +42,6 @@ bool HamsterGame::OnUserCreate(){
 	LoadSound("shiru8bit - A Little Journey.ogg");
 	LoadSound("nene - Boss Battle #3 Alternate.ogg");
 	LoadSound("nene - Boss Battle #5 V2.ogg");
-	
-	LoadLevel("StageV.tmx"); //THIS IS TEMPORARY.
-	Hamster::CreateHamsters(mode);
-	Hamster::MoveHamstersToSpawn(currentMap.value().GetData().GetSpawnZone());
-	camera.SetTarget(Hamster::GetPlayer().GetPos());
 
 	border.ChangeBorder(Border::DEFAULT);
 
@@ -366,6 +361,18 @@ void HamsterGame::DrawLevelTiles(){
 }
 
 bool HamsterGame::OnUserUpdate(float fElapsedTime){
+	if(!netInitialized){
+		net.InitSession();
+		netInitialized=true;
+	
+		net.SetName("Sig");
+		net.SetColor("Yellow");
+		LoadLevel("StageV.tmx"); //THIS IS TEMPORARY.
+		Hamster::CreateHamsters(mode);
+		Hamster::MoveHamstersToSpawn(currentMap.value().GetData().GetSpawnZone());
+		camera.SetTarget(Hamster::GetPlayer().GetPos());
+		net.StartRace(currentMapName);
+	}
 	runTime+=fElapsedTime;
 	UpdateGame(fElapsedTime);
 	DrawGame();
@@ -582,6 +589,10 @@ void HamsterGame::OnTextEntryComplete(const std::string& sText){
 
 const Difficulty&HamsterGame::GetMapDifficulty()const{
 	return currentMap.value().GetData().GetMapDifficulty();
+}
+
+void HamsterGame::OnPlayerFinishedRace(){
+	net.FinishRace();
 }
 
 int main()

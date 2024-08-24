@@ -106,4 +106,5 @@ const vf2d&Checkpoint::GetPos()const{
 void Checkpoint::OnCheckpointCollect(){
 	collectedByPlayerTimer=2.f;
 	animation.ChangeState(internal_animState,AnimationState::CHECKPOINT_CYCLING);
+	if(Hamster::GetPlayer().CollectedAllCheckpoints())HamsterGame::Game().OnPlayerFinishedRace();
 }

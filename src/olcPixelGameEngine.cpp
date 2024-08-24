@@ -11,3 +11,5 @@
 #include "olcPGEX_Graphics3D.h"
 #define OLC_PGEX_VIEWPORT
 #include "olcPGEX_Viewport.h"
+#define OLC_PGEX_SPLASHSCREEN
+#include "olcPGEX_SplashScreen.h"

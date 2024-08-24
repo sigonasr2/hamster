@@ -50,6 +50,8 @@ All rights reserved.
 #include "olcPGEX_Viewport.h"
 #include "Difficulty.h"
 #include "olcPGEX_MiniAudio.h"
+#include "HamsterNet.h"
+#include "olcPGEX_SplashScreen.h"
 
 struct Letter{
 	vf2d pos;
@@ -93,6 +95,7 @@ public:
 	const std::string&GetCurrentMapName()const;
 	virtual void OnTextEntryComplete(const std::string& sText)override;
 	const Difficulty&GetMapDifficulty()const;
+	void OnPlayerFinishedRace();
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -130,4 +133,9 @@ private:
 	MiniAudio audio;
 	std::unordered_map<std::string,int>bgm;
 	GameMode mode{GameMode::SINGLE_RACE};
+	HamsterNet net;
+	#ifndef __EMSCRIPTEN__
+	SplashScreen splash;
+	#endif
+	bool netInitialized{false};
 };

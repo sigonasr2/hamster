@@ -52,4 +52,5 @@ namespace olc::util{
 	float degToRad(float deg);
 	//Returns a normalized vector pointing from posFrom towards posTo.
 	vf2d pointTo(vf2d posFrom,vf2d posTo);
+	std::string timerStr(int ms);
 };

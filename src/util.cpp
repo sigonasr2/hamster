@@ -56,3 +56,27 @@ float olc::util::degToRad(float deg){
 vf2d olc::util::pointTo(vf2d posFrom,vf2d posTo){
 	return geom2d::line(posFrom,posTo).vector().norm();
 }
+std::string olc::util::timerStr(int ms){
+	int millis=ms%1000;
+	int seconds=ms/1000;
+	int hours=seconds/3600;
+	int minutes=seconds/60;
+
+	std::string timeStr="";
+	if(hours>0){
+		if(hours<10)timeStr+="0";
+		timeStr+=std::to_string(hours)+":";
+	}
+
+	if(minutes%60<10)timeStr+="0";
+	timeStr+=std::to_string(minutes%60)+":";
+
+	if(seconds%60<10)timeStr+="0";
+	timeStr+=std::to_string(seconds%60)+".";
+
+	if(millis<100)timeStr+="0";
+	if(millis<10)timeStr+="0";
+	timeStr+=std::to_string(millis);
+
+	return timeStr;
+}
