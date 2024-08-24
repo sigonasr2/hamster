@@ -70,6 +70,7 @@ public:
 		MARATHON,
 	};
 	const static std::string ASSETS_DIR;
+	const static int UNPLAYED;
 	HamsterGame()=delete;
 	HamsterGame(const std::string&appName);
 	static geom2d::rect<float>SCREEN_FRAME;
@@ -81,6 +82,7 @@ public:
 	static const Renderable&GetGFX(const std::string&img);
 	static const Animate2D::Animation<AnimationState::AnimationState>&GetAnimations(const std::string&img);
 	static const Animate2D::FrameSequence&GetAnimation(const std::string&img,const AnimationState::AnimationState state);
+	static std::unordered_map<std::string,int>mapPBs;
 	static HamsterGame&Game();
 	static std::unordered_map<uint32_t,Animate2D::FrameSequence>ANIMATED_TILE_IDS;
 	const double GetRuntime()const;
@@ -96,6 +98,9 @@ public:
 	virtual void OnTextEntryComplete(const std::string& sText)override;
 	const Difficulty&GetMapDifficulty()const;
 	void OnPlayerFinishedRace();
+	const GameMode GetGameMode();
+	static void SavePB(const std::string&mapName,int ms);
+	static void LoadPBs();
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -135,7 +140,24 @@ private:
 	GameMode mode{GameMode::SINGLE_RACE};
 	HamsterNet net;
 	#ifndef __EMSCRIPTEN__
+	#ifndef __DEBUG__
 	SplashScreen splash;
 	#endif
+	#endif
 	bool netInitialized{false};
+	std::vector<std::string>mapNameList{
+		"StageI.tmx",	
+		"StageII.tmx",
+		"StageIII.tmx",
+		"StageIV.tmx",
+		"StageV.tmx",
+		"StageVI.tmx",
+		"StageVII.tmx",
+		"StageVIII.tmx",
+		"StageIX.tmx",
+		"StageX.tmx",
+		"StageXI.tmx",
+		"StageXII.tmx",
+	};
+	std::string emscripten_temp_val{"123456"};
 };

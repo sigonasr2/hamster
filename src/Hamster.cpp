@@ -289,6 +289,7 @@ void Hamster::CreateHamsters(const HamsterGame::GameMode mode){
 }
 
 void Hamster::MoveHamstersToSpawn(const geom2d::rect<int>startingLoc){
+	if(HAMSTER_LIST.size()==0)Hamster::CreateHamsters(HamsterGame::Game().GetGameMode());
 	int MAX_AI_FILES{100};
 	int aiFileCount{0};
 	while(MAX_AI_FILES>0){

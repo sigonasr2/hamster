@@ -227,13 +227,18 @@ bool HamsterNet::StartRace(const std::string& map)
     return (hamsterNet__startRace() == 1);
 }
 
-bool HamsterNet::FinishRace()
+int HamsterNet::GetCurrentRaceTime(const std::string& map){
+    std::chrono::duration<double, std::milli> duration = std::chrono::system_clock::now() - m_tp1;
+    return static_cast<int>(duration.count());
+}
+
+std::pair<HamsterNet::FinishTime,bool> HamsterNet::FinishRace()
 {
     m_tp2 = std::chrono::system_clock::now();
     std::chrono::duration<double, std::milli> duration = m_tp2 - m_tp1;
     m_time = static_cast<int>(duration.count());
 
-    return (hamsterNet__finishRace(m_map.c_str(), m_color.c_str(), m_time) == 1);
+    return {m_time,(hamsterNet__finishRace(m_map.c_str(), m_color.c_str(), m_time) == 1)};
 }
 
 std::vector<LeaderboardEntry> HamsterNet::GetLeaderboard(const std::string& map, const int offset, const int limit, const std::string& sortBy, bool ascending)

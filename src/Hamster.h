@@ -129,7 +129,7 @@ class Hamster{
 	float boostTimer{};
 	float canCollectWheelPowerupTimer{};
 	float SEARCH_RANGE{1.f};
-	HamsterAI::AIType aiLevel;
+	HamsterAI::AIType aiLevel{HamsterAI::AIType::NORMAL};
 public:
 	Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled=NPC);
 	static const Hamster&GetPlayer();

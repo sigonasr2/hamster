@@ -28,7 +28,9 @@ public:
     bool SetName(const std::string& name);
 
     bool StartRace(const std::string& map);
-    bool FinishRace();
+    using FinishTime=int;
+    int GetCurrentRaceTime(const std::string& map);
+    std::pair<FinishTime,bool> FinishRace();
 
     std::vector<LeaderboardEntry> GetLeaderboard(const std::string& map, const int offset = 0, const int limit = 100, const std::string& sortBy = "time", bool ascending = true);
 
