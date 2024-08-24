@@ -246,6 +246,8 @@ if (EMSCRIPTEN)
             -sMIN_WEBGL_VERSION=2
             -sUSE_LIBPNG=1
             -sLLD_REPORT_UNDEFINED
+            -s ASYNCIFY
+            -sASYNCIFY_IMPORTS=hamsterNet__initSession,hamsterNet__setRacerName,hamsterNet__startRace,hamsterNet__finishRace,hamsterNet__getLeaderboard
             --preload-file ${SOURCE_DATA_DIR}@assets)
     else()
         target_link_options(
@@ -255,7 +257,10 @@ if (EMSCRIPTEN)
             -sMAX_WEBGL_VERSION=2
             -sMIN_WEBGL_VERSION=2
             -sUSE_LIBPNG=1
-            -sLLD_REPORT_UNDEFINED)
+            -sLLD_REPORT_UNDEFINED
+            -s ASYNCIFY
+            -sASYNCIFY_IMPORTS=hamsterNet__initSession,hamsterNet__setRacerName,hamsterNet__startRace,hamsterNet__finishRace,hamsterNet__getLeaderboard
+            )
     endif()
     
     set_target_properties(${OutputExecutable} PROPERTIES LINK_FLAGS "--shell-file ${CMAKE_CURRENT_SOURCE_DIR}/emscripten_shell.html")
