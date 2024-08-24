@@ -102,6 +102,7 @@ public:
 	static void SavePB(const std::string&mapName,int ms);
 	static void LoadPBs();
 	const int GetRaceTime();
+	const bool RaceCountdownCompleted();
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -141,6 +142,7 @@ private:
 	std::unordered_map<std::string,int>bgm;
 	GameMode mode{GameMode::SINGLE_RACE};
 	HamsterNet net;
+	float countdownTimer{};
 	#ifndef __EMSCRIPTEN__
 	#ifndef __DEBUG__
 	SplashScreen splash;

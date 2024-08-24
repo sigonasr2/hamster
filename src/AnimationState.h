@@ -48,5 +48,6 @@ namespace AnimationState{
 		CHECKPOINT_CYCLING,
 		CHECKPOINT_COLLECTED,
 		SIDE_VIEW,
+		COUNTDOWN,
 	};
 }

@@ -669,6 +669,7 @@ const float Hamster::GetMaxSpeed()const{
 			}break;
 		}
 	}
+	if(!HamsterGame::Game().RaceCountdownCompleted())finalMaxSpd*=0.f;
 	return finalMaxSpd;
 }
 const float Hamster::GetFriction()const{

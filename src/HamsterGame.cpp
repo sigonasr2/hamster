@@ -140,6 +140,7 @@ void HamsterGame::LoadAnimations(){
 	LoadAnimation(AnimationState::DEFAULT,"checkpoint.png",{{}},0.f,Animate2D::Style::OneShot,{128,128});
 	LoadAnimation(AnimationState::CHECKPOINT_CYCLING,"checkpoint.png",{{},{128,0}},0.4f,Animate2D::Style::Repeat,{128,128});
 	LoadAnimation(AnimationState::CHECKPOINT_COLLECTED,"checkpoint.png",{{128,0}},0.f,Animate2D::Style::OneShot,{128,128});
+	LoadAnimation(AnimationState::COUNTDOWN,"countdown.png",{{0,0},{32,0},{64,0}},1.f,Animate2D::Style::OneShot,{32,32});
 }
 
 void HamsterGame::LoadLevel(const std::string&mapName){
@@ -198,9 +199,11 @@ void HamsterGame::LoadLevel(const std::string&mapName){
 
 	audio.Play(bgm.at(currentMap.value().GetData().GetBGM()),true);
 	Hamster::MoveHamstersToSpawn(currentMap.value().GetData().GetSpawnZone());
+	countdownTimer=3.f;
 }
 
 void HamsterGame::UpdateGame(const float fElapsedTime){
+	countdownTimer=std::max(0.f,countdownTimer-fElapsedTime);
 	vEye.z+=(Hamster::GetPlayer().GetZ()+zoom-vEye.z)*fLazyFollowRate*fElapsedTime;
 	speedometerDisplayAmt+=(Hamster::GetPlayer().GetSpeed()-speedometerDisplayAmt)*fLazyFollowRate*fElapsedTime;
 
@@ -308,6 +311,11 @@ void HamsterGame::DrawGame(){
 	DrawDecal({2.f,4.f},GetGFX("radar.png").Decal());
 	DrawRadar();
 	DrawStringDecal({0,8.f},std::to_string(GetFPS()));
+	if(countdownTimer>0.f){
+		Pixel timerColor{fmod(countdownTimer,1.f)<0.5f?GREEN:WHITE};
+		timerColor.a=util::lerp(0.f,1.f,fmod(countdownTimer,1.f))*255;
+		DrawPartialRotatedDecal(SCREEN_FRAME.middle(),GetGFX("countdown.png").Decal(),0.f,{16.f,16.f},{int(countdownTimer)*32.f,0.f},{32,32},{4.f,4.f},timerColor);
+	}
 }
 
 const Terrain::TerrainType HamsterGame::GetTerrainTypeAtPos(const vf2d pos)const{
@@ -663,6 +671,10 @@ void HamsterGame::SetupAndStartRace(){
 
 const int HamsterGame::GetRaceTime(){
 	return net.GetCurrentRaceTime();
+}
+
+const bool HamsterGame::RaceCountdownCompleted(){
+	return countdownTimer==0.f;
 }
 
 int main()

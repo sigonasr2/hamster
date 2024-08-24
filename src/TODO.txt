@@ -167,6 +167,7 @@ Hamster Jet Landing Sound
 Powerup Collection Sound
 Hamster Wheel Boost Sound
 Checkpoint Collection Sound
+Countdown Sound Effect
 
 Hamster Jet Launch Command Sound
 Fail to Boost/Jet Launch command sound
