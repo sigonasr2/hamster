@@ -616,7 +616,7 @@ void HamsterGame::SavePB(const std::string&mapName,int ms){
 				std::cout<<"Failed"<<std::endl;
 			});
 		#else
-			std::ofstream file{"PBData"};
+			std::ofstream file{ASSETS_DIR+"PBData"};
 			for(const std::string&mapName:Game().mapNameList){
 				file<<mapPBs[mapName]<<" ";
 			}
@@ -639,7 +639,7 @@ void HamsterGame::LoadPBs(){
 				std::cout<<std::format("Failed to retrieve PB for {}",*((std::string*)(arg)))<<std::endl;
 			});
 		#else
-			std::ifstream file{"PBData"};
+			std::ifstream file{ASSETS_DIR+"PBData"};
 			int readCounter{0};
 			while(file.good()){
 				if(readCounter>=Game().mapNameList.size())break;
