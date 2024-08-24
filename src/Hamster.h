@@ -104,7 +104,6 @@ class Hamster{
 	std::string img;
 	Animate2D::Animation<AnimationState::AnimationState>animations;
 	Animate2D::AnimationState internalAnimState;
-	PlayerControlled IsPlayerControlled;
 	static std::optional<Hamster*>playerHamster;
 	HamsterState state{NORMAL};
 	std::unordered_set<Powerup::PowerupType>powerups;
@@ -132,6 +131,7 @@ class Hamster{
 	std::string colorFilename;
 	int points{};
 	std::optional<int>finishedRaceTime;
+	std::optional<vf2d>lastObtainedCheckpointPos;
 	HamsterAI::AIType aiLevel{HamsterAI::AIType::NORMAL};
 public:
 	Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled=NPC);
@@ -178,7 +178,7 @@ public:
 	void SetState(const HamsterState state);
 	const bool CollectedAllCheckpoints()const;
 	const bool HasCollectedCheckpoint(const Checkpoint&cp)const;
-	static const std::vector<Hamster>&GetHamsters();
+	static std::vector<Hamster>&GetHamsters();
 	const HamsterState&GetState()const;
 	const bool BurnedOrDrowned()const;
 	const bool CanMove()const;
@@ -188,4 +188,7 @@ public:
 	const float GetAINodeDistanceVariance()const;
 	const vf2d GetAINodePositionVariance()const;
 	const bool IsBurrowed()const;
+	const size_t GetCheckpointsCollectedCount()const;
+	const std::optional<vf2d>GetLastCollectedCheckpoint()const;
+	PlayerControlled IsPlayerControlled;
 };

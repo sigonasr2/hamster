@@ -52,6 +52,7 @@ All rights reserved.
 #include "olcPGEX_MiniAudio.h"
 #include "HamsterNet.h"
 #include "olcPGEX_SplashScreen.h"
+#include "HamsterLeaderboard.h"
 
 struct Letter{
 	vf2d pos;
@@ -103,6 +104,7 @@ public:
 	static void LoadPBs();
 	const int GetRaceTime();
 	const bool RaceCountdownCompleted();
+	const geom2d::rect<int>GetMapSpawnRect()const;
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -177,4 +179,5 @@ private:
 		"Red",
 		"Blue",
 	};
+	HamsterLeaderboard leaderboard;
 };

@@ -86,7 +86,10 @@ void Checkpoint::DrawCheckpoints(TransformedView&tv){
 			if(screenDistance>226){
 				const vf2d dirVec{playerToCheckpointLine.vector().norm()};
 				const float dir{dirVec.polar().y};
-				std::optional<vf2d>projCircle{geom2d::project(geom2d::circle<float>({},16),HamsterGame::SCREEN_FRAME,geom2d::ray<float>(HamsterGame::SCREEN_FRAME.middle(),dirVec))};
+				geom2d::rect<float>screenBounds{HamsterGame::SCREEN_FRAME};
+				screenBounds.pos.x+=16.f;
+				screenBounds.size.x-=16.f;
+				std::optional<vf2d>projCircle{geom2d::project(geom2d::circle<float>({},16),screenBounds,geom2d::ray<float>(HamsterGame::SCREEN_FRAME.middle(),dirVec))};
 				if(projCircle.has_value()){
 					Pixel arrowCol{PixelLerp(GREEN,BLACK,std::clamp((screenDistance-226)/1000.f,0.f,1.f))};
 					uint8_t iconAlpha{uint8_t(util::lerp(255.f,0.f,std::clamp((screenDistance-226)/1000.f,0.f,1.f)))};

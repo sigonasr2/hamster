@@ -36,15 +36,22 @@ All rights reserved.
 */
 #pragma endregion
 #pragma once
-#include "Hamster.h"
+#include <functional>
 
+class HamsterGame;
+class Hamster;
 class HamsterLeaderboard{
 	class HamsterRanking{
+		friend class HamsterLeaderboard;
 		std::reference_wrapper<Hamster>hamster;
-		float ranking; //The higher the ranking, the higher the hamster is placed.
+		float ranking{}; //The higher the ranking, the higher the hamster is placed.
+	public:
+		HamsterRanking(Hamster&hamsterRef);
+		const float GetRanking()const;
 	};
 	std::vector<HamsterRanking>hamsterRanking;
 public:
 	void OnRaceStart();
-	void OnRaceFinished();
+	void Update();
+	void Draw(HamsterGame&game);
 };

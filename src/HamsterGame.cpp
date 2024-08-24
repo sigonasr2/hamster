@@ -101,6 +101,7 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("background3.png");
 	_LoadImage("background4.png");
 	_LoadImage("background5.png");
+	_LoadImage("raceprogress.png");
 }
 
 void HamsterGame::LoadAnimations(){
@@ -203,7 +204,13 @@ void HamsterGame::LoadLevel(const std::string&mapName){
 }
 
 void HamsterGame::UpdateGame(const float fElapsedTime){
-	countdownTimer=std::max(0.f,countdownTimer-fElapsedTime);
+	if(countdownTimer>0.f){
+		countdownTimer-=fElapsedTime;
+		if(countdownTimer<=0.f){
+			countdownTimer=0.f;
+			leaderboard.OnRaceStart();
+		}
+	}
 	vEye.z+=(Hamster::GetPlayer().GetZ()+zoom-vEye.z)*fLazyFollowRate*fElapsedTime;
 	speedometerDisplayAmt+=(Hamster::GetPlayer().GetSpeed()-speedometerDisplayAmt)*fLazyFollowRate*fElapsedTime;
 
@@ -222,6 +229,7 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 	Powerup::UpdatePowerups(fElapsedTime);
 	Checkpoint::UpdateCheckpoints(fElapsedTime);
 	FloatingText::UpdateFloatingText(fElapsedTime);
+	leaderboard.Update();
 	border.Update(fElapsedTime);
 }
 
@@ -310,6 +318,7 @@ void HamsterGame::DrawGame(){
 	DrawStringDecal(SCREEN_FRAME.pos+SCREEN_FRAME.size-speedometerStrSize-vf2d{4.f,4.f},speedometerStr,speedometerCol);
 	DrawDecal({2.f,4.f},GetGFX("radar.png").Decal());
 	DrawRadar();
+	leaderboard.Draw(*this);
 	DrawStringDecal({0,8.f},std::to_string(GetFPS()));
 	if(countdownTimer>0.f){
 		Pixel timerColor{fmod(countdownTimer,1.f)<0.5f?GREEN:WHITE};
@@ -675,6 +684,10 @@ const int HamsterGame::GetRaceTime(){
 
 const bool HamsterGame::RaceCountdownCompleted(){
 	return countdownTimer==0.f;
+}
+
+const geom2d::rect<int>HamsterGame::GetMapSpawnRect()const{
+	return currentMap.value().GetData().GetSpawnZone();
 }
 
 int main()

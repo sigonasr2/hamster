@@ -422,8 +422,8 @@ void Hamster::DrawOverlay(){
 	if(GetPlayer().HasPowerup(Powerup::JET))HamsterGame::Game().DrawDecal(jetDisplayOffset+vf2d{22.f,137.f},HamsterGame::GetGFX("fuelbar_outline.png").Decal(),{1.f,1.f},GetPlayer().jetFuel<=0.2f?(fmod(GetPlayer().readyFlashTimer,1.f)<=0.5f?RED:BLACK):BLACK);
 	if(GetPlayer().HasPowerup(Powerup::WHEEL)){
 		for(int i:std::ranges::iota_view(0,3)){
-			if(fmod(HamsterGame::Game().GetRuntime(),2.f)<1.f&&GetPlayer().boostCounter>i)HamsterGame::Game().DrawDecal(HamsterGame::SCREEN_FRAME.pos+vf2d{i*16.f+4.f,HamsterGame::SCREEN_FRAME.size.y-20.f},HamsterGame::GetGFX("boost_outline.png").Decal(),{0.125f,0.125f},GetPlayer().boostCounter>i?WHITE:BLACK);
-			else HamsterGame::Game().DrawDecal(HamsterGame::SCREEN_FRAME.pos+vf2d{i*16.f+4.f,HamsterGame::SCREEN_FRAME.size.y-20.f},HamsterGame::GetGFX("boost.png").Decal(),{0.125f,0.125f},GetPlayer().boostCounter>i?WHITE:BLACK);
+			if(fmod(HamsterGame::Game().GetRuntime(),2.f)<1.f&&GetPlayer().boostCounter>i)HamsterGame::Game().DrawDecal(HamsterGame::SCREEN_FRAME.pos+vf2d{i*16.f+4.f,HamsterGame::SCREEN_FRAME.size.y-18.f},HamsterGame::GetGFX("boost_outline.png").Decal(),{0.125f,0.125f},GetPlayer().boostCounter>i?WHITE:BLACK);
+			else HamsterGame::Game().DrawDecal(HamsterGame::SCREEN_FRAME.pos+vf2d{i*16.f+4.f,HamsterGame::SCREEN_FRAME.size.y-18.f},HamsterGame::GetGFX("boost.png").Decal(),{0.125f,0.125f},GetPlayer().boostCounter>i?WHITE:BLACK);
 		}
 		for(int y:std::ranges::iota_view(-1,2)){
 			for(int x:std::ranges::iota_view(-1,2)){
@@ -561,6 +561,7 @@ void Hamster::HandleCollision(){
 			if(IsPlayerControlled)HamsterAI::OnCheckpointCollected(this->pos);
 			if(IsPlayerControlled)checkpoint.OnCheckpointCollect();
 			if(CollectedAllCheckpoints()){finishedRaceTime=HamsterGame::Game().GetRaceTime();}
+			lastObtainedCheckpointPos=checkpoint.GetPos();
 		}
 	}
 	if(GetState()==NORMAL){
@@ -842,7 +843,7 @@ const bool Hamster::CollectedAllCheckpoints()const{
 const bool Hamster::HasCollectedCheckpoint(const Checkpoint&cp)const{
 	return checkpointsCollected.contains(cp.GetPos());
 }
-const std::vector<Hamster>&Hamster::GetHamsters(){
+std::vector<Hamster>&Hamster::GetHamsters(){
 	return HAMSTER_LIST;
 }
 const Hamster::HamsterState&Hamster::GetState()const{
@@ -1029,4 +1030,12 @@ const vf2d Hamster::GetAINodePositionVariance()const{
 		}break;
 	}
 	return finalOffset;
+}
+
+const size_t Hamster::GetCheckpointsCollectedCount()const{
+	return checkpointsCollected.size();
+}
+
+const std::optional<vf2d>Hamster::GetLastCollectedCheckpoint()const{
+	return lastObtainedCheckpointPos;
 }

@@ -155,9 +155,9 @@ Stage 12: Boss Battle #5 V2 - nene
 
 
 Live Placement Tracking
-Pulsating Animation based on terrain walking across
+Pulsating Animation based on terrain walking across (30 min)
 
-Sound Effects
+Sound Effects (1 hour)
 
 Footstep sounds(Grass, Sand, Rock, Shore (Shared with Lava and Swamp), Ocean)
 Hamster Wheel sounds (Rolling)
@@ -184,6 +184,7 @@ Menu Navigations (2 hours)
 Grand Prix Management (1 hour)
 Unlocks (1 hour)
 Leaderboard Management (1 hour)
+Tutorial Stuff (3 hours)
 
 Menus
 ===========
