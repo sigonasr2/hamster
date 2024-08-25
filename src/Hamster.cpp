@@ -871,7 +871,8 @@ void Hamster::HandleAIControls(){
 	if(aiNodeTime>GetAIAdjustNodeTime()){
 		geom2d::line<float>playerToHamster{GetPlayer().GetPos(),GetPos()};
 		const float screenDistance{playerToHamster.length()*(1.325f/(HamsterGame::Game().GetCameraZ()))};
-		if(screenDistance>226){
+		const float playerScreenDistanceToNewNode{geom2d::line<float>(GetPlayer().GetPos(),action.pos).length()*(1.325f/(HamsterGame::Game().GetCameraZ()))};
+		if(screenDistance>226&&playerScreenDistanceToNewNode>226){
 			//Let's cheat, hehe.
 			pos=action.pos;
 			temporaryNode.reset();
@@ -980,7 +981,7 @@ const float Hamster::GetAILandingSpeed()const{
 const float Hamster::GetAIAdjustNodeTime()const{
 	switch(ai.GetAIType()){
 		case HamsterAI::SMART:{
-			return 0.5f;
+			return 1.f;
 		}break;
 		case HamsterAI::NORMAL:{
 			return 2.f;

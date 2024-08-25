@@ -154,7 +154,6 @@ Stage 11: Boss Battle #3 Alternate - nene
 Stage 12: Boss Battle #5 V2 - nene
 
 
-Live Placement Tracking
 Pulsating Animation based on terrain walking across (30 min)
 
 Sound Effects (1 hour)
@@ -180,7 +179,7 @@ Menu Select/Back Sound
 
 ==========================
 Stages VI - XII: 7 Stages (1 hour each, 7 hours total)
-Menu Navigations (2 hours)
+Menu Navigations (3 hours)
 Grand Prix Management (1 hour)
 Unlocks (1 hour)
 Leaderboard Management (1 hour)

@@ -22,6 +22,8 @@ HamsterGame::HamsterGame(const std::string&appName){
 }
 
 bool HamsterGame::OnUserCreate(){
+	CreateLayer();
+	EnableLayer(1U,true);
 	LoadPBs();
 	audio.SetBackgroundPlay(true);
 	olc::GFX3D::ConfigureDisplay();
@@ -102,6 +104,11 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("background4.png");
 	_LoadImage("background5.png");
 	_LoadImage("raceprogress.png");
+	_LoadImage("welcometo.png");
+	_LoadImage("hamsterplanet1.png");
+	_LoadImage("hamsterplanet2.png");
+	_LoadImage("hamsterplanet3.png");
+	_LoadImage("button.png");
 }
 
 void HamsterGame::LoadAnimations(){
@@ -387,12 +394,10 @@ bool HamsterGame::OnUserUpdate(float fElapsedTime){
 	
 		net.SetName("OneLoneHamster");
 		net.SetColor(hamsterColorNames[0]);
-		SetupAndStartRace();
 	}
 
 	runTime+=fElapsedTime;
-	UpdateGame(fElapsedTime);
-	DrawGame();
+	menu.UpdateAndDraw(*this,fElapsedTime);
 	return true;
 }
 
@@ -688,6 +693,19 @@ const bool HamsterGame::RaceCountdownCompleted(){
 
 const geom2d::rect<int>HamsterGame::GetMapSpawnRect()const{
 	return currentMap.value().GetData().GetSpawnZone();
+}
+
+void HamsterGame::SetMapSetList(const std::queue<std::string>&mapSet){
+	while(mapSetList.size()>0)mapSetList.pop();
+	mapSetList=mapSet;
+}
+const bool HamsterGame::HasMoreMapsToPlay()const{
+	return mapSetList.size()>0;
+}
+const std::string HamsterGame::PopNextMap(){
+	std::string frontMap{mapSetList.front()};
+	mapSetList.pop();
+	return frontMap;
 }
 
 int main()

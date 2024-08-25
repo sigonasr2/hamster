@@ -53,6 +53,7 @@ All rights reserved.
 #include "HamsterNet.h"
 #include "olcPGEX_SplashScreen.h"
 #include "HamsterLeaderboard.h"
+#include "Menu.h"
 
 struct Letter{
 	vf2d pos;
@@ -62,6 +63,7 @@ struct Letter{
 
 class HamsterGame : public olc::PixelGameEngine
 {
+	friend class Menu;
 public:
 	enum class GameMode{
 		GRAND_PRIX_1,
@@ -105,6 +107,9 @@ public:
 	const int GetRaceTime();
 	const bool RaceCountdownCompleted();
 	const geom2d::rect<int>GetMapSpawnRect()const;
+	void SetMapSetList(const std::queue<std::string>&mapSet);
+	const bool HasMoreMapsToPlay()const;
+	const std::string PopNextMap();
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -180,4 +185,6 @@ private:
 		"Blue",
 	};
 	HamsterLeaderboard leaderboard;
+	std::queue<std::string>mapSetList{};
+	Menu menu;
 };
