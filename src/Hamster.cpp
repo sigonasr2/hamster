@@ -393,23 +393,11 @@ void Hamster::DrawOverlay(){
 	if(GetPlayer().HasPowerup(Powerup::JET)&&!GetPlayer().hamsterJet.has_value()){
 		const std::string readyText{"READY!"};
 		const vi2d textSize{HamsterGame::Game().GetTextSize(readyText)};
-		for(int y:std::ranges::iota_view(-1,2)){
-			for(int x:std::ranges::iota_view(-1,2)){
-				if(x==0&&y==0)continue;
-				HamsterGame::Game().DrawRotatedStringDecal(jetDisplayOffset+vf2d{48.f,116.f}+vi2d{x,y},readyText,0.f,textSize/2,fmod(GetPlayer().readyFlashTimer,1.5f)<=0.75f?DARK_RED:BLACK);
-			}
-		}
-		HamsterGame::Game().DrawRotatedStringDecal(jetDisplayOffset+vf2d{48.f,116.f},readyText,0.f,textSize/2,GREEN);
+		HamsterGame::Game().DrawShadowRotatedStringDecal(jetDisplayOffset+vf2d{48.f,116.f},readyText,0.f,textSize/2,GREEN,fmod(GetPlayer().readyFlashTimer,1.5f)<=0.75f?DARK_RED:BLACK);
 		HamsterGame::Game().DrawDecal(HamsterGame::SCREEN_FRAME.pos+vf2d{HamsterGame::SCREEN_FRAME.size.x,0.f},HamsterGame::GetGFX("fuelmeter.png").Decal());
 		const std::string launchText{"(SPACE)x2\nto Launch!"};
 		const vi2d launchTextSize{HamsterGame::Game().GetTextSize(launchText)};
-		for(int y:std::ranges::iota_view(-1,2)){
-			for(int x:std::ranges::iota_view(-1,2)){
-				if(x==0&&y==0)continue;
-				HamsterGame::Game().DrawRotatedStringDecal(jetDisplayOffset+vf2d{48.f,224.f}+vi2d{x,y},launchText,0.f,launchTextSize/2,BLACK);
-			}
-		}
-		HamsterGame::Game().DrawRotatedStringDecal(jetDisplayOffset+vf2d{48.f,224.f},launchText,0.f,launchTextSize/2,WHITE);
+		HamsterGame::Game().DrawShadowRotatedStringDecal(jetDisplayOffset+vf2d{48.f,224.f},launchText,0.f,launchTextSize/2,WHITE,BLACK);
 	}else{
 		HamsterGame::Game().DrawPartialDecal(HamsterGame::SCREEN_FRAME.pos+vf2d{HamsterGame::SCREEN_FRAME.size.x,0.f},HamsterGame::GetGFX("fuelmeter.png").Decal(),{0,0},{96,200});
 	}
@@ -425,12 +413,7 @@ void Hamster::DrawOverlay(){
 			if(fmod(HamsterGame::Game().GetRuntime(),2.f)<1.f&&GetPlayer().boostCounter>i)HamsterGame::Game().DrawDecal(HamsterGame::SCREEN_FRAME.pos+vf2d{i*16.f+4.f,HamsterGame::SCREEN_FRAME.size.y-18.f},HamsterGame::GetGFX("boost_outline.png").Decal(),{0.125f,0.125f},GetPlayer().boostCounter>i?WHITE:BLACK);
 			else HamsterGame::Game().DrawDecal(HamsterGame::SCREEN_FRAME.pos+vf2d{i*16.f+4.f,HamsterGame::SCREEN_FRAME.size.y-18.f},HamsterGame::GetGFX("boost.png").Decal(),{0.125f,0.125f},GetPlayer().boostCounter>i?WHITE:BLACK);
 		}
-		for(int y:std::ranges::iota_view(-1,2)){
-			for(int x:std::ranges::iota_view(-1,2)){
-				HamsterGame::Game().DrawStringDecal(HamsterGame::SCREEN_FRAME.pos+vf2d{3*16.f+8.f,HamsterGame::SCREEN_FRAME.size.y-12.f}+vi2d{x,y},"\"R\" - BOOST",fmod(HamsterGame::Game().GetRuntime(),2.f)<1.f?RED:BLACK);
-			}
-		}
-		HamsterGame::Game().DrawStringDecal(HamsterGame::SCREEN_FRAME.pos+vf2d{3*16.f+8.f,HamsterGame::SCREEN_FRAME.size.y-12.f},"\"R\" - BOOST",YELLOW);
+		HamsterGame::Game().DrawShadowStringDecal(HamsterGame::SCREEN_FRAME.pos+vf2d{3*16.f+8.f,HamsterGame::SCREEN_FRAME.size.y-12.f},"\"R\" - BOOST",YELLOW,fmod(HamsterGame::Game().GetRuntime(),2.f)<1.f?RED:BLACK);
 	}
 }
 

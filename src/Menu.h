@@ -41,6 +41,9 @@ All rights reserved.
 
 class HamsterGame;
 class Menu{
+	class Button{
+		std::string buttonText;
+	};
 	enum MenuType{
 		INITIALIZE,
 		TITLE_SCREEN,

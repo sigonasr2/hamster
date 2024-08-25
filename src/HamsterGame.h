@@ -140,7 +140,6 @@ private:
 	vf2d cloudSpd{};
 	vf2d cloudOffset{};
 	float speedometerDisplayAmt{0.f};
-	ViewPort radar;
 	void DrawRadar();
 	float radarScale{36.f};
 	std::vector<Renderable>waterTiles;

@@ -73,14 +73,8 @@ void FloatingText::Draw(TransformedView&tv){
 
 	uint8_t alpha{uint8_t(util::lerp(0U,255U,lifetime/4.f))};
 	
-	HamsterGame::Game().SetZ(0.014f);
-	for(int y:std::ranges::iota_view(-1,2)){
-		for(int x:std::ranges::iota_view(-1,2)){
-			tv.DrawRotatedStringDecal(pos+vi2d{x,y},text,0.f,strSize/2,{0,0,0,alpha},scale);
-		}
-	}
 	HamsterGame::Game().SetZ(0.015f);
-	tv.DrawRotatedStringDecal(pos,text,0.f,strSize/2,{currentCol.r,currentCol.g,currentCol.b,uint8_t(currentCol.a*(alpha/255.f))},scale);
+	tv.DrawShadowRotatedStringDecal(pos,text,0.f,strSize/2,{currentCol.r,currentCol.g,currentCol.b,uint8_t(currentCol.a*(alpha/255.f))},{0,0,0,alpha},scale);
 	HamsterGame::Game().SetZ(0.f);
 }
 void FloatingText::CreateFloatingText(const vf2d&pos,const std::string&text,const std::vector<Pixel>&colorCycle,const vf2d&scale){

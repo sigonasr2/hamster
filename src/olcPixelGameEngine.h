@@ -1148,8 +1148,10 @@ namespace olc
 		void DrawRotatedDecal(const olc::vf2d& pos, olc::Decal* decal, const float fAngle, const olc::vf2d& center = { 0.0f, 0.0f }, const olc::vf2d& scale = { 1.0f,1.0f }, const olc::Pixel& tint = olc::WHITE,const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
 		void DrawPartialRotatedDecal(const olc::vf2d& pos, olc::Decal* decal, const float fAngle, const olc::vf2d& center, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::vf2d& scale = { 1.0f, 1.0f }, const olc::Pixel& tint = olc::WHITE,const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
 		// Draws a multiline string as a decal, with tiniting and scaling
-		void DrawStringDecal(const olc::vf2d& pos, const std::string& sText, const Pixel col = olc::WHITE, const olc::vf2d& scale = { 1.0f, 1.0f },const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
-		void DrawStringPropDecal(const olc::vf2d& pos, const std::string& sText, const Pixel col = olc::WHITE, const olc::vf2d& scale = { 1.0f, 1.0f },const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
+		void DrawStringDecal(const olc::vf2d& pos, const std::string& sText, const Pixel col = olc::WHITE, const olc::vf2d& scale = { 1.0f, 1.0f }, const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
+		void DrawStringPropDecal(const olc::vf2d& pos, const std::string& sText, const Pixel col = olc::WHITE, const olc::vf2d& scale = { 1.0f, 1.0f }, const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
+		void DrawShadowStringDecal(const olc::vf2d& pos, const std::string& sText, const Pixel col = olc::WHITE, const Pixel shadowCol = olc::BLACK, const olc::vf2d& scale = { 1.0f, 1.0f }, const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
+		void DrawShadowStringPropDecal(const olc::vf2d& pos, const std::string& sText, const Pixel col = olc::WHITE, const Pixel shadowCol = olc::BLACK, const olc::vf2d& scale = { 1.0f, 1.0f }, const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
 		// Draws a single shaded filled rectangle as a decal
 		void DrawRectDecal(const olc::vf2d& pos, const olc::vf2d& size, const olc::Pixel col = olc::WHITE,const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
 		void FillRectDecal(const olc::vf2d& pos, const olc::vf2d& size, const olc::Pixel col = olc::WHITE,const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
@@ -1167,6 +1169,8 @@ namespace olc
 		void DrawLineDecal(const olc::vf2d& pos1, const olc::vf2d& pos2, Pixel p = olc::WHITE,const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
 		void DrawRotatedStringDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center = { 0.0f, 0.0f }, const olc::Pixel col = olc::WHITE, const olc::vf2d& scale = { 1.0f, 1.0f },const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
 		void DrawRotatedStringPropDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center = { 0.0f, 0.0f }, const olc::Pixel col = olc::WHITE, const olc::vf2d& scale = { 1.0f, 1.0f },const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
+		void DrawShadowRotatedStringDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center = { 0.0f, 0.0f }, const olc::Pixel col = olc::WHITE, const Pixel shadowCol = olc::BLACK, const olc::vf2d& scale = { 1.0f, 1.0f },const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
+		void DrawShadowRotatedStringPropDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center = { 0.0f, 0.0f }, const olc::Pixel col = olc::WHITE, const Pixel shadowCol = olc::BLACK, const olc::vf2d& scale = { 1.0f, 1.0f },const GFX3DTransform transform=GFX3DTransform::NO_TRANSFORM);
 		// Clears entire draw target to Pixel
 		void Clear(Pixel p);
 		// Clears the rendering back buffer
@@ -1257,6 +1261,7 @@ namespace olc
 		int			nFrameCount = 0;		
 		bool bSuspendTextureTransfer = false;
 		Renderable  fontRenderable;
+		Renderable  shadowFontRenderable;
 		std::vector<LayerDesc> vLayers;
 		uint8_t		nTargetLayer = 0;
 		uint32_t	nLastFPS = 0;
@@ -3417,6 +3422,29 @@ namespace olc
 			}
 		}
 	}
+	void PixelGameEngine::DrawShadowStringDecal(const olc::vf2d& pos, const std::string& sText, const Pixel col, const Pixel shadowCol, const olc::vf2d& scale,const GFX3DTransform transform)
+	{
+		olc::vf2d spos = { 0.0f, 0.0f };
+		for (auto c : sText)
+		{
+			if (c == '\n')
+			{
+				spos.x = 0; spos.y += 8.0f * scale.y;
+			}
+			else if (c == '\t')
+			{
+				spos.x += 8.0f * float(nTabSizeInSpaces) * scale.x;
+			}
+			else
+			{
+				int32_t ox = (c - 32) % 16;
+				int32_t oy = (c - 32) / 16;
+				DrawPartialDecal(pos + spos - 1, shadowFontRenderable.Decal(), {float(ox) * 10.0f, float(oy) * 10.0f}, {10.0f, 10.0f}, scale, shadowCol,transform);
+				DrawPartialDecal(pos + spos, fontRenderable.Decal(), {float(ox) * 8.0f, float(oy) * 8.0f}, {8.0f, 8.0f}, scale, col,transform);
+				spos.x += 8.0f * scale.x;
+			}
+		}
+	}
 
 	void PixelGameEngine::DrawStringPropDecal(const olc::vf2d& pos, const std::string& sText, const Pixel col, const olc::vf2d& scale,const GFX3DTransform transform)
 	{
@@ -3435,6 +3463,29 @@ namespace olc
 			{
 				int32_t ox = (c - 32) % 16;
 				int32_t oy = (c - 32) / 16;
+				DrawPartialDecal(pos + spos, fontRenderable.Decal(), { float(ox) * 8.0f + float(vFontSpacing[c - 32].x), float(oy) * 8.0f }, { float(vFontSpacing[c - 32].y), 8.0f }, scale, col,transform);
+				spos.x += float(vFontSpacing[c - 32].y) * scale.x;
+			}
+		}
+	}
+	void PixelGameEngine::DrawShadowStringPropDecal(const olc::vf2d& pos, const std::string& sText, const Pixel col, const Pixel shadowCol, const olc::vf2d& scale,const GFX3DTransform transform)
+	{
+		olc::vf2d spos = { 0.0f, 0.0f };
+		for (auto c : sText)
+		{
+			if (c == '\n')
+			{
+				spos.x = 0; spos.y += 8.0f * scale.y;
+			}
+			else if (c == '\t')
+			{
+				spos.x += 8.0f * float(nTabSizeInSpaces) * scale.x;
+			}
+			else
+			{
+				int32_t ox = (c - 32) % 16;
+				int32_t oy = (c - 32) / 16;
+				DrawPartialDecal(pos + spos - 1, shadowFontRenderable.Decal(), { float(ox) * 10.0f + float(vFontSpacing[c - 32].x), float(oy) * 10.0f }, { float(vFontSpacing[c - 32].y)+2.f, 10.0f }, scale, shadowCol,transform);
 				DrawPartialDecal(pos + spos, fontRenderable.Decal(), { float(ox) * 8.0f + float(vFontSpacing[c - 32].x), float(oy) * 8.0f }, { float(vFontSpacing[c - 32].y), 8.0f }, scale, col,transform);
 				spos.x += float(vFontSpacing[c - 32].y) * scale.x;
 			}
@@ -3481,6 +3532,54 @@ namespace olc
 			{
 				int32_t ox = (c - 32) % 16;
 				int32_t oy = (c - 32) / 16;
+				DrawPartialRotatedDecal(pos, fontRenderable.Decal(), fAngle, spos, { float(ox) * 8.0f + float(vFontSpacing[c - 32].x), float(oy) * 8.0f }, { float(vFontSpacing[c - 32].y), 8.0f }, scale, col,transform);
+				spos.x -= float(vFontSpacing[c - 32].y);
+			}
+		}
+	}
+	// Thanks Oso-Grande/Sopadeoso For these awesom and stupidly clever Text Rotation routines... duh XD
+	void PixelGameEngine::DrawShadowRotatedStringDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center, const Pixel col, const Pixel shadowCol, const olc::vf2d& scale,const GFX3DTransform transform)
+	{
+		olc::vf2d spos = center;
+		for (auto c : sText)
+		{
+			if (c == '\n')
+			{
+				spos.x = center.x; spos.y -= 8.0f;
+			}
+			else if (c == '\t')
+			{
+				spos.x += 8.0f * float(nTabSizeInSpaces) * scale.x;
+			}
+			else
+			{
+				int32_t ox = (c - 32) % 16;
+				int32_t oy = (c - 32) / 16;
+				DrawPartialRotatedDecal(pos-scale, shadowFontRenderable.Decal(), fAngle, spos, { float(ox) * 10.0f, float(oy) * 10.0f }, { 10.0f, 10.0f }, scale, shadowCol,transform);
+				DrawPartialRotatedDecal(pos, fontRenderable.Decal(), fAngle, spos, { float(ox) * 8.0f, float(oy) * 8.0f }, { 8.0f, 8.0f }, scale, col,transform);
+				spos.x -= 8.0f;
+			}
+		}
+	}
+
+	void PixelGameEngine::DrawShadowRotatedStringPropDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center, const Pixel col, const Pixel shadowCol, const olc::vf2d& scale,const GFX3DTransform transform)
+	{
+		olc::vf2d spos = center;
+		for (auto c : sText)
+		{
+			if (c == '\n')
+			{
+				spos.x = center.x; spos.y -= 8.0f;
+			}
+			else if (c == '\t')
+			{
+				spos.x += 8.0f * float(nTabSizeInSpaces) * scale.x;
+			}
+			else
+			{
+				int32_t ox = (c - 32) % 16;
+				int32_t oy = (c - 32) / 16;
+				DrawPartialRotatedDecal(pos-scale, shadowFontRenderable.Decal(), fAngle, spos, { float(ox) * 10.0f + float(vFontSpacing[c - 32].x), float(oy) * 10.0f }, { float(vFontSpacing[c - 32].y)+2.f, 10.0f }, scale, shadowCol,transform);
 				DrawPartialRotatedDecal(pos, fontRenderable.Decal(), fAngle, spos, { float(ox) * 8.0f + float(vFontSpacing[c - 32].x), float(oy) * 8.0f }, { float(vFontSpacing[c - 32].y), 8.0f }, scale, col,transform);
 				spos.x -= float(vFontSpacing[c - 32].y);
 			}
@@ -4159,6 +4258,7 @@ namespace olc
 		data += "?P9PL020O`<`N3R0@E4HC7b0@ET<ATB0@@l6C4B0O`H3N7b0?P01L3R000000020";
 
 		fontRenderable.Create(128, 48);
+		shadowFontRenderable.Load("assets/font_shadow.png");
 
 		int px = 0, py = 0;
 		for (size_t b = 0; b < 1024; b += 4)

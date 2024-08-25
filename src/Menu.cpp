@@ -150,7 +150,7 @@ void Menu::Draw(HamsterGame&game,const MenuType menu,const vi2d pos){
 			game.border.Draw();
 		}break;
 		case MAIN_MENU:{
-			game.FillRectDecal(pos,game.SCREEN_FRAME.size,{});
+			game.DrawPartialDecal(vi2d{pos},game.SCREEN_FRAME.size,game.GetGFX("background1.png").Decal(),vf2d{}+int(game.GetRuntime()*4),game.SCREEN_FRAME.size);
 			game.DrawRotatedDecal(pos,game.GetGFX("button.png").Decal(),0.f,game.GetGFX("button.png").Sprite()->Size()/2);
 			game.border.Draw();
 		}break;

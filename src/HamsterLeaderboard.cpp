@@ -100,12 +100,7 @@ void HamsterLeaderboard::Draw(HamsterGame&game){
 		Pixel blinkCol{DARK_RED};
 		if(playerPlacement==1)blinkCol=CYAN;
 		else if(playerPlacement<=3)blinkCol=DARK_GREEN;
-		for(int y:std::ranges::iota_view(-1,2)){
-			for(int x:std::ranges::iota_view(-1,2)){
-				game.DrawRotatedStringPropDecal(progressBarBottomPos+vf2d{-4.f,8.f}+vi2d{x,y},placementStr,0.f,{},BLACK,{3.f,3.f});
-			}
-		}
-		game.DrawRotatedStringPropDecal(progressBarBottomPos+vf2d{-4.f,8.f},placementStr,0.f,{},blinkCol,{3.f,3.f});
+		game.DrawShadowRotatedStringPropDecal(progressBarBottomPos+vf2d{-4.f,8.f},placementStr,0.f,{},blinkCol,BLACK,{3.f,3.f});
 	}
 }
 

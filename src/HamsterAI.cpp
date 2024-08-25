@@ -58,19 +58,9 @@ void HamsterAI::DrawOverlay(){
 	if(recordingMode){
 		if(HamsterGame::Game().IsTextEntryEnabled()){
 			std::string displayStr{std::format("{}\n{}","0=SMART  1=NORMAL  2=DUMB",HamsterGame::Game().TextEntryGetString())};
-			for(int y:std::ranges::iota_view(-1,2)){
-				for(int x:std::ranges::iota_view(-1,2)){
-					HamsterGame::Game().DrawStringDecal({2.f+x,2.f+y},displayStr,BLACK);
-				}
-			}
-			HamsterGame::Game().DrawStringDecal({2.f,2.f},displayStr,YELLOW);
+			HamsterGame::Game().DrawShadowStringDecal({2.f,2.f},displayStr,YELLOW,BLACK);
 		}else if(fmod(HamsterGame::Game().GetRuntime(),1.f)<0.5f){
-			for(int y:std::ranges::iota_view(-1,2)){
-				for(int x:std::ranges::iota_view(-1,2)){
-					HamsterGame::Game().DrawStringDecal({2.f+x,2.f+y},"RECORDING",BLACK);
-				}
-			}
-			HamsterGame::Game().DrawStringDecal({2.f,2.f},"RECORDING",RED);
+			HamsterGame::Game().DrawShadowStringDecal({2.f,2.f},"RECORDING",RED,BLACK);
 		}
 	}
 }

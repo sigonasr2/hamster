@@ -57,7 +57,6 @@ bool HamsterGame::OnUserCreate(){
 		if(i==360){radarCircle.push_back(vf2d{cos(angle),sin(angle)}*43+vf2d{43,44});}
 		radarCircle.push_back(vf2d{cos(angle),sin(angle)}*43+vf2d{43,44});
 	}
-	radar=ViewPort{radarCircle,{5.f,8.f}};
 
 	for(int i:std::ranges::iota_view(0,8)){
 		waterTiles.emplace_back();
@@ -280,13 +279,8 @@ void HamsterGame::DrawGame(){
 					SetDecalMode(DecalMode::NORMAL);
 					DrawPartialDecal({drawX,drawY},GetGFX("gametiles.png").Decal(),powerupSubimageRect.pos,powerupSubimageRect.size);
 					SetDecalMode(DecalMode::ADDITIVE);
-					for(int y:std::ranges::iota_view(-1,2)){
-						for(int x:std::ranges::iota_view(-1,2)){
-							DrawRotatedStringDecal(vf2d{drawX+16.f,drawY+32.f}+vi2d{x,y},powerupName,0.f,powerupTextSize/2,CYAN,{0.5f,1.f});
-						}
-					}
 					SetDecalMode(DecalMode::NORMAL);
-					DrawRotatedStringDecal({drawX+16.f,drawY+32.f},powerupName,0.f,powerupTextSize/2,VERY_DARK_BLUE,{0.5f,1.f});
+					DrawShadowRotatedStringDecal({drawX+16.f,drawY+32.f},powerupName,0.f,powerupTextSize/2,VERY_DARK_BLUE,CYAN,{0.5f,1.f});
 				}else{
 					DrawPartialDecal({drawX,drawY},GetGFX("gametiles.png").Decal(),powerupSubimageRect.pos,powerupSubimageRect.size,{1.f,1.f},VERY_DARK_GREY);
 					DrawRotatedStringDecal({drawX+16.f,drawY+32.f},powerupName,0.f,powerupTextSize/2,DARK_GREY,{0.5f,1.f});
@@ -316,13 +310,7 @@ void HamsterGame::DrawGame(){
 	if(speedometerDisplayAmt>=180)speedometerCol=RED;
 	else if(speedometerDisplayAmt>=120)speedometerCol=YELLOW;
 	else if(speedometerDisplayAmt>=80)speedometerCol=GREEN;
-	for(int y:std::ranges::iota_view(-1,2)){
-		for(int x:std::ranges::iota_view(-1,2)){
-			if(x==0&&y==0)continue;
-			DrawStringDecal(SCREEN_FRAME.pos+SCREEN_FRAME.size-speedometerStrSize-vf2d{4.f,4.f}+vi2d{x,y},speedometerStr,BLACK);
-		}
-	}
-	DrawStringDecal(SCREEN_FRAME.pos+SCREEN_FRAME.size-speedometerStrSize-vf2d{4.f,4.f},speedometerStr,speedometerCol);
+	DrawShadowStringDecal(SCREEN_FRAME.pos+SCREEN_FRAME.size-speedometerStrSize-vf2d{4.f,4.f},speedometerStr,speedometerCol,BLACK);
 	DrawDecal({2.f,4.f},GetGFX("radar.png").Decal());
 	DrawRadar();
 	leaderboard.Draw(*this);
@@ -536,8 +524,7 @@ void HamsterGame::DrawRadar(){
 	};
 
 	const auto DeferRenderingBasedOnPosition=[this,&icon](const vf2d&pos,const IconType powerupIcon,const uint8_t iconAlpha){
-		if(geom2d::intersects(geom2d::circle<float>{{43.f+5.f,44.f+8.f},43},geom2d::rect<float>{pos-vf2d{16.f,16.f},{32.f,32.f}}).size()>0)radar.DrawPartialRotatedDecal(pos,GetGFX("radaricons.png").Decal(),0.f,{8.f,8.f},icon.at(powerupIcon).pos,icon.at(powerupIcon).size,{1.f,1.f},{255,255,255,iconAlpha});
-		else if(geom2d::contains(geom2d::circle<float>{{43.f+5.f,44.f+8.f},43},geom2d::rect<float>{pos-vf2d{8.f,8.f},{16.f,16.f}}))DrawPartialRotatedDecal(pos+vf2d{5.f,8.f},GetGFX("radaricons.png").Decal(),0.f,{8.f,8.f},icon.at(powerupIcon).pos,icon.at(powerupIcon).size,{1.f,1.f},{255,255,255,iconAlpha});
+		if(geom2d::contains(geom2d::circle<float>{{43.f+5.f,44.f+8.f},43},geom2d::rect<float>{pos-vf2d{8.f,8.f},{16.f,16.f}}))DrawPartialRotatedDecal(pos+vf2d{5.f,8.f},GetGFX("radaricons.png").Decal(),0.f,{8.f,8.f},icon.at(powerupIcon).pos,icon.at(powerupIcon).size,{1.f,1.f},{255,255,255,iconAlpha});
 	};
 
 	for(const Powerup&powerup:Powerup::GetPowerups()){

@@ -177,6 +177,8 @@ Race Countdown timer sound
 
 Menu Select/Back Sound
 
+Loading Screen
+
 ==========================
 Stages VI - XII: 7 Stages (1 hour each, 7 hours total)
 Menu Navigations (3 hours)

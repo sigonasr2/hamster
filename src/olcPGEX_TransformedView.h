@@ -196,6 +196,12 @@ namespace olc
 		void DrawRotatedStringDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center = { 0.0f, 0.0f }, const olc::Pixel col = olc::WHITE, const olc::vf2d& scale = { 1.0f, 1.0f });
 		void DrawRotatedStringPropDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center = { 0.0f, 0.0f }, const olc::Pixel col = olc::WHITE, const olc::vf2d& scale = { 1.0f, 1.0f });
 
+		void DrawShadowStringDecal(const olc::vf2d& pos, const std::string& sText, const olc::Pixel col = olc::WHITE, const olc::Pixel shadowCol = olc::BLACK, const olc::vf2d& scale = { 1.0f, 1.0f });
+		void DrawShadowStringPropDecal(const olc::vf2d& pos, const std::string& sText, const olc::Pixel col = olc::WHITE, const olc::Pixel shadowCol = olc::BLACK, const olc::vf2d& scale = { 1.0f, 1.0f });
+				 
+		void DrawShadowRotatedStringDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center = { 0.0f, 0.0f }, const olc::Pixel col = olc::WHITE, const olc::Pixel shadowCol = olc::BLACK, const olc::vf2d& scale = { 1.0f, 1.0f });
+		void DrawShadowRotatedStringPropDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center = { 0.0f, 0.0f }, const olc::Pixel col = olc::WHITE, const olc::Pixel shadowCol = olc::BLACK, const olc::vf2d& scale = { 1.0f, 1.0f });
+
 		// Draws a single shaded filled rectangle as a decal
 		void FillRectDecal(const olc::vf2d& pos, const olc::vf2d& size, const olc::Pixel col = olc::WHITE);
 		void DrawRectDecal(const olc::vf2d& pos, const olc::vf2d& size, const olc::Pixel col = olc::WHITE);
@@ -662,6 +668,16 @@ namespace olc
 		pge->DrawStringPropDecal(WorldToScreen(pos), sText, col, scale * m_vWorldScale * m_vRecipPixel,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 
+	void TransformedView::DrawShadowStringDecal(const olc::vf2d & pos, const std::string & sText, const olc::Pixel col, const olc::Pixel shadowCol, const olc::vf2d & scale)
+	{
+		pge->DrawStringDecal(WorldToScreen(pos), sText, col, scale * m_vWorldScale * m_vRecipPixel,GFX3DTransform::TRANSFORM_REQUIRED);
+	}
+
+	void TransformedView::DrawShadowStringPropDecal(const olc::vf2d & pos, const std::string & sText, const olc::Pixel col, const olc::Pixel shadowCol, const olc::vf2d & scale )
+	{
+		pge->DrawShadowStringPropDecal(WorldToScreen(pos), sText, col,shadowCol, scale * m_vWorldScale * m_vRecipPixel,GFX3DTransform::TRANSFORM_REQUIRED);
+	}
+
 	void TransformedView::FillRectDecal(const olc::vf2d & pos, const olc::vf2d & size, const olc::Pixel col)
 	{
 		pge->FillRectDecal(WorldToScreen(pos), (size * m_vWorldScale).ceil(), col,GFX3DTransform::TRANSFORM_REQUIRED);
@@ -711,6 +727,12 @@ namespace olc
 	}
 	void TransformedView::DrawRotatedStringPropDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center, const olc::Pixel col, const olc::vf2d& scale){
 		pge->DrawRotatedStringPropDecal(WorldToScreen(pos),sText,fAngle,center,col,scale*m_vWorldScale*m_vRecipPixel,GFX3DTransform::TRANSFORM_REQUIRED);
+	}
+	void TransformedView::DrawShadowRotatedStringDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center, const olc::Pixel col, const olc::Pixel shadowCol, const olc::vf2d& scale){
+		pge->DrawShadowRotatedStringDecal(WorldToScreen(pos),sText,fAngle,center,col,shadowCol,scale*m_vWorldScale*m_vRecipPixel,GFX3DTransform::TRANSFORM_REQUIRED);
+	}
+	void TransformedView::DrawShadowRotatedStringPropDecal(const olc::vf2d& pos, const std::string& sText, const float fAngle, const olc::vf2d& center, const olc::Pixel col, const olc::Pixel shadowCol, const olc::vf2d& scale){
+		pge->DrawShadowRotatedStringPropDecal(WorldToScreen(pos),sText,fAngle,center,col,shadowCol,scale*m_vWorldScale*m_vRecipPixel,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 
 
