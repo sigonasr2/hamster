@@ -130,12 +130,62 @@ std::vector<Menu::Button>Menu::GetMenuButtons(const MenuType type){
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,64.f},"Quit","button.png","highlight_button.png",Pixel{165,208,96},Pixel{37,134,139},[this](Button&self){Transition(SHIFT_DOWN,QUIT,0.5f);});
 		}break;
 		case GRAND_PRIX:{
-			//Add more buttons up here!
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.pos+vf2d{60.f,HamsterGame::SCREEN_FRAME.size.y/2-36.f},"Grand Prix I - ","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				selectedMap="StageI.tmx";
+				Transition(FADE_OUT,LOADING,0.5f);
+			});
 			buttons.emplace_back(vf2d{54.f,HamsterGame::SCREEN_FRAME.size.y-24.f},"< Back","button3.png","highlight_button3.png",Pixel{145,199,255},Pixel{145,199,255},[this](Button&self){Transition(SHIFT_RIGHT,MAIN_MENU,0.5f);});
 		}break;
 		case SINGLE_RACE:{
-			//Add more buttons up here!
-			buttons.emplace_back(vf2d{54.f,HamsterGame::SCREEN_FRAME.size.y-24.f},"< Back","button4.png","highlight_button4.png",Pixel{220,185,155},Pixel{180,140,152},[this](Button&self){Transition(SHIFT_DOWN,MAIN_MENU,0.5f);});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f},"I - Welcome to Hamster Planet!","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				selectedMap="StageI.tmx";
+				Transition(FADE_OUT,LOADING,0.5f);
+			});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*1},"II - Splitting Hairs","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				selectedMap="StageII.tmx";
+				Transition(FADE_OUT,LOADING,0.5f);
+			});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*2},"III - The Stranger Lands","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				selectedMap="StageIII.tmx";
+				Transition(FADE_OUT,LOADING,0.5f);
+			});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*3},"IV - Jet Jet Go!","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				selectedMap="StageIV.tmx";
+				Transition(FADE_OUT,LOADING,0.5f);
+			});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*4},"V - Run Run Run!","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				selectedMap="StageV.tmx";
+				Transition(FADE_OUT,LOADING,0.5f);
+			});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*5},"VI - A Twisty Maze","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				selectedMap="StageVI.tmx";
+				Transition(FADE_OUT,LOADING,0.5f);
+			});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*6},"VII - Dunescape","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				selectedMap="StageVII.tmx";
+				Transition(FADE_OUT,LOADING,0.5f);
+			});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*7},"VIII - Swamps of Travesty","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				selectedMap="StageVIII.tmx";
+				Transition(FADE_OUT,LOADING,0.5f);
+			});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*8},"IX - Wide Chasm","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				selectedMap="StageIX.tmx";
+				Transition(FADE_OUT,LOADING,0.5f);
+			});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*9},"X - Hamster Island","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				selectedMap="StageX.tmx";
+				Transition(FADE_OUT,LOADING,0.5f);
+			});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*10},"XI - Lava Panic!","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				selectedMap="StageXI.tmx";
+				Transition(FADE_OUT,LOADING,0.5f);
+			});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*11},"XII - The Great Plunge","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				selectedMap="StageXII.tmx";
+				Transition(FADE_OUT,LOADING,0.5f);
+			});
+			buttons.emplace_back(vf2d{54.f,HamsterGame::SCREEN_FRAME.size.y-12.f},"< Back","button4.png","highlight_button4.png",Pixel{220,185,155},Pixel{180,140,152},[this](Button&self){Transition(SHIFT_DOWN,MAIN_MENU,0.5f);});
 		}break;
 		case OPTIONS:{
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-32.f},std::format("BGM: {}",int(round(HamsterGame::Game().bgmVol*100))),"button2.png","highlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
@@ -302,6 +352,41 @@ void Menu::Draw(HamsterGame&game,const MenuType menu,const vi2d pos){
 			game.DrawPartialDecal(vi2d{pos},game.SCREEN_FRAME.size,game.GetGFX("background4.png").Decal(),vf2d{}+int(game.GetRuntime()*4),game.SCREEN_FRAME.size);
 			DrawButtons(pos);
 			game.border.Draw();
+			if(selectedButton.value()<game.mapNameList.size()){
+				//Display PB.
+				std::string mapName{game.mapNameList[selectedButton.value()]};
+				std::string timerStr{"No Record!"};
+				game.DrawShadowStringPropDecal({4.f,4.f},"Personal Best",WHITE,BLACK,{1.f,2.f});
+				if(game.mapPBs[mapName]!=std::numeric_limits<int>::max())timerStr=util::timerStr(game.mapPBs[mapName]);
+				vf2d timerStrSize{game.GetTextSize(timerStr)*vf2d{1.f,2.f}};
+				game.DrawShadowRotatedStringDecal({48.f,44.f},timerStr,0.f,timerStrSize/2,WHITE,BLACK,{1.f,2.f});
+				if(lastHovered!=selectedButton.value()){
+					loadedLeaderboard.clear();
+					loadedLeaderboard=game.net.GetLeaderboard(mapName);
+					lastHovered=selectedButton.value();
+				}
+				if(loadedLeaderboard.size()>0){
+					game.DrawShadowStringPropDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x,0.f}+vf2d{4.f,4.f},"Leaderboard",YELLOW,BLACK,{1.f,1.f});
+					for(int i=0;i<std::min(size_t(10),loadedLeaderboard.size());i++){
+						const LeaderboardEntry&entry{loadedLeaderboard[i]};
+						std::string placementStr{std::format("{}.",i+1)};
+						vf2d placementStrSize{game.GetTextSizeProp(placementStr)};
+						vf2d entryStrSize{game.GetTextSizeProp(entry.name)};
+
+						int totalPixelSpaceForName{int(96-16-placementStrSize.x)};
+
+						game.DrawShadowStringPropDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x,0.f}+vf2d{4.f,4.f+(i+1)*20.f},placementStr,WHITE,BLACK,{1.f,1.f});
+						if(entryStrSize.x>totalPixelSpaceForName){
+							float nameScaleX{totalPixelSpaceForName/entryStrSize.x};
+							game.DrawShadowStringPropDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x,0.f}+vf2d{4.f+placementStrSize.x,4.f+(i+1)*20.f},std::format("{}",entry.name,util::timerStr(entry.time)),WHITE,BLACK,{nameScaleX,1.f});
+						}else game.DrawShadowStringPropDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x,0.f}+vf2d{4.f+placementStrSize.x,4.f+(i+1)*20.f},std::format("{}",entry.name,util::timerStr(entry.time)),WHITE,BLACK,{1.f,1.f});
+						game.DrawShadowStringPropDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x,0.f}+vf2d{4.f+placementStrSize.x+4.f,4.f+(i+1)*20.f+10.f},std::format("{}",util::timerStr(entry.time)),WHITE,BLACK,{1.f,1.f});
+				
+						std::string hamsterDisplayImg{game.ColorToHamsterImage(entry.color)};
+						game.DrawPartialRotatedDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x,0.f}+vf2d{96.f-6.f,4.f+(i+1)*20.f+2.f},game.GetGFX(hamsterDisplayImg).Decal(),0.f,{8.f,6.f},{64.f,64.f},{16.f,12.f},{-1.f,1.f});
+					}
+				}
+			}
 		}break;
 		case OPTIONS:{
 			game.DrawPartialDecal(vi2d{pos},game.SCREEN_FRAME.size,game.GetGFX("background2.png").Decal(),vf2d{}+int(game.GetRuntime()*4),game.SCREEN_FRAME.size);

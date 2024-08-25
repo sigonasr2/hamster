@@ -39,6 +39,7 @@ All rights reserved.
 
 #include "olcPixelGameEngine.h"
 #include <functional>
+#include "HamsterNet.h"
 
 class HamsterGame;
 class Menu{
@@ -98,12 +99,14 @@ class Menu{
 	std::vector<Button>newMenuButtons;
 	std::string selectedMap{"StageI.tmx"};
 	std::optional<int>selectedButton;
+	int lastHovered{};
 	void Transition(const TransitionType type,const MenuType gotoMenu,const float transitionTime);
 	void Draw(HamsterGame&game,const MenuType menu,const vi2d pos);
 	void DrawTransition(HamsterGame&game);
 	void OnMenuTransition();
 	std::vector<Button>GetMenuButtons(const MenuType type);
 	bool ignoreInputs{false};
+	std::vector<LeaderboardEntry>loadedLeaderboard;
 public:
 	void UpdateAndDraw(HamsterGame&game,const float fElapsedTime);
 	void OnLevelLoaded();

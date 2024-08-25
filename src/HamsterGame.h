@@ -78,6 +78,17 @@ public:
 	HamsterGame(const std::string&appName);
 	static geom2d::rect<float>SCREEN_FRAME;
 	TransformedView tv{};
+private:
+	std::vector<std::string>hamsterColorNames{
+		"Yellow",
+		"Pink",
+		"Cyan",
+		"Black",
+		"Green",
+		"Purple"
+		"Red",
+		"Blue",
+	};
 public:
 	bool OnUserCreate()override final;
 	bool OnUserUpdate(float fElapsedTime)override final;
@@ -114,7 +125,8 @@ public:
 	void QuitGame();
 	std::string playerName{"OneLoneHamster"};
 	void SaveOptions();
-	const std::string&GetPlayerHamsterImage()const;
+	const std::string ColorToHamsterImage(const std::string&color)const;
+	std::string hamsterColor{hamsterColorNames[0]};
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -160,16 +172,6 @@ private:
 	#endif
 	#endif
 	bool netInitialized{false};
-	std::vector<std::string>hamsterColorNames{
-		"Yellow",
-		"Pink",
-		"Cyan",
-		"Black",
-		"Green",
-		"Purple"
-		"Red",
-		"Blue",
-	};
 	std::vector<std::string>mapNameList{
 		"StageI.tmx",	
 		"StageII.tmx",
@@ -205,5 +207,4 @@ private:
 	std::string hamsterColorLabel{"hamsterColor"};
 	float bgmVol{0.7f};
 	float sfxVol{0.7f};
-	std::string hamsterColor{hamsterColorNames[0]};
 };

@@ -231,9 +231,9 @@ void Hamster::CreateHamsters(const HamsterGame::GameMode mode){
 	playerHamster.reset();
 	HAMSTER_LIST.reserve(MAX_HAMSTER_COUNT);
 	if(NPC_HAMSTER_COUNT+1>MAX_HAMSTER_COUNT)throw std::runtime_error{std::format("WARNING! Max hamster count is too high! Please expand the MAX_HAMSTER_COUNT if you want more hamsters. Requested {} hamsters.",MAX_HAMSTER_COUNT)};
-	playerHamster=&HAMSTER_LIST.emplace_back(vf2d{},HamsterGame::Game().GetPlayerHamsterImage(),PLAYER_CONTROLLED);
+	playerHamster=&HAMSTER_LIST.emplace_back(vf2d{},HamsterGame::Game().ColorToHamsterImage(HamsterGame::Game().hamsterColor),PLAYER_CONTROLLED);
 	std::vector<std::string>hamsterColorChoices{NPC_HAMSTER_IMAGES};
-	std::erase(hamsterColorChoices,HamsterGame::Game().GetPlayerHamsterImage());
+	std::erase(hamsterColorChoices,HamsterGame::Game().ColorToHamsterImage(HamsterGame::Game().hamsterColor));
 	for(int i:std::ranges::iota_view(0U,NPC_HAMSTER_COUNT)){
 		std::string colorChoice{hamsterColorChoices.at(util::random()%hamsterColorChoices.size())};
 		std::erase(hamsterColorChoices,colorChoice);
@@ -848,8 +848,9 @@ void Hamster::HandleAIControls(){
 	vf2d aimingDir{};
 
 	const HamsterAI::ActionOptRef&currentAction{ai.GetCurrentAction()};
+	HamsterAI::Action action;
 	if(!currentAction.has_value()){temporaryNode=ai.GetPreviousAction().value().get().pos;}
-	const HamsterAI::Action&action{currentAction.value().get()};
+	else action=currentAction.value().get();
 
 	if(aiNodeTime>GetAIAdjustNodeTime()){
 		geom2d::line<float>playerToHamster{GetPlayer().GetPos(),GetPos()};

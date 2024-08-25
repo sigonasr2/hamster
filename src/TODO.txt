@@ -179,6 +179,8 @@ Menu Select/Back Sound
 
 Loading Screen
 
+Credits goes in Quit Page
+
 ==========================
 Stages VI - XII: 7 Stages (1 hour each, 7 hours total)
 Menu Navigations (3 hours)

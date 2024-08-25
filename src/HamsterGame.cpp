@@ -772,8 +772,8 @@ void HamsterGame::QuitGame(){
 	gameIsRunning=false;
 }
 
-const std::string&HamsterGame::GetPlayerHamsterImage()const{
-	return std::format("hamster{}.png",std::distance(hamsterColorNames.begin(),std::find(hamsterColorNames.begin(),hamsterColorNames.end(),hamsterColor))+1);
+const std::string HamsterGame::ColorToHamsterImage(const std::string&color)const{
+	return std::format("hamster{}.png",std::distance(hamsterColorNames.begin(),std::find(hamsterColorNames.begin(),hamsterColorNames.end(),color))+1);
 }
 
 int main()
