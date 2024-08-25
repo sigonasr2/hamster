@@ -43,10 +43,33 @@ All rights reserved.
 
 void Menu::UpdateAndDraw(HamsterGame&game,const float fElapsedTime){
 	menuTransitionRefreshTimer-=fElapsedTime;
+
+	for(int i{0};const Button&b:menuButtons){
+		if(b.IsHovered(oldLayerPos+game.SCREEN_FRAME.pos))selectedButton=i;
+		i++;
+	}
+
+	if(menuButtons.size()>0&&menuTimer==0.f){
+		if(game.GetKey(W).bPressed||game.GetKey(UP).bPressed||game.GetKey(A).bPressed||game.GetKey(LEFT).bPressed){
+			if(selectedButton.value()-1<0)selectedButton=menuButtons.size()-1;
+			else selectedButton.value()--;
+		}
+		if(game.GetKey(S).bPressed||game.GetKey(DOWN).bPressed||game.GetKey(D).bPressed||game.GetKey(RIGHT).bPressed){
+			if(selectedButton.value()+1>=menuButtons.size())selectedButton=0;
+			else selectedButton.value()++;
+		}
+		if(game.GetKey(ENTER).bPressed||game.GetKey(SPACE).bPressed||menuButtons[selectedButton.value()].IsHovered(oldLayerPos+game.SCREEN_FRAME.pos)&&game.GetMouse(Mouse::LEFT).bPressed){
+			menuButtons[selectedButton.value()].OnClick();
+		}
+	}
+
 	if(menuTimer>0.f){
 		menuTimer-=fElapsedTime;
 		if(menuTimer<=0.f){
+			menuTimer=0.f;
 			currentMenu=nextMenu;
+			oldLayerPos={};
+			newLayerPos=game.SCREEN_FRAME.pos;
 			OnMenuTransition();
 		}
 	}
@@ -58,15 +81,11 @@ void Menu::UpdateAndDraw(HamsterGame&game,const float fElapsedTime){
 			Transition(FADE_OUT,TITLE_SCREEN,1.f);
 		}break;
 		case TITLE_SCREEN:{
-			if(game.GetKey(SPACE).bPressed||game.GetMouse(Mouse::LEFT).bPressed){
+			if(game.GetKey(SPACE).bPressed||game.GetKey(ENTER).bPressed||game.GetMouse(Mouse::LEFT).bPressed){
 				Transition(SHIFT_LEFT,MAIN_MENU,0.5f);
 			}
 		}break;
 		case MAIN_MENU:{
-			if(game.GetKey(SPACE).bPressed||game.GetMouse(Mouse::LEFT).bPressed){	
-				Transition(FADE_OUT,LOADING,0.5f);
-				selectedMap="StageV.tmx";
-			}
 		}break;
 		case GAMEPLAY:{
 			game.UpdateGame(fElapsedTime);
@@ -96,20 +115,49 @@ void Menu::Transition(const TransitionType type,const MenuType gotoMenu,const fl
 	menuTimer=originalMenuTimer=transitionTime;
 	nextMenu=gotoMenu;
 	currentTransition=type;
+	newMenuButtons=GetMenuButtons(gotoMenu);
+}
+std::vector<Menu::Button>Menu::GetMenuButtons(const MenuType type){
+	std::vector<Menu::Button>buttons;
+	switch(type){
+		case MAIN_MENU:{
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-32.f},"Grand Prix","button.png","highlight_button.png",Pixel{165,208,96},Pixel{37,134,139},[this](){Transition(SHIFT_LEFT,GRAND_PRIX,0.5f);});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,0.f},"Single Race","button.png","highlight_button.png",Pixel{165,208,96},Pixel{37,134,139},[this](){Transition(SHIFT_UP,SINGLE_RACE,0.5f);});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,32.f},"Options","button.png","highlight_button.png",Pixel{165,208,96},Pixel{37,134,139},[this](){Transition(SHIFT_RIGHT,OPTIONS,0.5f);});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,64.f},"Quit","button.png","highlight_button.png",Pixel{165,208,96},Pixel{37,134,139},[this](){Transition(SHIFT_DOWN,QUIT,0.5f);});
+		}break;
+		case GRAND_PRIX:{
+			//Add more buttons up here!
+			buttons.emplace_back(vf2d{54.f,HamsterGame::SCREEN_FRAME.size.y-24.f},"< Back","button3.png","highlight_button3.png",Pixel{145,199,255},Pixel{145,199,255},[this](){Transition(SHIFT_RIGHT,MAIN_MENU,0.5f);});
+		}break;
+		case SINGLE_RACE:{
+			//Add more buttons up here!
+			buttons.emplace_back(vf2d{54.f,HamsterGame::SCREEN_FRAME.size.y-24.f},"< Back","button4.png","highlight_button4.png",Pixel{220,185,155},Pixel{180,140,152},[this](){Transition(SHIFT_DOWN,MAIN_MENU,0.5f);});
+		}break;
+		case OPTIONS:{
+			//Add more buttons up here!
+			buttons.emplace_back(vf2d{54.f,HamsterGame::SCREEN_FRAME.size.y-24.f},"< Back","button2.png","highlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](){Transition(SHIFT_LEFT,MAIN_MENU,0.5f);});
+		}break;
+	}
+	return buttons;
 }
 void Menu::OnMenuTransition(){
 	selectedButton.reset();
+	menuButtons.clear();
+	newMenuButtons.clear();
+	menuButtons=GetMenuButtons(currentMenu);
 	switch(currentMenu){
-		case MAIN_MENU:{
-			//selectedButton
-		}break;
 		case LOADING:{
 			colorNumb=util::random()%8+1;
 			loading=true;
 			loadingPct=0.f;
 			HamsterGame::Game().LoadRace(selectedMap);
 		}break;
+		case QUIT:{
+			HamsterGame::Game().QuitGame();
+		}break;
 	}
+	if(menuButtons.size()>0)selectedButton=0;
 }
 void Menu::DrawTransition(HamsterGame&game){
 	if(currentTransition==FADE_OUT){
@@ -160,6 +208,19 @@ void Menu::DrawTransition(HamsterGame&game){
 
 void Menu::Draw(HamsterGame&game,const MenuType menu,const vi2d pos){
 	game.Clear(BLANK);
+	const auto DrawButtons=[this,&game](const vf2d&offset){
+		for(int i{0};const Button&b:menuButtons){
+			if(selectedButton.has_value())b.Draw(game,oldLayerPos+game.SCREEN_FRAME.pos,menuButtons[selectedButton.value()]);
+			else b.Draw(game,oldLayerPos+game.SCREEN_FRAME.pos);
+			if(selectedButton.has_value())b.Draw(game,oldLayerPos+game.SCREEN_FRAME.pos,menuButtons[selectedButton.value()]);
+			else b.Draw(game,oldLayerPos+game.SCREEN_FRAME.pos);
+		}
+		for(int i{0};const Button&b:newMenuButtons){
+			if(selectedButton.has_value())b.Draw(game,newLayerPos+game.SCREEN_FRAME.pos,menuButtons[selectedButton.value()]);
+			else b.Draw(game,newLayerPos+game.SCREEN_FRAME.pos);
+		}
+	};
+
 	switch(menu){
 		case TITLE_SCREEN:{
 			game.FillRectDecal(pos,game.SCREEN_FRAME.size,{111,150,255});
@@ -172,7 +233,26 @@ void Menu::Draw(HamsterGame&game,const MenuType menu,const vi2d pos){
 		case MAIN_MENU:{
 			game.DrawPartialDecal(vi2d{pos},game.SCREEN_FRAME.size,game.GetGFX("background1.png").Decal(),vf2d{}+int(game.GetRuntime()*4),game.SCREEN_FRAME.size);
 			game.DrawRotatedDecal(pos,game.GetGFX("button.png").Decal(),0.f,game.GetGFX("button.png").Sprite()->Size()/2);
+			DrawButtons(pos);
 			game.border.Draw();
+		}break;
+		case GRAND_PRIX:{
+			game.DrawPartialDecal(vi2d{pos},game.SCREEN_FRAME.size,game.GetGFX("background5.png").Decal(),vf2d{}+int(game.GetRuntime()*4),game.SCREEN_FRAME.size);
+			DrawButtons(pos);
+			game.border.Draw();
+		}break;
+		case SINGLE_RACE:{
+			game.DrawPartialDecal(vi2d{pos},game.SCREEN_FRAME.size,game.GetGFX("background4.png").Decal(),vf2d{}+int(game.GetRuntime()*4),game.SCREEN_FRAME.size);
+			DrawButtons(pos);
+			game.border.Draw();
+		}break;
+		case OPTIONS:{
+			game.DrawPartialDecal(vi2d{pos},game.SCREEN_FRAME.size,game.GetGFX("background2.png").Decal(),vf2d{}+int(game.GetRuntime()*4),game.SCREEN_FRAME.size);
+			DrawButtons(pos);
+			game.border.Draw();
+		}break;
+		case QUIT:{
+			game.DrawPartialDecal(vi2d{pos},game.SCREEN_FRAME.size,game.GetGFX("background3.png").Decal(),vf2d{}+int(game.GetRuntime()*4),game.SCREEN_FRAME.size);
 		}break;
 		case GAMEPLAY:{
 			game.DrawGame();
@@ -214,12 +294,22 @@ void Menu::UpdateLoadingProgress(const float pctLoaded){
 	loadingPct=pctLoaded;
 }
 
-Menu::Button::Button(const vf2d pos,std::string buttonText,Renderable&buttonImg,std::function<void()>onClick)
-:pos(pos),buttonText(buttonText),buttonImg(buttonImg),onClick(onClick){}
+Menu::Button::Button(const vf2d pos,const std::string&buttonText,const std::string&buttonImg,const std::string&highlightButtonImg,const Pixel textCol,const Pixel highlightTextCol,const std::function<void()>onClick)
+:pos(pos),buttonText(buttonText),buttonImg(buttonImg),highlightButtonImg(highlightButtonImg),onClick(onClick),textCol(textCol),highlightTextCol(highlightTextCol){}
 
-void Menu::Button::Update(const float fElapsedTime){
-	
+const bool Menu::Button::IsHovered(const vf2d&offset)const{
+	return geom2d::overlaps(HamsterGame::Game().GetMousePos(),geom2d::rect<float>(pos-HamsterGame::GetGFX(buttonImg).Sprite()->Size()/2+offset,HamsterGame::GetGFX(buttonImg).Sprite()->Size()));
 }
-void Menu::Button::Draw(HamsterGame&game){
-	
+void Menu::Button::Draw(HamsterGame&game,const vf2d&offset,std::optional<std::reference_wrapper<Button>>selectedButton)const{
+	if(selectedButton.has_value()&&&selectedButton.value().get()==this){
+		game.DrawRotatedDecal(pos+offset,game.GetGFX(highlightButtonImg).Decal(),0.f,game.GetGFX(highlightButtonImg).Sprite()->Size()/2);
+		game.DrawRotatedStringPropDecal(pos+offset,buttonText,0.f,game.GetTextSizeProp(buttonText)/2,highlightTextCol);
+	}else{
+		game.DrawRotatedDecal(pos+offset,game.GetGFX(buttonImg).Decal(),0.f,game.GetGFX(buttonImg).Sprite()->Size()/2);
+		game.DrawRotatedStringPropDecal(pos+offset,buttonText,0.f,game.GetTextSizeProp(buttonText)/2,textCol);
+	}
+}
+
+void Menu::Button::OnClick(){
+	onClick();
 }

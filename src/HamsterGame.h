@@ -111,6 +111,7 @@ public:
 	const bool HasMoreMapsToPlay()const;
 	const std::string PopNextMap();
 	void ProcessMap();
+	void QuitGame();
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -193,4 +194,5 @@ private:
 	size_t loadingMapLayerTileY;
 	int totalOperationsCount{};
 	int operationsProgress{};
+	bool gameIsRunning{true};
 };

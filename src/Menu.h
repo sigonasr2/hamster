@@ -45,12 +45,16 @@ class Menu{
 	class Button{
 		std::string buttonText;
 		vf2d pos;
-		Renderable&buttonImg;
+		std::string buttonImg;
+		std::string highlightButtonImg;
+		Pixel textCol;
+		Pixel highlightTextCol;
 		std::function<void()>onClick;
 	public:
-		Button(const vf2d pos,std::string buttonText,Renderable&buttonImg,std::function<void()>onClick={});
-		void Update(const float fElapsedTime);
-		void Draw(HamsterGame&game);
+		Button(const vf2d pos,const std::string&buttonText,const std::string&buttonImg,const std::string&highlightButtonImg,const Pixel textCol,const Pixel highlightTextCol,const std::function<void()>onClick={});
+		const bool IsHovered(const vf2d&offset)const;
+		void OnClick();
+		void Draw(HamsterGame&game,const vf2d&pos,std::optional<std::reference_wrapper<Button>>selectedButton={})const;
 	};
 	enum MenuType{
 		INITIALIZE,
@@ -64,6 +68,7 @@ class Menu{
 		AFTER_RACE_MENU,
 		PAUSE,
 		LOADING,
+		QUIT,
 	};
 	enum TransitionType{
 		SHIFT_LEFT,
@@ -81,7 +86,7 @@ class Menu{
 	MenuType currentMenu{INITIALIZE};
 	MenuType nextMenu{TITLE_SCREEN};
 	float menuTimer{};
-	const float MENU_TRANSITION_REFRESH_RATE{0.15f};
+	const float MENU_TRANSITION_REFRESH_RATE{0.1f};
 	float menuTransitionRefreshTimer{MENU_TRANSITION_REFRESH_RATE};
 	float originalMenuTimer{};
 	vi2d oldLayerPos{};
@@ -90,12 +95,14 @@ class Menu{
 	bool loading{false};
 	float loadingPct{0.f};
 	std::vector<Button>menuButtons;
+	std::vector<Button>newMenuButtons;
 	std::string selectedMap{"StageI.tmx"};
 	std::optional<int>selectedButton;
 	void Transition(const TransitionType type,const MenuType gotoMenu,const float transitionTime);
 	void Draw(HamsterGame&game,const MenuType menu,const vi2d pos);
 	void DrawTransition(HamsterGame&game);
 	void OnMenuTransition();
+	std::vector<Button>GetMenuButtons(const MenuType type);
 public:
 	void UpdateAndDraw(HamsterGame&game,const float fElapsedTime);
 	void OnLevelLoaded();

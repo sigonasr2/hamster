@@ -108,6 +108,13 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("hamsterplanet2.png");
 	_LoadImage("hamsterplanet3.png");
 	_LoadImage("button.png");
+	_LoadImage("highlight_button.png");
+	_LoadImage("button2.png");
+	_LoadImage("highlight_button2.png");
+	_LoadImage("button3.png");
+	_LoadImage("highlight_button3.png");
+	_LoadImage("button4.png");
+	_LoadImage("highlight_button4.png");
 }
 
 void HamsterGame::LoadAnimations(){
@@ -359,7 +366,7 @@ bool HamsterGame::OnUserUpdate(float fElapsedTime){
 
 	runTime+=fElapsedTime;
 	menu.UpdateAndDraw(*this,fElapsedTime);
-	return true;
+	return gameIsRunning;
 }
 
 const Renderable&HamsterGame::GetGFX(const std::string&img){
@@ -680,6 +687,10 @@ void HamsterGame::ProcessMap(){
 	menu.UpdateLoadingProgress(float(operationsProgress)/totalOperationsCount);
 	SetPixelMode(Pixel::NORMAL);
 	SetDrawTarget(nullptr);
+}
+
+void HamsterGame::QuitGame(){
+	gameIsRunning=false;
 }
 
 int main()
