@@ -880,8 +880,9 @@ void Hamster::HandleAIControls(){
 
 	const HamsterAI::ActionOptRef&currentAction{ai.GetCurrentAction()};
 	HamsterAI::Action action;
-	if(!currentAction.has_value()){temporaryNode=ai.GetPreviousAction().value().get().pos;}
-	else action=currentAction.value().get();
+	if(!currentAction.has_value()){
+		if(ai.GetPreviousAction().has_value())temporaryNode=ai.GetPreviousAction().value().get().pos;
+	}else action=currentAction.value().get();
 
 	if(aiNodeTime>GetAIAdjustNodeTime()){
 		geom2d::line<float>playerToHamster{GetPlayer().GetPos(),GetPos()};

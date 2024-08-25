@@ -85,6 +85,9 @@ public:
 		TRANSITIONING,
 	};
 private:
+	std::vector<vf2d>hamsterPos;
+	float generatorWaitTime{5.f};
+	float generatorTime{generatorWaitTime};
 	MenuState currentState{NORMAL};
 	TransitionType currentTransition{FADE_OUT};
 	MenuType currentMenu{INITIALIZE};

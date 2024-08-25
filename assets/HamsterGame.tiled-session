@@ -51,11 +51,41 @@
             }
         },
         "StageV.tmx": {
-            "scale": 3,
+            "scale": 0.33,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 107.33333333333331,
-                "y": 453.16666666666663
+                "x": 1118.1818181818182,
+                "y": 1783.3333333333333
+            }
+        },
+        "StageVI.tmx": {
+            "expandedObjectLayers": [
+                5
+            ],
+            "scale": 0.5,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 490,
+                "y": 1913
+            }
+        },
+        "StageVII.tmx": {
+            "scale": 2,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 808.75,
+                "y": 934.75
+            }
+        },
+        "StageVIII.tmx": {
+            "expandedObjectLayers": [
+                4
+            ],
+            "scale": 5.5,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": -126.0909090909091,
+                "y": -428.4545454545455
             }
         },
         "Terrain.tsx": {
@@ -78,7 +108,7 @@
             "scale": 3,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 250.16666666666663,
+                "x": 251.83333333333334,
                 "y": 165.16666666666663
             }
         }
