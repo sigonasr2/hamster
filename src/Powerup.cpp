@@ -43,6 +43,16 @@ All rights reserved.
 std::vector<Powerup>Powerup::powerupList;
 std::unordered_map<int,std::pair<Powerup::PowerupType,Powerup::TileType>>Powerup::powerupIds;
 const vf2d Powerup::POWERUP_TILESET_STARTING_POS{144.f,816.f};
+std::unordered_map<Powerup::PowerupType,std::string>Powerup::powerupInfo{
+	{WHEEL,"Vroom Vroom! Use R to boost!"},
+	{GRASS,"Speed up through Grass"},
+	{SAND,"Speed up through Sand"},
+	{SWAMP,"Cross Swamps without drowning!"},
+	{LAVA,"Walking on fire!"},
+	{FOREST,"Speed through trees"},
+	{ICE,"Less slippery, more speedy"},
+	{JET,"      Take off! Use <Space> x2.     \n          Watch your fuel!          \nArrow Keys to control landing speed."},
+};
 std::unordered_map<Powerup::PowerupType,std::string>Powerup::powerupNames{
 	{WHEEL,"WHEEL"},
 	{GRASS,"GRASS"},

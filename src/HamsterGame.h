@@ -130,6 +130,8 @@ public:
 	static void PlaySFX(const std::string&filename);
 	static void PlaySFX(vf2d pos,const std::string&filename);
 	const float GetPlayerDifferentialTime()const;
+	float collectedPowerupTimer{};
+	std::string powerupHelpDisplay;
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -169,10 +171,12 @@ private:
 	GameMode mode{GameMode::SINGLE_RACE};
 	HamsterNet net;
 	float countdownTimer{};
+	bool obtainedNewPB{false};
 	using Points=int;
 	using HamsterInd=size_t;
 	using FinishTime=int;
-	std::vector<std::pair<Points,HamsterInd>>grandPrixPoints;
+	std::unordered_map<HamsterInd,Points>grandPrixPoints;
+	std::vector<std::pair<Points,HamsterInd>>pointsList;
 	std::vector<std::pair<FinishTime,HamsterInd>>racerList;
 	#ifndef __EMSCRIPTEN__
 	#ifndef __DEBUG__

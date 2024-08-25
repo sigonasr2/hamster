@@ -223,6 +223,12 @@ void HamsterJet::DrawOverlay()const{
 		float meterHeight{meterEndY-meterStartY};
 		HamsterGame::Game().DrawPartialDecal(HamsterGame::SCREEN_FRAME.pos+vf2d{0,222}-vf2d{0,(fallSpd/5.f)*meterHeight},HamsterGame::GetGFX("fallometer.png").Decal(),vf2d{0,223}-vf2d{0,(fallSpd/5.f)*meterHeight},vf2d{float(HamsterGame::GetGFX("fallometer.png").Sprite()->width),(fallSpd/5.f)*meterHeight});
 	}
+	if(state==HAMSTER_CONTROL){
+		const vf2d jetDisplayOffset{HamsterGame::SCREEN_FRAME.pos+vf2d{HamsterGame::SCREEN_FRAME.size.x,0.f}};
+		const std::string launchText{"(SPACE)x2\nto Land!"};
+		const vi2d launchTextSize{HamsterGame::Game().GetTextSize(launchText)};
+		HamsterGame::Game().DrawShadowRotatedStringDecal(jetDisplayOffset+vf2d{48.f,224.f},launchText,0.f,launchTextSize/2,WHITE,BLACK);
+	}
 }
 
 void HamsterJet::SetPos(const vf2d pos){

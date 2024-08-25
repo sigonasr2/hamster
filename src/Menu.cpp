@@ -135,59 +135,123 @@ std::vector<Menu::Button>Menu::GetMenuButtons(const MenuType type){
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,64.f},"Quit","button.png","highlight_button.png",Pixel{165,208,96},Pixel{37,134,139},[this](Button&self){Transition(SHIFT_DOWN,QUIT,0.5f);});
 		}break;
 		case GRAND_PRIX:{
-			buttons.emplace_back(HamsterGame::SCREEN_FRAME.pos+vf2d{60.f,HamsterGame::SCREEN_FRAME.size.y/2-36.f},"Grand Prix I - ","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.pos+vf2d{60.f,HamsterGame::SCREEN_FRAME.size.y/2-36.f},"Grand Prix I (4 courses)","button3.png","highlight_button3.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
 				selectedMap="StageI.tmx";
+				HamsterGame::Game().mode=HamsterGame::GameMode::GRAND_PRIX_1;
+				std::queue<std::string>mapList;
+				mapList.emplace("StageII.tmx");
+				mapList.emplace("StageIII.tmx");
+				mapList.emplace("StageIV.tmx");
+				HamsterGame::Game().SetMapSetList(mapList);
+				HamsterGame::Game().grandPrixPoints.clear();
+				Hamster::ClearHamsters();
 				Transition(FADE_OUT,LOADING,0.5f);
 			});
-			buttons.emplace_back(vf2d{54.f,HamsterGame::SCREEN_FRAME.size.y-24.f},"< Back","button3.png","highlight_button3.png",Pixel{145,199,255},Pixel{145,199,255},[this](Button&self){Transition(SHIFT_RIGHT,MAIN_MENU,0.5f);});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.pos+vf2d{60.f,HamsterGame::SCREEN_FRAME.size.y/2.f},"Grand Prix II (4 courses)","button3.png","highlight_button3.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				selectedMap="StageV.tmx";
+				HamsterGame::Game().mode=HamsterGame::GameMode::GRAND_PRIX_2;
+				std::queue<std::string>mapList;
+				mapList.emplace("StageVI.tmx");
+				mapList.emplace("StageVII.tmx");
+				mapList.emplace("StageVIII.tmx");
+				HamsterGame::Game().SetMapSetList(mapList);
+				HamsterGame::Game().grandPrixPoints.clear();
+				Hamster::ClearHamsters();
+				Transition(FADE_OUT,LOADING,0.5f);
+			});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.pos+vf2d{60.f,HamsterGame::SCREEN_FRAME.size.y/2+36.f},"Grand Prix III (4 courses)","button3.png","highlight_button3.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				selectedMap="StageIX.tmx";
+				HamsterGame::Game().mode=HamsterGame::GameMode::GRAND_PRIX_3;
+				std::queue<std::string>mapList;
+				mapList.emplace("StageX.tmx");
+				mapList.emplace("StageXI.tmx");
+				mapList.emplace("StageXII.tmx");
+				HamsterGame::Game().SetMapSetList(mapList);
+				HamsterGame::Game().grandPrixPoints.clear();
+				Hamster::ClearHamsters();
+				Transition(FADE_OUT,LOADING,0.5f);
+			});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.pos+vf2d{60.f,HamsterGame::SCREEN_FRAME.size.y/2+72.f},"Marathon (12 courses)","button3.png","highlight_button3.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				selectedMap="StageI.tmx";
+				HamsterGame::Game().mode=HamsterGame::GameMode::MARATHON;
+				std::queue<std::string>mapList;
+				mapList.emplace("StageII.tmx");
+				mapList.emplace("StageIII.tmx");
+				mapList.emplace("StageIV.tmx");
+				mapList.emplace("StageV.tmx");
+				mapList.emplace("StageVI.tmx");
+				mapList.emplace("StageVII.tmx");
+				mapList.emplace("StageVIII.tmx");
+				mapList.emplace("StageIX.tmx");
+				mapList.emplace("StageX.tmx");
+				mapList.emplace("StageXI.tmx");
+				mapList.emplace("StageXII.tmx");
+				HamsterGame::Game().SetMapSetList(mapList);
+				HamsterGame::Game().grandPrixPoints.clear();
+				Hamster::ClearHamsters();
+				Transition(FADE_OUT,LOADING,0.5f);
+			});
+			buttons.emplace_back(vf2d{54.f,HamsterGame::SCREEN_FRAME.size.y-24.f},"< Back","smallbutton3.png","highlight_smallbutton3.png",Pixel{145,199,255},Pixel{145,199,255},[this](Button&self){Transition(SHIFT_RIGHT,MAIN_MENU,0.5f);});
 		}break;
 		case SINGLE_RACE:{
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f},"I - Welcome to Hamster Planet!","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
 				selectedMap="StageI.tmx";
+				Hamster::ClearHamsters();
 				Transition(FADE_OUT,LOADING,0.5f);
 			});
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*1},"II - Splitting Hairs","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
 				selectedMap="StageII.tmx";
+				Hamster::ClearHamsters();
 				Transition(FADE_OUT,LOADING,0.5f);
 			});
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*2},"III - The Stranger Lands","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
 				selectedMap="StageIII.tmx";
+				Hamster::ClearHamsters();
 				Transition(FADE_OUT,LOADING,0.5f);
 			});
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*3},"IV - Jet Jet Go!","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
 				selectedMap="StageIV.tmx";
+				Hamster::ClearHamsters();
 				Transition(FADE_OUT,LOADING,0.5f);
 			});
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*4},"V - Run Run Run!","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
 				selectedMap="StageV.tmx";
+				Hamster::ClearHamsters();
 				Transition(FADE_OUT,LOADING,0.5f);
 			});
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*5},"VI - A Twisty Maze","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
 				selectedMap="StageVI.tmx";
+				Hamster::ClearHamsters();
 				Transition(FADE_OUT,LOADING,0.5f);
 			});
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*6},"VII - Dunescape","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
 				selectedMap="StageVII.tmx";
+				Hamster::ClearHamsters();
 				Transition(FADE_OUT,LOADING,0.5f);
 			});
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*7},"VIII - Swamps of Travesty","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
 				selectedMap="StageVIII.tmx";
+				Hamster::ClearHamsters();
 				Transition(FADE_OUT,LOADING,0.5f);
 			});
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*8},"IX - Wide Chasm","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
 				selectedMap="StageIX.tmx";
+				Hamster::ClearHamsters();
 				Transition(FADE_OUT,LOADING,0.5f);
 			});
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*9},"X - Hamster Island","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
 				selectedMap="StageX.tmx";
+				Hamster::ClearHamsters();
 				Transition(FADE_OUT,LOADING,0.5f);
 			});
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*10},"XI - Lava Panic!","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
 				selectedMap="StageXI.tmx";
+				Hamster::ClearHamsters();
 				Transition(FADE_OUT,LOADING,0.5f);
 			});
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-132.f+22.f*11},"XII - The Great Plunge","longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
 				selectedMap="StageXII.tmx";
+				Hamster::ClearHamsters();
 				Transition(FADE_OUT,LOADING,0.5f);
 			});
 			buttons.emplace_back(vf2d{54.f,HamsterGame::SCREEN_FRAME.size.y-12.f},"< Back","button4.png","highlight_button4.png",Pixel{220,185,155},Pixel{180,140,152},[this](Button&self){Transition(SHIFT_DOWN,MAIN_MENU,0.5f);});
@@ -254,34 +318,38 @@ std::vector<Menu::Button>Menu::GetMenuButtons(const MenuType type){
 			buttons.emplace_back(vf2d{54.f,HamsterGame::SCREEN_FRAME.size.y-24.f},"< Back","button2.png","highlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){Transition(SHIFT_LEFT,MAIN_MENU,0.5f);});
 		}break;
 		case GAMEPLAY_RESULTS:{
-			switch(HamsterGame::Game().GetGameMode()){
-				case HamsterGame::GameMode::SINGLE_RACE:{
-					int MAX_SIMULATION_COUNT{10000};
-					HamsterGame::Game().playerDifferentialTime=0.f;
-					while(MAX_SIMULATION_COUNT>0){
-						bool allHamstersFinished{true};
-						for(Hamster&hamster:Hamster::GetHamsters()){
-							if(!hamster.CollectedAllCheckpoints())allHamstersFinished=false;
-						}
-						if(allHamstersFinished)break;
-						HamsterGame::Game().SetElapsedTime(1/30.f);
-						HamsterGame::Game().UpdateGame(1/30.f);
-						HamsterGame::Game().playerDifferentialTime+=33;
-						MAX_SIMULATION_COUNT--;
-					}
-					HamsterGame::Game().racerList.clear();
-					for(size_t ind{0};Hamster&hamster:Hamster::GetHamsters()){
-						HamsterGame::Game().racerList.emplace_back(std::pair<HamsterGame::FinishTime,HamsterGame::HamsterInd>{hamster.GetFinishedTime(),ind});
-						ind++;
-					}
-					std::sort(HamsterGame::Game().racerList.begin(),HamsterGame::Game().racerList.end(),[](const std::pair<HamsterGame::FinishTime,HamsterGame::HamsterInd>&hamster1,const std::pair<HamsterGame::FinishTime,HamsterGame::HamsterInd>&hamster2){return hamster1.first<hamster2.first;});
-					buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,HamsterGame::SCREEN_FRAME.size.y/2-40.f},"Track Select","trackselectbutton.png","highlight_trackselectbutton.png",Pixel{165,208,96},Pixel{37,134,139},[this](Button&self){Transition(FADE_OUT,SINGLE_RACE,1.f);});
-					buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,HamsterGame::SCREEN_FRAME.size.y/2-16.f},"Retry","button.png","highlight_button.png",Pixel{165,208,96},Pixel{37,134,139},[this](Button&self){Transition(FADE_OUT,LOADING,1.f);});
-				}break;
-				default:{
-					//Show the points.
-
+			int MAX_SIMULATION_COUNT{10000};
+			HamsterGame::Game().playerDifferentialTime=0.f;
+			while(MAX_SIMULATION_COUNT>0){
+				bool allHamstersFinished{true};
+				for(Hamster&hamster:Hamster::GetHamsters()){
+					if(!hamster.CollectedAllCheckpoints())allHamstersFinished=false;
 				}
+				if(allHamstersFinished)break;
+				HamsterGame::Game().SetElapsedTime(1/30.f);
+				HamsterGame::Game().UpdateGame(1/30.f);
+				HamsterGame::Game().playerDifferentialTime+=33;
+				MAX_SIMULATION_COUNT--;
+			}
+			HamsterGame::Game().racerList.clear();
+			for(size_t ind{0};Hamster&hamster:Hamster::GetHamsters()){
+				HamsterGame::Game().racerList.emplace_back(std::pair<HamsterGame::FinishTime,HamsterGame::HamsterInd>{hamster.GetFinishedTime(),ind});
+				ind++;
+			}
+			std::sort(HamsterGame::Game().racerList.begin(),HamsterGame::Game().racerList.end(),[](const std::pair<HamsterGame::FinishTime,HamsterGame::HamsterInd>&hamster1,const std::pair<HamsterGame::FinishTime,HamsterGame::HamsterInd>&hamster2){return hamster1.first<hamster2.first;});
+			
+			if(HamsterGame::Game().mapSetList.size()>0){
+				buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,HamsterGame::SCREEN_FRAME.size.y/2-24.f},"Continue","trackselectbutton.png","highlight_trackselectbutton.png",Pixel{165,208,96},Pixel{37,134,139},[this](Button&self){
+					selectedMap=HamsterGame::Game().mapSetList.front();
+					HamsterGame::Game().mapSetList.pop();
+					Transition(FADE_OUT,LOADING,1.f);
+				});
+			}else
+			if(HamsterGame::Game().GetGameMode()==HamsterGame::GameMode::SINGLE_RACE){
+				buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,HamsterGame::SCREEN_FRAME.size.y/2-40.f},"Track Select","trackselectbutton.png","highlight_trackselectbutton.png",Pixel{165,208,96},Pixel{37,134,139},[this](Button&self){Transition(FADE_OUT,SINGLE_RACE,1.f);});
+				buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,HamsterGame::SCREEN_FRAME.size.y/2-16.f},"Retry","button.png","highlight_button.png",Pixel{165,208,96},Pixel{37,134,139},[this](Button&self){Transition(FADE_OUT,LOADING,1.f);});
+			}else{
+				buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,HamsterGame::SCREEN_FRAME.size.y/2-40.f},"Grand Prix Select","trackselectbutton.png","highlight_trackselectbutton.png",Pixel{165,208,96},Pixel{37,134,139},[this](Button&self){Transition(FADE_OUT,GRAND_PRIX,1.f);});
 			}
 		}break;
 	}
@@ -294,10 +362,23 @@ void Menu::OnMenuTransition(){
 	menuButtons=GetMenuButtons(currentMenu);
 	if(currentMenu!=GAMEPLAY&&currentMenu!=GAMEPLAY_RESULTS&&currentMenu!=AFTER_RACE_MENU)HamsterGame::Game().audio.Play(HamsterGame::Game().bgm["Trevor Lentz - Guinea Pig Hero.ogg"]);
 	switch(currentMenu){
+		case GAMEPLAY_RESULTS:{
+			const std::vector<int>pointTable{10,7,5,3,2,1};
+			for(size_t ind{0};const auto&[finishTime,hamsterInd]:HamsterGame::Game().racerList){
+				HamsterGame::Game().grandPrixPoints[hamsterInd]+=pointTable[ind];
+				ind++;
+			}
+			HamsterGame::Game().pointsList.clear();
+			for(const auto&[hamsterInd,points]:HamsterGame::Game().grandPrixPoints){
+				HamsterGame::Game().pointsList.emplace_back(std::pair<HamsterGame::Points,HamsterGame::HamsterInd>{points,hamsterInd});
+			}
+			std::sort(HamsterGame::Game().pointsList.begin(),HamsterGame::Game().pointsList.end(),[](const std::pair<HamsterGame::Points,HamsterGame::HamsterInd>&ham1,const std::pair<HamsterGame::Points,HamsterGame::HamsterInd>&ham2){return ham1.first>ham2.first;});
+		}break;
 		case LOADING:{
 			colorNumb=util::random()%8+1;
 			loading=true;
 			loadingPct=0.f;
+			HamsterGame::Game().operationsProgress=0;
 			HamsterGame::Game().LoadRace(selectedMap);
 		}break;
 		case QUIT:{
@@ -429,14 +510,29 @@ void Menu::Draw(HamsterGame&game,const MenuType menu,const vi2d pos){
 			}
 		}break;
 		case GAMEPLAY_RESULTS:{
+			const std::vector<int>pointTable{10,7,5,3,2,1};
 			for(size_t ind{0};const auto&[finishTime,hamsterInd]:HamsterGame::Game().racerList){
 				const Hamster&hamster{Hamster::GetHamsters()[hamsterInd]};
+				if(hamster.IsPlayerControlled)game.FillRectDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x/2-64.f,game.SCREEN_FRAME.pos.y+game.SCREEN_FRAME.size.y/2-100.f+ind*16}-2.f,{164.f,12.f},{DARK_YELLOW.r,DARK_YELLOW.g,DARK_YELLOW.b,160});
 				game.DrawShadowStringDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x/2-64.f,game.SCREEN_FRAME.pos.y+game.SCREEN_FRAME.size.y/2-100.f+ind*16},std::format("{}.",ind+1));
 				game.DrawPartialRotatedDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x/2-64.f+24.f,game.SCREEN_FRAME.pos.y+game.SCREEN_FRAME.size.y/2-100.f+ind*16+6.f},game.GetGFX(hamster.GetHamsterImage()).Decal(),0.f,{8.f,6.f},{64.f,64.f},{16.f,12.f});
 				std::string timeStr{util::timerStr(finishTime)};
 				vf2d timeStrSize{game.GetTextSize(timeStr)};
 				game.DrawShadowStringDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x/2+64.f-timeStrSize.x,game.SCREEN_FRAME.pos.y+game.SCREEN_FRAME.size.y/2-100.f+ind*16},timeStr);
+				game.DrawShadowStringDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x/2+72.f,game.SCREEN_FRAME.pos.y+game.SCREEN_FRAME.size.y/2-100.f+ind*16},std::format("+{}",pointTable[ind]),YELLOW);
 				ind++;
+			}
+			if(HamsterGame::Game().GetGameMode()!=HamsterGame::GameMode::SINGLE_RACE){
+				for(size_t ind{0};const auto&[points,hamsterInd]:HamsterGame::Game().pointsList){
+					const Hamster&hamster{Hamster::GetHamsters()[hamsterInd]};
+					if(hamster.IsPlayerControlled)game.FillRectDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x/2-64.f,game.SCREEN_FRAME.pos.y+game.SCREEN_FRAME.size.y/2+12.f+ind*16}-2.f,{132.f,12.f},{DARK_YELLOW.r,DARK_YELLOW.g,DARK_YELLOW.b,160});
+					game.DrawShadowStringDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x/2-64.f,game.SCREEN_FRAME.pos.y+game.SCREEN_FRAME.size.y/2+12.f+ind*16},std::format("{}.",ind+1));
+					game.DrawPartialRotatedDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x/2-64.f+24.f,game.SCREEN_FRAME.pos.y+game.SCREEN_FRAME.size.y/2+12.f+ind*16+6.f},game.GetGFX(hamster.GetHamsterImage()).Decal(),0.f,{8.f,6.f},{64.f,64.f},{16.f,12.f});
+					std::string pointsStr{std::to_string(points)};
+					vf2d pointsStrSize{game.GetTextSize(pointsStr)};
+					game.DrawShadowStringDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x/2+64.f-pointsStrSize.x,game.SCREEN_FRAME.pos.y+game.SCREEN_FRAME.size.y/2+12.f+ind*16},pointsStr,CYAN);
+					ind++;
+				}
 			}
 			DrawButtons(pos);
 		}break;
@@ -466,7 +562,7 @@ void Menu::Draw(HamsterGame&game,const MenuType menu,const vi2d pos){
 
 void Menu::OnLevelLoaded(){
 	loading=false;
-	
+	HamsterGame::Game().obtainedNewPB=false;
 	HamsterGame::Game().mapImage.Decal()->Update();
 
 	Powerup::Initialize(HamsterGame::Game().mapPowerupsTemp);

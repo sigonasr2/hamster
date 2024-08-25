@@ -84,4 +84,5 @@ public:
 	static void DrawPowerups(TransformedView&tv);
 	static const geom2d::rect<float>GetPowerupSubimageRect(const PowerupType powerupType);
 	void OnPowerupObtain(Hamster&pickupHamster);
+	static std::unordered_map<PowerupType,std::string>powerupInfo;
 };

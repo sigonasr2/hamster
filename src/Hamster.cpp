@@ -320,6 +320,7 @@ void Hamster::MoveHamstersToSpawn(const geom2d::rect<int>startingLoc){
 	for(HamsterPersistentData&data:persistentData){
 		Hamster&newHamster{HAMSTER_LIST.emplace_back(vf2d{},data.colorFilename,data.IsPlayerControlled)};
 		newHamster.points=data.points;
+		newHamster.aiLevel=data.aiLevel;
 	}
 
 	for(Hamster&hamster:HAMSTER_LIST){
@@ -417,6 +418,13 @@ void Hamster::DrawOverlay(){
 			else HamsterGame::Game().DrawDecal(HamsterGame::SCREEN_FRAME.pos+vf2d{i*16.f+4.f,HamsterGame::SCREEN_FRAME.size.y-18.f},HamsterGame::GetGFX("boost.png").Decal(),{0.125f,0.125f},GetPlayer().boostCounter>i?WHITE:BLACK);
 		}
 		HamsterGame::Game().DrawShadowStringDecal(HamsterGame::SCREEN_FRAME.pos+vf2d{3*16.f+8.f,HamsterGame::SCREEN_FRAME.size.y-12.f},"\"R\" - BOOST",YELLOW,fmod(HamsterGame::Game().GetRuntime(),2.f)<1.f?RED:BLACK);
+	}
+
+	if(HamsterGame::Game().collectedPowerupTimer>0.f){
+		vf2d powerupInfoStrSize{HamsterGame::Game().GetTextSizeProp(HamsterGame::Game().powerupHelpDisplay)};
+		uint8_t alpha{255U};
+		if(HamsterGame::Game().collectedPowerupTimer<1.f)alpha=uint8_t(util::lerp(0,255,HamsterGame::Game().collectedPowerupTimer));
+		HamsterGame::Game().DrawShadowRotatedStringPropDecal(HamsterGame::SCREEN_FRAME.middle()+vf2d{0.f,-HamsterGame::SCREEN_FRAME.size.y/2+powerupInfoStrSize.y+4.f},HamsterGame::Game().powerupHelpDisplay,0.f,powerupInfoStrSize/2,{255,255,255,alpha},{0,0,0,alpha});
 	}
 }
 
@@ -542,6 +550,10 @@ void Hamster::HandleCollision(){
 			if(powerup.GetType()==Powerup::JET)HamsterGame::PlaySFX(pos,"obtain_jet.wav");
 			else HamsterGame::PlaySFX(pos,"collect_powerup.wav");
 			powerup.OnPowerupObtain(*this);
+			if(IsPlayerControlled){
+				HamsterGame::Game().collectedPowerupTimer=5.f;
+				HamsterGame::Game().powerupHelpDisplay=Powerup::powerupInfo[powerup.GetType()];
+			}
 		}
 	}
 	for(Checkpoint&checkpoint:Checkpoint::GetCheckpoints()){
@@ -1050,4 +1062,8 @@ const int Hamster::GetFinishedTime()const{
 
 const std::string&Hamster::GetHamsterImage()const{
 	return colorFilename;
+}
+
+void Hamster::ClearHamsters(){
+	HAMSTER_LIST.clear();
 }

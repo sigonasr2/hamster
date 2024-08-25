@@ -194,4 +194,5 @@ public:
 	PlayerControlled IsPlayerControlled;
 	const int GetFinishedTime()const;
 	const std::string&GetHamsterImage()const;
+	static void ClearHamsters();
 };

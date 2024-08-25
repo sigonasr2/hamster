@@ -165,6 +165,8 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("smallhighlight_button.png");
 	_LoadImage("trackselectbutton.png");
 	_LoadImage("highlight_trackselectbutton.png");
+	_LoadImage("smallbutton3.png");
+	_LoadImage("highlight_smallbutton3.png");
 }
 
 void HamsterGame::LoadAnimations(){
@@ -254,6 +256,7 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 	}
 	vEye.z+=(Hamster::GetPlayer().GetZ()+zoom-vEye.z)*fLazyFollowRate*fElapsedTime;
 	speedometerDisplayAmt+=(Hamster::GetPlayer().GetSpeed()-speedometerDisplayAmt)*fLazyFollowRate*fElapsedTime;
+	collectedPowerupTimer-=fElapsedTime;
 
 	if(GetMouseWheel()>0){
 		radarScale=std::clamp(radarScale/2.f,9.f,144.f);
@@ -652,6 +655,7 @@ void HamsterGame::SavePB(const std::string&mapName,int ms){
 			file<<Game().bgmVol<<" "<<Game().sfxVol<<" "<<Game().playerName<<" "<<Game().hamsterColor;
 			file.close();
 		#endif
+		self->obtainedNewPB=true;
 	}
 }
 
