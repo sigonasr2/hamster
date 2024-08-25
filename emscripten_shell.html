@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Hamster</title>
+    <title>Hamster Planet</title>
+    <link href="https://fonts.cdnfonts.com/css/press-start" rel="stylesheet">
     <style>
         html,
         body {
@@ -14,7 +15,7 @@
         }
 
         body {
-            font-family: arial;
+            font-family: 'Press Start', sans-serif;
             background: #222;
             color: #ded;
             overflow: hidden;
@@ -38,52 +39,189 @@
             left: 0;
             right: 0;
             bottom: 0;
+            text-align: center;
         }
 
         #canvas {
-            display: block;
+            display: none;
             border: 0px none;
             background-color: black;
             margin: 0 auto;
         }
 
+
         #canvas:focus {
             outline: none;
         }
+
+        #start-screen {
+            display: none;
+        }
         
+        body.start #start-screen img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        #loading-screen {
+            display: none;
+        }
+
+        body.start #start-screen {
+            max-width: 30rem;
+            width: 100%;
+            display: block;
+        }
+        
+        #start-screen video {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -2;            
+        }
+
+        body.start #pge-logo-container {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 1rem;
+            width: 100%;
+            text-align: center;
+        }
+        
+        body.start #pge-logo-container img {
+            display: inline;
+            max-width: 15rem;
+            width: 100%;
+        }
+
+        #start-screen button {
+            font-family: 'Press Start', sans-serif;
+            font-size: 1.2rem;
+            padding: 1.2rem;
+            margin: 1rem 0 0 0;
+            color: #ded;
+            text-shadow: .1rem .1rem .1rem #000;
+            cursor: pointer;
+            background-image: url(web-assets/button-big.png);
+            background-position: top left;
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            border: none;
+        }
+
+        body.loading #loading-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            background-image: url(web-assets/background3.png);
+            background-repeat: repeat;
+            background-size: 3rem;
+        }
+
+        #loading-screen > div {
+            max-width: 30rem;
+            width: 100%;
+        }
+
+        #loading-screen > div img {
+            width: 100%;
+            height: auto;
+        }
+        
+        #loading-screen > div span {
+            text-shadow: .2rem .1rem .4rem #000;
+            font-size: 2rem;
+        }
+
+        body.loaded #canvas {
+            display: block;
+        }
     </style>
 </head>
 
 <body>
     <div id="container">
         <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+        <div id="start-screen">
+            <video autoplay loop muted playsinline>
+                <source src="web-assets/hamsterplanet.webm" type="video/webm">
+                Your browser does not support the video tag.
+            </video>
+            <p>
+                <img id="hamster-planet" src="web-assets/hamsterplanet.gif">
+            </p>
+            <p>
+                <button type="button" id="start-button">Load Game</button>
+            </p>
+            
+            <div id="pge-logo-container">
+                <img id="pge-logo" src="web-assets/pge2_logo.png" alt="Powered by: olc::PixelGameEngine">
+            </div>
+        </div>
+        <div id="loading-screen">
+            <div>
+                <img src="web-assets/checkpoint.gif">
+                <span>Loading...</span>
+            </div>
+        </div>
     </div>
     <script type='text/javascript'>
-        var Module = {
-            print: (function () {
-                return (...args) => {
-                    var text = args.join(' ');
-                    console.log(text);
-                };
-            })(),
-            canvas: (() => {
-                var canvas = document.getElementById('canvas');
 
-                // As a default initial behavior, pop up an alert when webgl context is lost. To make your
-                // application robust, you may want to override this behavior before shipping!
-                // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
-                canvas.addEventListener("webglcontextlost", (e) => { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
-
-                return canvas;
-            })(),
-            setStatus: (text) => {
-            },
-            totalDependencies: 0,
-            monitorRunDependencies: (left) => {
-            }
+var Module = {
+    print: (function () {
+        return (...args) => {
+            console.log(args.join(' '));
         };
-    </script>
+    })(),
+    canvas: (() => {
+        var canvas = document.getElementById('canvas');
+
+        // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+        // application robust, you may want to override this behavior before shipping!
+        // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+        canvas.addEventListener("webglcontextlost", (e) => { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+
+        return canvas;
+    })(),
+    setStatus: (text) => {},
+    totalDependencies: 0,
+    monitorRunDependencies: (left) => {},
+    
+    preRun: [
+        function()
+        {
+            document.body.classList.toggle("start", true);
+            Module["addRunDependency"]("click-to-start");
+            
+            document.getElementById("start-button").addEventListener("click", (event) =>
+            {
+                document.body.classList.toggle("loading", true);
+                document.body.classList.toggle("start", false);
+                
+                document.getElementById('canvas').focus();
+                setTimeout(() => Module["removeRunDependency"]("click-to-start"), 50);
+            });
+        },
+    ],
+    
+    onRuntimeInitialized: function()
+    {
+        document.body.classList.toggle("loading", false);
+        document.body.classList.toggle("loaded", true);
+    },
+};
+    </script> 
     {{{ SCRIPT }}}
 </body>
 
 </html>
+
+
+

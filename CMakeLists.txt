@@ -278,6 +278,21 @@ if (EMSCRIPTEN)
         COMMAND ${CMAKE_COMMAND}
         ARGS -E rename ${CMAKE_BINARY_DIR}/bin/${OutputExecutable}.html ${CMAKE_BINARY_DIR}/bin/index.html
     )
+
+    add_custom_command(
+        TARGET ${OutputExecutable}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+        ARGS -E make_directory ${CMAKE_BINARY_DIR}/bin/web-assets
+    )
+    
+    add_custom_command(
+        TARGET ${OutputExecutable}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+        ARGS -E copy ${CMAKE_CURRENT_SOURCE_DIR}/web-assets/*.* ${CMAKE_BINARY_DIR}/bin/web-assets/
+    )
+
 endif() # Emscripten
 
 ######################################################################
