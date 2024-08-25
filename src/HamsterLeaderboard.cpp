@@ -95,6 +95,7 @@ void HamsterLeaderboard::Draw(HamsterGame&game){
 		std::string addonStr{"th"};
 		if(playerPlacement==1)addonStr="st";
 		else if(playerPlacement==2)addonStr="nd";
+		else if(playerPlacement==3)addonStr="rd";
 		std::string placementStr{std::format("{}{}",playerPlacement,addonStr)};
 		vi2d placementStrSize{game.GetTextSizeProp(placementStr)};
 		Pixel blinkCol{DARK_RED};

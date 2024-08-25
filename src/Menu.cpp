@@ -39,6 +39,7 @@ All rights reserved.
 #include "Menu.h"
 #include "HamsterGame.h"
 #include "util.h"
+#include "Hamster.h"
 
 void Menu::UpdateAndDraw(HamsterGame&game,const float fElapsedTime){
 	menuTransitionRefreshTimer-=fElapsedTime;
@@ -46,6 +47,7 @@ void Menu::UpdateAndDraw(HamsterGame&game,const float fElapsedTime){
 		menuTimer-=fElapsedTime;
 		if(menuTimer<=0.f){
 			currentMenu=nextMenu;
+			OnMenuTransition();
 		}
 	}
 
@@ -62,8 +64,8 @@ void Menu::UpdateAndDraw(HamsterGame&game,const float fElapsedTime){
 		}break;
 		case MAIN_MENU:{
 			if(game.GetKey(SPACE).bPressed||game.GetMouse(Mouse::LEFT).bPressed){	
-				Transition(FADE_OUT,GAMEPLAY,0.5f);
-				game.SetupAndStartRace();
+				Transition(FADE_OUT,LOADING,0.5f);
+				selectedMap="StageV.tmx";
 			}
 		}break;
 		case GAMEPLAY:{
@@ -72,6 +74,9 @@ void Menu::UpdateAndDraw(HamsterGame&game,const float fElapsedTime){
 		}break;
 		case GAMEPLAY_RESULTS:{
 			game.DrawGame();
+		}break;
+		case LOADING:{
+			if(loading)game.ProcessMap();
 		}break;
 	}
 
@@ -84,12 +89,23 @@ void Menu::UpdateAndDraw(HamsterGame&game,const float fElapsedTime){
 		game.SetDrawTarget(nullptr);
 		Draw(game,currentMenu,game.SCREEN_FRAME.pos);
 	}
+	game.border.Update(fElapsedTime);
 }
 void Menu::Transition(const TransitionType type,const MenuType gotoMenu,const float transitionTime){
 	if(menuTimer>0.f)return;
 	menuTimer=originalMenuTimer=transitionTime;
 	nextMenu=gotoMenu;
 	currentTransition=type;
+}
+void Menu::OnMenuTransition(){
+	switch(currentMenu){
+		case LOADING:{
+			colorNumb=util::random()%8+1;
+			loading=true;
+			loadingPct=0.f;
+			HamsterGame::Game().LoadRace(selectedMap);
+		}break;
+	}
 }
 void Menu::DrawTransition(HamsterGame&game){
 	if(currentTransition==FADE_OUT){
@@ -160,5 +176,36 @@ void Menu::Draw(HamsterGame&game,const MenuType menu,const vi2d pos){
 		case GAMEPLAY_RESULTS:{
 			game.DrawGame();
 		}break;
+		case LOADING:{
+			game.DrawPartialDecal(vi2d{pos},game.SCREEN_FRAME.size,game.GetGFX("background3.png").Decal(),vf2d{}+int(game.GetRuntime()*4),game.SCREEN_FRAME.size);
+			game.FillRectDecal(pos+vf2d{32.f,game.SCREEN_FRAME.size.y-64.f}+vf2d{2.f,2.f},vf2d{loadingPct*(game.SCREEN_FRAME.size.x-64),32.f},BLACK);
+			game.GradientFillRectDecal(pos+vf2d{32.f,game.SCREEN_FRAME.size.y-64.f},vf2d{loadingPct*(game.SCREEN_FRAME.size.x-64),32.f},{250,177,163},{255,224,194},{255,224,194},{250,177,163});
+			int animationFrame{3};
+			if(fmod(game.GetRuntime(),2.f)<0.5f)animationFrame=0;
+			else if(fmod(game.GetRuntime(),2.f)<1.f)animationFrame=2;
+			else if(fmod(game.GetRuntime(),2.f)<1.5f)animationFrame=0;
+			game.DrawPartialRotatedDecal(pos+vf2d{32.f,game.SCREEN_FRAME.size.y-64.f}+vf2d{loadingPct*(game.SCREEN_FRAME.size.x-64)-10.f,8.f},game.GetGFX(std::format("hamster{}.png",colorNumb)).Decal(),0.f,{16.f,16.f},vf2d{float(animationFrame*32),0.f},{32.f,32.f});
+		}break;
 	}
+}
+
+void Menu::OnLevelLoaded(){
+	loading=false;
+	
+	HamsterGame::Game().mapImage.Decal()->Update();
+
+	Powerup::Initialize(HamsterGame::Game().mapPowerupsTemp);
+	Checkpoint::Initialize(HamsterGame::Game().checkpointsTemp);
+
+	HamsterGame::Game().audio.Play(HamsterGame::Game().bgm.at(HamsterGame::Game().currentMap.value().GetData().GetBGM()),true);
+	Hamster::MoveHamstersToSpawn(HamsterGame::Game().currentMap.value().GetData().GetSpawnZone());
+	HamsterGame::Game().countdownTimer=3.f;
+	
+	HamsterGame::Game().camera.SetTarget(Hamster::GetPlayer().GetPos());
+
+	Transition(FADE_OUT,GAMEPLAY,0.5f);
+}
+
+void Menu::UpdateLoadingProgress(const float pctLoaded){
+	loadingPct=pctLoaded;
 }

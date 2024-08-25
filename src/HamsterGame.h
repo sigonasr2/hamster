@@ -110,6 +110,7 @@ public:
 	void SetMapSetList(const std::queue<std::string>&mapSet);
 	const bool HasMoreMapsToPlay()const;
 	const std::string PopNextMap();
+	void ProcessMap();
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -122,7 +123,7 @@ private:
 	static HamsterGame*self;
 	Border border;
 	void DrawLevelTiles();
-	void SetupAndStartRace();
+	void LoadRace(const std::string&mapName);
 	std::optional<TMXParser>currentMap;
 	std::optional<TSXParser>currentTileset;
 	double runTime{};
@@ -186,4 +187,10 @@ private:
 	HamsterLeaderboard leaderboard;
 	std::queue<std::string>mapSetList{};
 	Menu menu;
+	std::vector<Powerup>mapPowerupsTemp{};
+	std::vector<vf2d>checkpointsTemp{};
+	size_t loadingMapLayerInd;
+	size_t loadingMapLayerTileY;
+	int totalOperationsCount{};
+	int operationsProgress{};
 };

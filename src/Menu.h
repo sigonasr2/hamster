@@ -55,6 +55,7 @@ class Menu{
 		GAMEPLAY_RESULTS,
 		AFTER_RACE_MENU,
 		PAUSE,
+		LOADING,
 	};
 	enum TransitionType{
 		SHIFT_LEFT,
@@ -77,9 +78,16 @@ class Menu{
 	float originalMenuTimer{};
 	vi2d oldLayerPos{};
 	vi2d newLayerPos{};
+	int colorNumb{1};
+	bool loading{false};
+	float loadingPct{0.f};
+	std::string selectedMap{"StageI.tmx"};
 	void Transition(const TransitionType type,const MenuType gotoMenu,const float transitionTime);
 	void Draw(HamsterGame&game,const MenuType menu,const vi2d pos);
 	void DrawTransition(HamsterGame&game);
+	void OnMenuTransition();
 public:
 	void UpdateAndDraw(HamsterGame&game,const float fElapsedTime);
+	void OnLevelLoaded();
+	void UpdateLoadingProgress(const float pctLoaded);
 };

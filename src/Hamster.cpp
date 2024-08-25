@@ -848,7 +848,7 @@ void Hamster::HandleAIControls(){
 	vf2d aimingDir{};
 
 	const HamsterAI::ActionOptRef&currentAction{ai.GetCurrentAction()};
-	if(!currentAction.has_value())return;
+	if(!currentAction.has_value()){temporaryNode=ai.GetPreviousAction().value().get().pos;}
 	const HamsterAI::Action&action{currentAction.value().get()};
 
 	if(aiNodeTime>GetAIAdjustNodeTime()){

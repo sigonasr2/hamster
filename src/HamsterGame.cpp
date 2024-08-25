@@ -164,49 +164,22 @@ void HamsterGame::LoadLevel(const std::string&mapName){
 	camera.SetMode(Camera2D::Mode::LazyFollow);
 	
 	mapImage.Create(currentMap.value().GetData().GetMapData().width*16,currentMap.value().GetData().GetMapData().height*16);
+
+	mapPowerupsTemp.clear();
+	checkpointsTemp.clear();
+	
+	totalOperationsCount=0;
+	for(const LayerTag&layer:currentMap.value().GetData().GetLayers()){
+		totalOperationsCount+=layer.tiles.size();
+	}
+
+	loadingMapLayerInd=0U;
+	loadingMapLayerTileY=0U;
+	
 	SetDrawTarget(mapImage.Sprite());
 	Clear(BLANK);
-	SetPixelMode(Pixel::MASK);
 
-	#pragma region Detect special tiles
-	{
-		std::vector<Powerup>mapPowerups;
-		std::vector<vf2d>checkpoints;
-		for(const LayerTag&layer:currentMap.value().GetData().GetLayers()){
-			for(size_t y:std::ranges::iota_view(0U,layer.tiles.size())){
-				for(size_t x:std::ranges::iota_view(0U,layer.tiles[y].size())){
-					unsigned int tileID{(unsigned int)(layer.tiles[y][x]-1)};
-					if(Powerup::TileIDIsUpperLeftPowerupTile(tileID))mapPowerups.emplace_back(vf2d{float(x),float(y)}*16+vf2d{16,16},Powerup::TileIDPowerupType(tileID));
-					
-					if(tileID==1484)checkpoints.emplace_back(vf2d{float(x),float(y)}*16+vf2d{64,64});
-					
-					const int numTilesWide{GetGFX("gametiles.png").Sprite()->width/16};
-					const int numTilesTall{GetGFX("gametiles.png").Sprite()->height/16};
-
-					Sprite::Flip flip{Sprite::Flip::NONE};
-					if(tileID&0x80'00'00'00)flip=Sprite::Flip::HORIZ;
-
-					tileID&=0x7FFFFFFF;
-					
-					int imgTileX{int(tileID%numTilesWide)};
-					int imgTileY{int(tileID/numTilesWide)};
-					if(tileID==-1||Powerup::TileIDIsPowerupTile(tileID))continue;
-					DrawPartialSprite(vf2d{float(x),float(y)}*16,GetGFX("gametiles.png").Sprite(),vf2d{float(imgTileX),float(imgTileY)}*16.f,vf2d{16.f,16.f},1U,flip);
-				}
-			}
-		}
-		Powerup::Initialize(mapPowerups);
-		Checkpoint::Initialize(checkpoints);
-	}
-	#pragma endregion
-
-	mapImage.Decal()->Update();
-	SetPixelMode(Pixel::NORMAL);
-	SetDrawTarget(nullptr);
-
-	audio.Play(bgm.at(currentMap.value().GetData().GetBGM()),true);
-	Hamster::MoveHamstersToSpawn(currentMap.value().GetData().GetSpawnZone());
-	countdownTimer=3.f;
+	ProcessMap();
 }
 
 void HamsterGame::UpdateGame(const float fElapsedTime){
@@ -215,6 +188,7 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 		if(countdownTimer<=0.f){
 			countdownTimer=0.f;
 			leaderboard.OnRaceStart();
+			net.StartRace(currentMapName);
 		}
 	}
 	vEye.z+=(Hamster::GetPlayer().GetZ()+zoom-vEye.z)*fLazyFollowRate*fElapsedTime;
@@ -236,7 +210,6 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 	Checkpoint::UpdateCheckpoints(fElapsedTime);
 	FloatingText::UpdateFloatingText(fElapsedTime);
 	leaderboard.Update();
-	border.Update(fElapsedTime);
 }
 
 void HamsterGame::DrawGame(){
@@ -640,10 +613,8 @@ const HamsterGame::GameMode HamsterGame::GetGameMode(){
 	return mode;
 }
 
-void HamsterGame::SetupAndStartRace(){
-	LoadLevel("StageV.tmx"); //THIS IS TEMPORARY.
-	camera.SetTarget(Hamster::GetPlayer().GetPos());
-	net.StartRace(currentMapName);
+void HamsterGame::LoadRace(const std::string&mapName){
+	LoadLevel(mapName);
 }
 
 const int HamsterGame::GetRaceTime(){
@@ -669,6 +640,46 @@ const std::string HamsterGame::PopNextMap(){
 	std::string frontMap{mapSetList.front()};
 	mapSetList.pop();
 	return frontMap;
+}
+
+void HamsterGame::ProcessMap(){
+	SetDrawTarget(mapImage.Sprite());
+	SetPixelMode(Pixel::MASK);
+
+	const LayerTag&layer{currentMap.value().GetData().GetLayers()[loadingMapLayerInd]};
+	const size_t y{loadingMapLayerTileY};
+	for(size_t x:std::ranges::iota_view(0U,layer.tiles[y].size())){
+		unsigned int tileID{(unsigned int)(layer.tiles[y][x]-1)};
+		if(Powerup::TileIDIsUpperLeftPowerupTile(tileID))mapPowerupsTemp.emplace_back(vf2d{float(x),float(y)}*16+vf2d{16,16},Powerup::TileIDPowerupType(tileID));
+					
+		if(tileID==1484)checkpointsTemp.emplace_back(vf2d{float(x),float(y)}*16+vf2d{64,64});
+					
+		const int numTilesWide{GetGFX("gametiles.png").Sprite()->width/16};
+		const int numTilesTall{GetGFX("gametiles.png").Sprite()->height/16};
+
+		Sprite::Flip flip{Sprite::Flip::NONE};
+		if(tileID&0x80'00'00'00)flip=Sprite::Flip::HORIZ;
+
+		tileID&=0x7FFFFFFF;
+					
+		int imgTileX{int(tileID%numTilesWide)};
+		int imgTileY{int(tileID/numTilesWide)};
+		if(tileID==-1||Powerup::TileIDIsPowerupTile(tileID))continue;
+		DrawPartialSprite(vf2d{float(x),float(y)}*16,GetGFX("gametiles.png").Sprite(),vf2d{float(imgTileX),float(imgTileY)}*16.f,vf2d{16.f,16.f},1U,flip);
+	}
+	loadingMapLayerTileY++;
+	if(loadingMapLayerTileY>=layer.tiles.size()){
+		loadingMapLayerInd++;
+		loadingMapLayerTileY=0;
+	}
+	if(loadingMapLayerInd>=currentMap.value().GetData().GetLayers().size()){
+		operationsProgress=totalOperationsCount;
+		menu.OnLevelLoaded();
+	}
+	operationsProgress++;
+	menu.UpdateLoadingProgress(float(operationsProgress)/totalOperationsCount);
+	SetPixelMode(Pixel::NORMAL);
+	SetDrawTarget(nullptr);
 }
 
 int main()
