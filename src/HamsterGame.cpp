@@ -80,7 +80,8 @@ bool HamsterGame::OnUserCreate(){
 	const auto LoadSound=[this](const std::string&filename){
 		bgm.insert({filename,audio.LoadSound(ASSETS_DIR+filename)});
 	};
-
+	
+	LoadSound("Trevor Lentz - Guinea Pig Hero.ogg"); 
 	LoadSound("Jonathan So - Fields of Ice.ogg"); 
 	LoadSound("Juhani Junkala - Stage 2.ogg");
 	LoadSound("shiru8bit - Moonlight.ogg");
@@ -241,8 +242,12 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 		countdownTimer-=fElapsedTime;
 		if(countdownTimer<=0.f){
 			countdownTimer=0.f;
+			PlaySFX("start_race_whistle.wav");
 			leaderboard.OnRaceStart();
 			net.StartRace(currentMapName);
+		}else if(int(countdownTimer)!=lastDigitPlayedSound){
+			lastDigitPlayedSound=int(countdownTimer);
+			PlaySFX("countdown.wav");
 		}
 	}
 	vEye.z+=(Hamster::GetPlayer().GetZ()+zoom-vEye.z)*fLazyFollowRate*fElapsedTime;
@@ -606,6 +611,7 @@ const Difficulty&HamsterGame::GetMapDifficulty()const{
 void HamsterGame::OnPlayerFinishedRace(){
 	std::pair<HamsterNet::FinishTime,bool>result{net.FinishRace()};
 	std::cout<<"Finish Time: "<<result.first<<std::endl;
+	audio.Stop(HamsterGame::Game().bgm.at(HamsterGame::Game().currentMap.value().GetData().GetBGM()));
 	if(result.second)HamsterGame::SavePB(GetCurrentMapName(),result.first);
 }
 
@@ -774,6 +780,15 @@ void HamsterGame::QuitGame(){
 
 const std::string HamsterGame::ColorToHamsterImage(const std::string&color)const{
 	return std::format("hamster{}.png",std::distance(hamsterColorNames.begin(),std::find(hamsterColorNames.begin(),hamsterColorNames.end(),color))+1);
+}
+
+void HamsterGame::PlaySFX(const std::string&filename){
+	PlaySFX(Game().camera.GetPosition(),filename);
+}
+void HamsterGame::PlaySFX(vf2d pos,const std::string&filename){
+	float distanceFromCamera{geom2d::line<float>(self->camera.GetPosition(),pos).length()};
+	float Xdiff{pos.x-self->camera.GetPosition().x}; //If it's positive the sound is to our right...
+	self->audio.Play("assets/sounds/"+filename,std::clamp(1-distanceFromCamera/250.f,0.f,1.f)*self->sfxVol,std::clamp(Xdiff/250.f,-1.f,1.f),util::random_range(0.9f,1.1f));
 }
 
 int main()

@@ -75,6 +75,7 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 		h.bumpTimer-=fElapsedTime;
 		h.boostTimer=std::max(0.f,h.boostTimer-fElapsedTime);
 		h.canCollectWheelPowerupTimer=std::max(0.f,h.canCollectWheelPowerupTimer-fElapsedTime);
+		h.lastCollisionSound+=fElapsedTime;
 		h.HandleCollision();
 		switch(h.state){
 			case NORMAL:{
@@ -98,6 +99,7 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 				}
 				else{
 					h.waitTimer=4.f;
+					HamsterGame::PlaySFX(h.pos,"drown_burn.wav");
 					h.SetState(WAIT);
 				}
 			}break;
@@ -124,6 +126,7 @@ void Hamster::UpdateHamsters(const float fElapsedTime){
 					h.imgScale=std::max(0.f,h.imgScale-0.5f*fElapsedTime);
 				}else{
 					h.waitTimer=4.f;
+					HamsterGame::PlaySFX(h.pos,"drown_burn.wav");
 					h.SetState(WAIT);
 				}
 			}break;
@@ -455,6 +458,7 @@ void Hamster::HandlePlayerControls(){
 	if(HamsterGame::Game().GetKey(R).bPressed&&boostCounter>0){
 		boostCounter--;
 		boostTimer=1.f;
+		HamsterGame::PlaySFX(pos,"wheel_boost.wav");
 		if(IsPlayerControlled)HamsterAI::OnBoost(this->pos);
 	}
 	if(HamsterGame::Game().GetKey(SPACE).bPressed){
@@ -465,11 +469,6 @@ void Hamster::HandlePlayerControls(){
 			hamsterJet.emplace(*this);
 		}
 		lastTappedSpace=0.f;
-	}
-	if(HamsterGame::Game().GetKey(P).bPressed){
-		ObtainPowerup(Powerup::JET);
-		Powerup tempJetPowerup{{},Powerup::JET};
-		tempJetPowerup.OnPowerupObtain(*this);
 	}
 }
 
@@ -525,15 +524,23 @@ void Hamster::HandleCollision(){
 				h.vel+=vf2d{h.GetBumpAmount(),collisionLine.vector().polar().y}.cart();
 				h.vel=vf2d{std::min(h.GetMaxSpeed(),h.vel.polar().x),h.vel.polar().y}.cart();
 			}
+			if(h.lastCollisionSound>1.f){
+				if(util::random()%2==0)HamsterGame::PlaySFX(pos,"hit_hamster.wav");
+				else HamsterGame::PlaySFX(pos,"hit_hamster_2.wav");
+
+				lastCollisionSound=h.lastCollisionSound=0.f;
+			}
 			bumpTimer=h.bumpTimer=0.12f;
 		}
 	}
 	for(Powerup&powerup:Powerup::GetPowerups()){
 		if(z<=0.1f&&
-			(!HasPowerup(powerup.GetType())||HasPowerup(Powerup::JET)&&powerup.GetType()==Powerup::JET&&jetFuel!=1.f||HasPowerup(Powerup::WHEEL)&&boostCounter<3&&canCollectWheelPowerupTimer==0.f)
+			(!HasPowerup(powerup.GetType())||HasPowerup(Powerup::JET)&&powerup.GetType()==Powerup::JET&&jetFuel!=1.f||powerup.GetType()==Powerup::WHEEL&&HasPowerup(Powerup::WHEEL)&&boostCounter<3&&canCollectWheelPowerupTimer==0.f)
 			&&geom2d::overlaps(geom2d::circle<float>(GetPos(),collisionRadius),geom2d::circle<float>(powerup.GetPos(),20.f))){
 			ObtainPowerup(powerup.GetType());
 			if(IsPlayerControlled)HamsterAI::OnPowerupCollection(this->pos);
+			if(powerup.GetType()==Powerup::JET)HamsterGame::PlaySFX(pos,"obtain_jet.wav");
+			else HamsterGame::PlaySFX(pos,"collect_powerup.wav");
 			powerup.OnPowerupObtain(*this);
 		}
 	}
@@ -543,7 +550,10 @@ void Hamster::HandleCollision(){
 			FloatingText::CreateFloatingText(pos,std::format("{} / {}",checkpointsCollected.size(),Checkpoint::GetCheckpoints().size()),{WHITE,GREEN},{1.5f,2.f});
 			if(IsPlayerControlled)HamsterAI::OnCheckpointCollected(this->pos);
 			if(IsPlayerControlled)checkpoint.OnCheckpointCollect();
-			if(CollectedAllCheckpoints()){finishedRaceTime=HamsterGame::Game().GetRaceTime();}
+			if(CollectedAllCheckpoints()){
+				finishedRaceTime=HamsterGame::Game().GetRaceTime();
+				if(IsPlayerControlled)HamsterGame::PlaySFX("winneris.ogg");
+			}else HamsterGame::PlaySFX(pos,"checkpoint_collection.wav");
 			lastObtainedCheckpointPos=checkpoint.GetPos();
 		}
 	}
@@ -728,7 +738,14 @@ void Hamster::SetPos(const vf2d pos){
 		this->pos=vf2d{this->pos.x,pos.y};
 		movedY=true;
 	}
-	if(IsPlayerControlled&&(movedX||movedY)&&HamsterGame::Game().GetTerrainTypeAtPos(this->pos)!=Terrain::TUNNEL&&state!=FLYING)HamsterAI::OnMove(this->pos);
+	Terrain::TerrainType terrainAtPos{HamsterGame::Game().GetTerrainTypeAtPos(this->pos)};
+	if(distanceTravelled-lastFootstep>32.f){
+		lastFootstep=distanceTravelled;
+		if(terrainAtPos==Terrain::ROCK)HamsterGame::PlaySFX(pos,"footsteps_rock.wav");
+		else if(terrainAtPos==Terrain::SAND||terrainAtPos==Terrain::SWAMP||terrainAtPos==Terrain::FOREST)HamsterGame::PlaySFX(pos,"sfx_movement_footsteps1b.wav");
+		else HamsterGame::PlaySFX(pos,"sfx_movement_footsteps1a.wav");
+	}
+	if(IsPlayerControlled&&(movedX||movedY)&&terrainAtPos!=Terrain::TUNNEL&&state!=FLYING)HamsterAI::OnMove(this->pos);
 }
 
 void Hamster::SetZ(const float z){

@@ -70,6 +70,7 @@ void HamsterJet::Update(const float fElapsedTime){
 				targetPos=pos+vf2d{128.f,32};
 				targetZ=8.f;
 				timer=3.f;
+				HamsterGame::PlaySFX(pos,"jet_takeoff.wav");
 			}
 		}break;
 		case RISE_UP:{
@@ -112,6 +113,7 @@ void HamsterJet::Update(const float fElapsedTime){
 				hamster.SetState(Hamster::NORMAL);
 				if(hamster.IsPlayerControlled)HamsterGame::Game().SetZoom(1.f);
 				timer=3.f;
+				HamsterGame::PlaySFX(pos,"land_ground.wav");
 				originalPos=hamster.GetPos();
 				targetPos={hamster.GetPos().x+128.f,hamster.GetPos().y+32.f};
 				std::pair<Terrain::FuelDamage,Terrain::KnockoutOccurs>landingResult{Terrain::GetFuelDamageTakenAndKnockoutEffect(hamster.GetTerrainStandingOn(),GetLandingSpeed())};
@@ -124,6 +126,7 @@ void HamsterJet::Update(const float fElapsedTime){
 		case COMPLETE_LANDING:{
 			z=util::lerp(3.f,0.f,std::pow(timer/3.f,2));
 			if(timer<=0.f){
+				HamsterGame::PlaySFX(pos,"jet_land.wav");
 				hamster.hamsterJet.reset();
 				return;
 			}else{
@@ -202,6 +205,7 @@ void HamsterJet::HandlePlayerControls(){
 		if(lastTappedSpace<=0.6f&&state!=LANDING){
 			state=LANDING;
 			easeInTimer=0.f;
+			HamsterGame::PlaySFX(pos,"sfx_sounds_falling7.wav");
 			if(hamster.IsPlayerControlled)HamsterAI::OnJetBeginLanding(pos);
 		}
 		lastTappedSpace=0.f;
@@ -279,6 +283,7 @@ void HamsterJet::HandleAIControls(){
 	if(action.type!=HamsterAI::Action::MOVE)variance=172.f;
 	if(diff.mag()<variance){
 		if(action.type==HamsterAI::Action::LANDING){
+			HamsterGame::PlaySFX(pos,"sfx_sounds_falling7.wav");
 			state=LANDING;
 			easeInTimer=0.f;
 		}

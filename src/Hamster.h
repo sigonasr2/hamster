@@ -133,6 +133,8 @@ class Hamster{
 	std::optional<int>finishedRaceTime;
 	std::optional<vf2d>lastObtainedCheckpointPos;
 	HamsterAI::AIType aiLevel{HamsterAI::AIType::NORMAL};
+	float lastFootstep{};
+	float lastCollisionSound{};
 public:
 	Hamster(const vf2d spawnPos,const std::string&img,const PlayerControlled IsPlayerControlled=NPC);
 	static const Hamster&GetPlayer();

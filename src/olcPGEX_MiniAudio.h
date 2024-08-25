@@ -90,7 +90,7 @@ namespace olc
         // plays a sample, can be set to loop
         void Play(const int id, const bool loop = false);
         // plays a sound file, as a one off, and automatically unloads it
-        void Play(const std::string& path);
+        void Play(const std::string& path,const float&vol,const float&pan,const float&pitch);
         // stops a sample, rewinds to beginning
         void Stop(const int id);
         // pauses a sample, does not change position
@@ -336,7 +336,7 @@ namespace olc
         ma_sound_start(vecSounds.at(id));
     }
 
-    void MiniAudio::Play(const std::string& path)
+    void MiniAudio::Play(const std::string& path,const float&vol,const float&pan,const float&pitch)
     {
         // create the sound
         ma_sound* sound = new ma_sound();
@@ -344,7 +344,10 @@ namespace olc
         // load it from the file and decode it
         if(ma_sound_init_from_file(&engine, path.c_str(), MA_SOUND_FLAG_DECODE | MA_SOUND_FLAG_ASYNC, NULL, NULL, sound) != MA_SUCCESS)
             throw MiniAudioSoundException();
-        
+
+        ma_sound_set_volume(sound,vol);
+        ma_sound_set_pan(sound,pan);
+        ma_sound_set_pitch(sound,pitch);
         ma_sound_start(sound);
         vecOneOffSounds.push_back(sound);
     }
@@ -352,7 +355,7 @@ namespace olc
     void MiniAudio::Stop(const int id)
     {
         ma_sound_seek_to_pcm_frame(vecSounds.at(id), 0);
-        ma_sound_stop(vecSounds.at(id));
+        ma_sound_stop_with_fade_in_milliseconds(vecSounds.at(id),300);
     }
 
     void MiniAudio::Pause(const int id)

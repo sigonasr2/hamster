@@ -46,7 +46,10 @@ void Menu::UpdateAndDraw(HamsterGame&game,const float fElapsedTime){
 	menuTransitionRefreshTimer-=fElapsedTime;
 
 	for(int i{0};const Button&b:menuButtons){
-		if(b.IsHovered(oldLayerPos+game.SCREEN_FRAME.pos))selectedButton=i;
+		if(b.IsHovered(oldLayerPos+game.SCREEN_FRAME.pos)&&selectedButton.value()!=i){
+			selectedButton=i;
+			HamsterGame::PlaySFX("menu_hover.wav");
+		}
 		i++;
 	}
 
@@ -54,10 +57,12 @@ void Menu::UpdateAndDraw(HamsterGame&game,const float fElapsedTime){
 		if(game.GetKey(W).bPressed||game.GetKey(UP).bPressed||game.GetKey(A).bPressed||game.GetKey(LEFT).bPressed){
 			if(selectedButton.value()-1<0)selectedButton=menuButtons.size()-1;
 			else selectedButton.value()--;
+			HamsterGame::PlaySFX("menu_hover.wav");
 		}
 		if(game.GetKey(S).bPressed||game.GetKey(DOWN).bPressed||game.GetKey(D).bPressed||game.GetKey(RIGHT).bPressed){
 			if(selectedButton.value()+1>=menuButtons.size())selectedButton=0;
 			else selectedButton.value()++;
+			HamsterGame::PlaySFX("menu_hover.wav");
 		}
 		if(game.GetKey(ENTER).bPressed||game.GetKey(SPACE).bPressed||menuButtons[selectedButton.value()].IsHovered(oldLayerPos+game.SCREEN_FRAME.pos)&&game.GetMouse(Mouse::LEFT).bPressed){
 			menuButtons[selectedButton.value()].OnClick();
@@ -205,6 +210,7 @@ std::vector<Menu::Button>Menu::GetMenuButtons(const MenuType type){
 			});
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,0.f},std::format("SFX: {}",int(round(HamsterGame::Game().sfxVol*100))),"button2.png","highlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
 				HamsterGame::Game().sfxVol=((int(round(HamsterGame::Game().sfxVol*100))+10)%110)/100.f;
+				HamsterGame::PlaySFX("wheel_boost.wav");
 				self.buttonText=std::format("SFX: {}",int(round(HamsterGame::Game().sfxVol*100)));
 				HamsterGame::Game().emscripten_temp_val=std::to_string(HamsterGame::Game().sfxVol);
 				#ifdef __EMSCRIPTEN__
@@ -222,6 +228,7 @@ std::vector<Menu::Button>Menu::GetMenuButtons(const MenuType type){
 				HamsterGame::Game().TextEntryEnable(true,HamsterGame::Game().playerName);
 			});
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,64.f},"","smallbutton.png","smallhighlight_button.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				HamsterGame::PlaySFX("select_track_confirm_name_menu.wav");
 				int colorInd{0};
 				for(int ind{0};const std::string&color:HamsterGame::Game().hamsterColorNames){
 					if(color==HamsterGame::Game().hamsterColor){
@@ -254,6 +261,9 @@ void Menu::OnMenuTransition(){
 	newMenuButtons.clear();
 	menuButtons=GetMenuButtons(currentMenu);
 	switch(currentMenu){
+		case TITLE_SCREEN:{
+			HamsterGame::Game().audio.Play(HamsterGame::Game().bgm["Trevor Lentz - Guinea Pig Hero.ogg"]);
+		}break;
 		case LOADING:{
 			colorNumb=util::random()%8+1;
 			loading=true;
@@ -507,4 +517,6 @@ void Menu::OnTextEntryComplete(const std::string&text){
 		}
 	}
 	ignoreInputs=true;
+	HamsterGame::PlaySFX("menu_set_name.wav");
 }
+

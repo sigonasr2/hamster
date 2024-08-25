@@ -127,6 +127,8 @@ public:
 	void SaveOptions();
 	const std::string ColorToHamsterImage(const std::string&color)const;
 	std::string hamsterColor{hamsterColorNames[0]};
+	static void PlaySFX(const std::string&filename);
+	static void PlaySFX(vf2d pos,const std::string&filename);
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -207,4 +209,5 @@ private:
 	std::string hamsterColorLabel{"hamsterColor"};
 	float bgmVol{0.7f};
 	float sfxVol{0.7f};
+	int lastDigitPlayedSound{};
 };
