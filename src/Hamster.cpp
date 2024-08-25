@@ -551,8 +551,10 @@ void Hamster::HandleCollision(){
 			if(IsPlayerControlled)HamsterAI::OnCheckpointCollected(this->pos);
 			if(IsPlayerControlled)checkpoint.OnCheckpointCollect();
 			if(CollectedAllCheckpoints()){
-				finishedRaceTime=HamsterGame::Game().GetRaceTime();
+				if(IsPlayerControlled||!GetPlayer().CollectedAllCheckpoints())finishedRaceTime=HamsterGame::Game().GetRaceTime();
+				else if(!IsPlayerControlled){finishedRaceTime=GetPlayer().GetFinishedTime()+HamsterGame::Game().GetPlayerDifferentialTime();}
 				if(IsPlayerControlled)HamsterGame::PlaySFX("winneris.ogg");
+				if(IsPlayerControlled)HamsterGame::Game().OnPlayerFinishedRace();
 			}else HamsterGame::PlaySFX(pos,"checkpoint_collection.wav");
 			lastObtainedCheckpointPos=checkpoint.GetPos();
 		}
@@ -739,7 +741,7 @@ void Hamster::SetPos(const vf2d pos){
 		movedY=true;
 	}
 	Terrain::TerrainType terrainAtPos{HamsterGame::Game().GetTerrainTypeAtPos(this->pos)};
-	if(distanceTravelled-lastFootstep>32.f){
+	if(state!=FLYING&&distanceTravelled-lastFootstep>32.f){
 		lastFootstep=distanceTravelled;
 		if(terrainAtPos==Terrain::ROCK)HamsterGame::PlaySFX(pos,"footsteps_rock.wav");
 		else if(terrainAtPos==Terrain::SAND||terrainAtPos==Terrain::SWAMP||terrainAtPos==Terrain::FOREST)HamsterGame::PlaySFX(pos,"sfx_movement_footsteps1b.wav");
@@ -1040,4 +1042,12 @@ const size_t Hamster::GetCheckpointsCollectedCount()const{
 
 const std::optional<vf2d>Hamster::GetLastCollectedCheckpoint()const{
 	return lastObtainedCheckpointPos;
+}
+
+const int Hamster::GetFinishedTime()const{
+	return finishedRaceTime.value_or(std::numeric_limits<int>::max());
+}
+
+const std::string&Hamster::GetHamsterImage()const{
+	return colorFilename;
 }

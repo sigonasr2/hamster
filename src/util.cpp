@@ -57,6 +57,7 @@ vf2d olc::util::pointTo(vf2d posFrom,vf2d posTo){
 	return geom2d::line(posFrom,posTo).vector().norm();
 }
 std::string olc::util::timerStr(int ms){
+	if(ms==std::numeric_limits<int>::max())return "DNF";
 	int millis=ms%1000;
 	int seconds=ms/1000;
 	int hours=seconds/3600;

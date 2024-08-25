@@ -126,7 +126,6 @@ void HamsterJet::Update(const float fElapsedTime){
 		case COMPLETE_LANDING:{
 			z=util::lerp(3.f,0.f,std::pow(timer/3.f,2));
 			if(timer<=0.f){
-				HamsterGame::PlaySFX(pos,"jet_land.wav");
 				hamster.hamsterJet.reset();
 				return;
 			}else{

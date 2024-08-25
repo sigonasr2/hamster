@@ -133,7 +133,7 @@ void HamsterAI::OnJetBeginLanding(const vi2d pos){
 
 
 const HamsterAI::ActionOptRef HamsterAI::GetPreviousAction(){
-	if(actionInd-1>0)return actionsToPerform[actionInd-1];
+	if(actionInd-1>0&&actionInd-1<actionsToPerform.size())return actionsToPerform[actionInd-1];
 	if(actionsToPerform.size()>0)return actionsToPerform[actionsToPerform.size()-1];
 	return {};
 }

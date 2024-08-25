@@ -57,6 +57,7 @@ class Menu{
 		void OnClick();
 		void Draw(HamsterGame&game,const vf2d&pos,std::optional<std::reference_wrapper<Button>>selectedButton={})const;
 	};
+public:
 	enum MenuType{
 		INITIALIZE,
 		TITLE_SCREEN,
@@ -77,11 +78,13 @@ class Menu{
 		SHIFT_UP,
 		SHIFT_DOWN,
 		FADE_OUT,
+		SIMPLE,
 	};
 	enum MenuState{
 		NORMAL,
 		TRANSITIONING,
 	};
+private:
 	MenuState currentState{NORMAL};
 	TransitionType currentTransition{FADE_OUT};
 	MenuType currentMenu{INITIALIZE};
@@ -100,7 +103,6 @@ class Menu{
 	std::string selectedMap{"StageI.tmx"};
 	std::optional<int>selectedButton;
 	int lastHovered{};
-	void Transition(const TransitionType type,const MenuType gotoMenu,const float transitionTime);
 	void Draw(HamsterGame&game,const MenuType menu,const vi2d pos);
 	void DrawTransition(HamsterGame&game);
 	void OnMenuTransition();
@@ -112,4 +114,5 @@ public:
 	void OnLevelLoaded();
 	void UpdateLoadingProgress(const float pctLoaded);
 	void OnTextEntryComplete(const std::string&text);
+	void Transition(const TransitionType type,const MenuType gotoMenu,const float transitionTime);
 };

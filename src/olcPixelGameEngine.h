@@ -1037,6 +1037,7 @@ namespace olc
 		uint32_t GetFPS() const;
 		// Gets last update of elapsed time
 		float GetElapsedTime() const;
+		void SetElapsedTime(const float fElapsedTime);
 		// Gets Actual Window size
 		const olc::vi2d& GetWindowSize() const;
 		// Gets pixel scale
@@ -2154,6 +2155,8 @@ namespace olc
 
 	float PixelGameEngine::GetElapsedTime() const
 	{ return fLastElapsed; }
+	void PixelGameEngine::SetElapsedTime(const float fElapsedTime)
+	{ fLastElapsed=fElapsedTime; }
 
 	const olc::vi2d& PixelGameEngine::GetWindowSize() const
 	{ return vWindowSize; }

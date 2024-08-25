@@ -129,6 +129,7 @@ public:
 	std::string hamsterColor{hamsterColorNames[0]};
 	static void PlaySFX(const std::string&filename);
 	static void PlaySFX(vf2d pos,const std::string&filename);
+	const float GetPlayerDifferentialTime()const;
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -168,6 +169,11 @@ private:
 	GameMode mode{GameMode::SINGLE_RACE};
 	HamsterNet net;
 	float countdownTimer{};
+	using Points=int;
+	using HamsterInd=size_t;
+	using FinishTime=int;
+	std::vector<std::pair<Points,HamsterInd>>grandPrixPoints;
+	std::vector<std::pair<FinishTime,HamsterInd>>racerList;
 	#ifndef __EMSCRIPTEN__
 	#ifndef __DEBUG__
 	SplashScreen splash;
@@ -210,4 +216,5 @@ private:
 	float bgmVol{0.7f};
 	float sfxVol{0.7f};
 	int lastDigitPlayedSound{};
+	float playerDifferentialTime{};
 };

@@ -163,6 +163,8 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("highlight_button4.png");
 	_LoadImage("smallbutton.png");
 	_LoadImage("smallhighlight_button.png");
+	_LoadImage("trackselectbutton.png");
+	_LoadImage("highlight_trackselectbutton.png");
 }
 
 void HamsterGame::LoadAnimations(){
@@ -613,6 +615,7 @@ void HamsterGame::OnPlayerFinishedRace(){
 	std::cout<<"Finish Time: "<<result.first<<std::endl;
 	audio.Stop(HamsterGame::Game().bgm.at(HamsterGame::Game().currentMap.value().GetData().GetBGM()));
 	if(result.second)HamsterGame::SavePB(GetCurrentMapName(),result.first);
+	menu.Transition(Menu::TransitionType::SIMPLE,Menu::GAMEPLAY_RESULTS,3.f);
 }
 
 void HamsterGame::SaveOptions(){
@@ -786,9 +789,14 @@ void HamsterGame::PlaySFX(const std::string&filename){
 	PlaySFX(Game().camera.GetPosition(),filename);
 }
 void HamsterGame::PlaySFX(vf2d pos,const std::string&filename){
+	if(pos!=Game().camera.GetPosition()&&Hamster::GetPlayer().CollectedAllCheckpoints())return;
 	float distanceFromCamera{geom2d::line<float>(self->camera.GetPosition(),pos).length()};
 	float Xdiff{pos.x-self->camera.GetPosition().x}; //If it's positive the sound is to our right...
 	self->audio.Play("assets/sounds/"+filename,std::clamp(1-distanceFromCamera/250.f,0.f,1.f)*self->sfxVol,std::clamp(Xdiff/250.f,-1.f,1.f),util::random_range(0.9f,1.1f));
+}
+
+const float HamsterGame::GetPlayerDifferentialTime()const{
+	return playerDifferentialTime;
 }
 
 int main()

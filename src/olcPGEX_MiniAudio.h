@@ -328,7 +328,7 @@ namespace olc
     {
         if(ma_sound_is_playing(vecSounds.at(id)))
         {
-            ma_sound_seek_to_pcm_frame(vecSounds.at(id), 0);
+            //ma_sound_seek_to_pcm_frame(vecSounds.at(id), 0);
             return;
         }
         
@@ -355,7 +355,7 @@ namespace olc
     void MiniAudio::Stop(const int id)
     {
         ma_sound_seek_to_pcm_frame(vecSounds.at(id), 0);
-        ma_sound_stop_with_fade_in_milliseconds(vecSounds.at(id),300);
+        ma_sound_stop(vecSounds.at(id));
     }
 
     void MiniAudio::Pause(const int id)

@@ -101,7 +101,6 @@ class Hamster{
 	float burnTimer{};
 	float imgScale{1.f};
 	Pixel shrinkEffectColor{BLACK};
-	std::string img;
 	Animate2D::Animation<AnimationState::AnimationState>animations;
 	Animate2D::AnimationState internalAnimState;
 	static std::optional<Hamster*>playerHamster;
@@ -193,4 +192,6 @@ public:
 	const size_t GetCheckpointsCollectedCount()const;
 	const std::optional<vf2d>GetLastCollectedCheckpoint()const;
 	PlayerControlled IsPlayerControlled;
+	const int GetFinishedTime()const;
+	const std::string&GetHamsterImage()const;
 };

@@ -195,6 +195,7 @@ std::vector<Menu::Button>Menu::GetMenuButtons(const MenuType type){
 		case OPTIONS:{
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-32.f},std::format("BGM: {}",int(round(HamsterGame::Game().bgmVol*100))),"button2.png","highlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
 				HamsterGame::Game().bgmVol=((int(round(HamsterGame::Game().bgmVol*100))+10)%110)/100.f;
+				HamsterGame::Game().audio.SetVolume(HamsterGame::Game().bgm["Trevor Lentz - Guinea Pig Hero.ogg"],HamsterGame::Game().bgmVol);
 				self.buttonText=std::format("BGM: {}",int(round(HamsterGame::Game().bgmVol*100)));
 				HamsterGame::Game().emscripten_temp_val=std::to_string(HamsterGame::Game().bgmVol);
 				#ifdef __EMSCRIPTEN__
@@ -252,6 +253,37 @@ std::vector<Menu::Button>Menu::GetMenuButtons(const MenuType type){
 			});
 			buttons.emplace_back(vf2d{54.f,HamsterGame::SCREEN_FRAME.size.y-24.f},"< Back","button2.png","highlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){Transition(SHIFT_LEFT,MAIN_MENU,0.5f);});
 		}break;
+		case GAMEPLAY_RESULTS:{
+			switch(HamsterGame::Game().GetGameMode()){
+				case HamsterGame::GameMode::SINGLE_RACE:{
+					int MAX_SIMULATION_COUNT{10000};
+					HamsterGame::Game().playerDifferentialTime=0.f;
+					while(MAX_SIMULATION_COUNT>0){
+						bool allHamstersFinished{true};
+						for(Hamster&hamster:Hamster::GetHamsters()){
+							if(!hamster.CollectedAllCheckpoints())allHamstersFinished=false;
+						}
+						if(allHamstersFinished)break;
+						HamsterGame::Game().SetElapsedTime(1/30.f);
+						HamsterGame::Game().UpdateGame(1/30.f);
+						HamsterGame::Game().playerDifferentialTime+=33;
+						MAX_SIMULATION_COUNT--;
+					}
+					HamsterGame::Game().racerList.clear();
+					for(size_t ind{0};Hamster&hamster:Hamster::GetHamsters()){
+						HamsterGame::Game().racerList.emplace_back(std::pair<HamsterGame::FinishTime,HamsterGame::HamsterInd>{hamster.GetFinishedTime(),ind});
+						ind++;
+					}
+					std::sort(HamsterGame::Game().racerList.begin(),HamsterGame::Game().racerList.end(),[](const std::pair<HamsterGame::FinishTime,HamsterGame::HamsterInd>&hamster1,const std::pair<HamsterGame::FinishTime,HamsterGame::HamsterInd>&hamster2){return hamster1.first<hamster2.first;});
+					buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,HamsterGame::SCREEN_FRAME.size.y/2-40.f},"Track Select","trackselectbutton.png","highlight_trackselectbutton.png",Pixel{165,208,96},Pixel{37,134,139},[this](Button&self){Transition(FADE_OUT,SINGLE_RACE,1.f);});
+					buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,HamsterGame::SCREEN_FRAME.size.y/2-16.f},"Retry","button.png","highlight_button.png",Pixel{165,208,96},Pixel{37,134,139},[this](Button&self){Transition(FADE_OUT,LOADING,1.f);});
+				}break;
+				default:{
+					//Show the points.
+
+				}
+			}
+		}break;
 	}
 	return buttons;
 }
@@ -260,10 +292,8 @@ void Menu::OnMenuTransition(){
 	menuButtons.clear();
 	newMenuButtons.clear();
 	menuButtons=GetMenuButtons(currentMenu);
+	if(currentMenu!=GAMEPLAY&&currentMenu!=GAMEPLAY_RESULTS&&currentMenu!=AFTER_RACE_MENU)HamsterGame::Game().audio.Play(HamsterGame::Game().bgm["Trevor Lentz - Guinea Pig Hero.ogg"]);
 	switch(currentMenu){
-		case TITLE_SCREEN:{
-			HamsterGame::Game().audio.Play(HamsterGame::Game().bgm["Trevor Lentz - Guinea Pig Hero.ogg"]);
-		}break;
 		case LOADING:{
 			colorNumb=util::random()%8+1;
 			loading=true;
@@ -277,6 +307,7 @@ void Menu::OnMenuTransition(){
 	if(menuButtons.size()>0)selectedButton=0;
 }
 void Menu::DrawTransition(HamsterGame&game){
+	if(currentTransition==SIMPLE)return;
 	if(currentTransition==FADE_OUT){
 		if(menuTimer>=originalMenuTimer/2){//Fading out from old scene.
 			game.SetDrawTarget(1U);
@@ -349,7 +380,6 @@ void Menu::Draw(HamsterGame&game,const MenuType menu,const vi2d pos){
 		}break;
 		case MAIN_MENU:{
 			game.DrawPartialDecal(vi2d{pos},game.SCREEN_FRAME.size,game.GetGFX("background1.png").Decal(),vf2d{}+int(game.GetRuntime()*4),game.SCREEN_FRAME.size);
-			game.DrawRotatedDecal(pos,game.GetGFX("button.png").Decal(),0.f,game.GetGFX("button.png").Sprite()->Size()/2);
 			DrawButtons(pos);
 			game.border.Draw();
 		}break;
@@ -398,6 +428,21 @@ void Menu::Draw(HamsterGame&game,const MenuType menu,const vi2d pos){
 				}
 			}
 		}break;
+		case GAMEPLAY_RESULTS:{
+			for(size_t ind{0};const auto&[finishTime,hamsterInd]:HamsterGame::Game().racerList){
+				const Hamster&hamster{Hamster::GetHamsters()[hamsterInd]};
+				game.DrawShadowStringDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x/2-64.f,game.SCREEN_FRAME.pos.y+game.SCREEN_FRAME.size.y/2-100.f+ind*16},std::format("{}.",ind+1));
+				game.DrawPartialRotatedDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x/2-64.f+24.f,game.SCREEN_FRAME.pos.y+game.SCREEN_FRAME.size.y/2-100.f+ind*16+6.f},game.GetGFX(hamster.GetHamsterImage()).Decal(),0.f,{8.f,6.f},{64.f,64.f},{16.f,12.f});
+				std::string timeStr{util::timerStr(finishTime)};
+				vf2d timeStrSize{game.GetTextSize(timeStr)};
+				game.DrawShadowStringDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x/2+64.f-timeStrSize.x,game.SCREEN_FRAME.pos.y+game.SCREEN_FRAME.size.y/2-100.f+ind*16},timeStr);
+				ind++;
+			}
+			DrawButtons(pos);
+		}break;
+		case AFTER_RACE_MENU:{
+			DrawButtons(pos);
+		}break;
 		case OPTIONS:{
 			game.DrawPartialDecal(vi2d{pos},game.SCREEN_FRAME.size,game.GetGFX("background2.png").Decal(),vf2d{}+int(game.GetRuntime()*4),game.SCREEN_FRAME.size);
 			DrawButtons(pos);
@@ -405,12 +450,6 @@ void Menu::Draw(HamsterGame&game,const MenuType menu,const vi2d pos){
 		}break;
 		case QUIT:{
 			game.DrawPartialDecal(vi2d{pos},game.SCREEN_FRAME.size,game.GetGFX("background3.png").Decal(),vf2d{}+int(game.GetRuntime()*4),game.SCREEN_FRAME.size);
-		}break;
-		case GAMEPLAY:{
-			game.DrawGame();
-		}break;
-		case GAMEPLAY_RESULTS:{
-			game.DrawGame();
 		}break;
 		case LOADING:{
 			game.DrawPartialDecal(vi2d{pos},game.SCREEN_FRAME.size,game.GetGFX("background3.png").Decal(),vf2d{}+int(game.GetRuntime()*4),game.SCREEN_FRAME.size);
@@ -434,6 +473,7 @@ void Menu::OnLevelLoaded(){
 	Checkpoint::Initialize(HamsterGame::Game().checkpointsTemp);
 
 	HamsterGame::Game().audio.SetVolume(HamsterGame::Game().bgm.at(HamsterGame::Game().currentMap.value().GetData().GetBGM()),HamsterGame::Game().bgmVol);
+	HamsterGame::Game().audio.Stop(HamsterGame::Game().bgm["Trevor Lentz - Guinea Pig Hero.ogg"]);
 	HamsterGame::Game().audio.Play(HamsterGame::Game().bgm.at(HamsterGame::Game().currentMap.value().GetData().GetBGM()),true);
 	HamsterGame::Game().net.SetName(HamsterGame::Game().playerName);
 	HamsterGame::Game().net.SetColor(HamsterGame::Game().hamsterColor);
