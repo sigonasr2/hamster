@@ -231,9 +231,9 @@ void Hamster::CreateHamsters(const HamsterGame::GameMode mode){
 	playerHamster.reset();
 	HAMSTER_LIST.reserve(MAX_HAMSTER_COUNT);
 	if(NPC_HAMSTER_COUNT+1>MAX_HAMSTER_COUNT)throw std::runtime_error{std::format("WARNING! Max hamster count is too high! Please expand the MAX_HAMSTER_COUNT if you want more hamsters. Requested {} hamsters.",MAX_HAMSTER_COUNT)};
-	playerHamster=&HAMSTER_LIST.emplace_back(vf2d{},PLAYER_HAMSTER_IMAGE,PLAYER_CONTROLLED);
+	playerHamster=&HAMSTER_LIST.emplace_back(vf2d{},HamsterGame::Game().GetPlayerHamsterImage(),PLAYER_CONTROLLED);
 	std::vector<std::string>hamsterColorChoices{NPC_HAMSTER_IMAGES};
-	std::erase(hamsterColorChoices,PLAYER_HAMSTER_IMAGE);
+	std::erase(hamsterColorChoices,HamsterGame::Game().GetPlayerHamsterImage());
 	for(int i:std::ranges::iota_view(0U,NPC_HAMSTER_COUNT)){
 		std::string colorChoice{hamsterColorChoices.at(util::random()%hamsterColorChoices.size())};
 		std::erase(hamsterColorChoices,colorChoice);

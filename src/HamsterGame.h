@@ -114,6 +114,7 @@ public:
 	void QuitGame();
 	std::string playerName{"OneLoneHamster"};
 	void SaveOptions();
+	const std::string&GetPlayerHamsterImage()const;
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -159,6 +160,16 @@ private:
 	#endif
 	#endif
 	bool netInitialized{false};
+	std::vector<std::string>hamsterColorNames{
+		"Yellow",
+		"Pink",
+		"Cyan",
+		"Black",
+		"Green",
+		"Purple"
+		"Red",
+		"Blue",
+	};
 	std::vector<std::string>mapNameList{
 		"StageI.tmx",	
 		"StageII.tmx",
@@ -178,16 +189,6 @@ private:
 		"Marathon",
 	};
 	std::string emscripten_temp_val{"123456"};
-	std::vector<std::string>hamsterColorNames{
-		"Yellow",
-		"Pink",
-		"Cyan",
-		"Black",
-		"Green",
-		"Purple"
-		"Red",
-		"Blue",
-	};
 	HamsterLeaderboard leaderboard;
 	std::queue<std::string>mapSetList{};
 	Menu menu;

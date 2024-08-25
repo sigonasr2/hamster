@@ -34,7 +34,7 @@ bool HamsterGame::OnUserCreate(){
 		emscripten_idb_async_load("hamster",Game().bgmVolLabel.c_str(),&Game().bgmVol,[](void*arg,void*data,int length){
 			std::string rawMetadata=(char*)data;
 			std::cout<<rawMetadata<<std::endl;
-			*((float*)(arg))=stof(rawMetadata);
+			*((float*)(arg))=stof(rawMetadata.substr(0,length));
 			std::cout<<std::format("Success! Loaded BGM Volume {}",*((float*)(arg)))<<std::endl;
 		},
 		[](void*arg){
@@ -43,7 +43,7 @@ bool HamsterGame::OnUserCreate(){
 		emscripten_idb_async_load("hamster",Game().sfxVolLabel.c_str(),&Game().sfxVol,[](void*arg,void*data,int length){
 			std::string rawMetadata=(char*)data;
 			std::cout<<rawMetadata<<std::endl;
-			*((float*)(arg))=stof(rawMetadata);
+			*((float*)(arg))=stof(rawMetadata.substr(0,length));
 			std::cout<<std::format("Success! Loaded SFX Volume {}",*((float*)(arg)))<<std::endl;
 		},
 		[](void*arg){
@@ -52,7 +52,7 @@ bool HamsterGame::OnUserCreate(){
 		emscripten_idb_async_load("hamster",Game().playerNameLabel.c_str(),&Game().playerName,[](void*arg,void*data,int length){
 			std::string rawMetadata=(char*)data;
 			std::cout<<rawMetadata<<std::endl;
-			*((std::string*)(arg))=rawMetadata;
+			*((std::string*)(arg))=rawMetadata.substr(0,length);
 			std::cout<<std::format("Success! Loaded Player Name {}",*((std::string*)(arg)))<<std::endl;
 		},
 		[](void*arg){
@@ -61,7 +61,7 @@ bool HamsterGame::OnUserCreate(){
 		emscripten_idb_async_load("hamster",Game().hamsterColorLabel.c_str(),&Game().hamsterColor,[](void*arg,void*data,int length){
 			std::string rawMetadata=(char*)data;
 			std::cout<<rawMetadata<<std::endl;
-			*((std::string*)(arg))=std::string(rawMetadata);
+			*((std::string*)(arg))=rawMetadata.substr(0,length);
 			std::cout<<std::format("Success! Loaded Hamster Color {}",*((std::string*)(arg)))<<std::endl;
 		},
 		[](void*arg){
@@ -160,6 +160,8 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("highlight_button3.png");
 	_LoadImage("button4.png");
 	_LoadImage("highlight_button4.png");
+	_LoadImage("smallbutton.png");
+	_LoadImage("smallhighlight_button.png");
 }
 
 void HamsterGame::LoadAnimations(){
@@ -651,7 +653,7 @@ void HamsterGame::LoadPBs(){
 				emscripten_idb_async_load("hamster",Game().mapNameList[i].c_str(),&Game().mapNameList[i],[](void*arg,void*data,int length){
 					std::string rawMetadata=(char*)data;
 					std::cout<<rawMetadata<<std::endl;
-					HamsterGame::mapPBs[*((std::string*)(arg))]=stoi(rawMetadata);
+					HamsterGame::mapPBs[*((std::string*)(arg))]=stoi(rawMetadata.substr(0,length));
 					std::cout<<std::format("Success! PB for {} is {}",*((std::string*)(arg)),HamsterGame::mapPBs[*((std::string*)(arg))])<<std::endl;
 				},
 				[](void*arg){
@@ -768,6 +770,10 @@ void HamsterGame::ProcessMap(){
 
 void HamsterGame::QuitGame(){
 	gameIsRunning=false;
+}
+
+const std::string&HamsterGame::GetPlayerHamsterImage()const{
+	return std::format("hamster{}.png",std::distance(hamsterColorNames.begin(),std::find(hamsterColorNames.begin(),hamsterColorNames.end(),hamsterColor))+1);
 }
 
 int main()

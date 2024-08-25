@@ -171,6 +171,28 @@ std::vector<Menu::Button>Menu::GetMenuButtons(const MenuType type){
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,32.f},std::format("Player Name: {}",HamsterGame::Game().playerName),"longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
 				HamsterGame::Game().TextEntryEnable(true,HamsterGame::Game().playerName);
 			});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,64.f},"","smallbutton.png","smallhighlight_button.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				int colorInd{0};
+				for(int ind{0};const std::string&color:HamsterGame::Game().hamsterColorNames){
+					if(color==HamsterGame::Game().hamsterColor){
+						colorInd=ind;
+						break;
+					}
+					ind++;
+				}
+				HamsterGame::Game().hamsterColor=HamsterGame::Game().hamsterColorNames[(colorInd+1)%HamsterGame::Game().hamsterColorNames.size()];
+				HamsterGame::Game().emscripten_temp_val=HamsterGame::Game().hamsterColor;
+				#ifdef __EMSCRIPTEN__
+					emscripten_idb_async_store("hamster",HamsterGame::Game().hamsterColorLabel.c_str(),HamsterGame::Game().emscripten_temp_val.data(),HamsterGame::Game().emscripten_temp_val.length(),0,[](void*args){
+						std::cout<<"Success!"<<std::endl;
+					},
+					[](void*args){
+						std::cout<<"Failed"<<std::endl;
+					});
+				#else
+					HamsterGame::Game().SaveOptions();
+				#endif
+			});
 			buttons.emplace_back(vf2d{54.f,HamsterGame::SCREEN_FRAME.size.y-24.f},"< Back","button2.png","highlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){Transition(SHIFT_LEFT,MAIN_MENU,0.5f);});
 		}break;
 	}
@@ -349,7 +371,28 @@ void Menu::Button::Draw(HamsterGame&game,const vf2d&offset,std::optional<std::re
 			std::string helpText{"Press <ENTER> or <ESC> to finish name entry."};
 			const vf2d helpTextSize{game.GetTextSizeProp(helpText)};
 			game.DrawShadowRotatedStringPropDecal(pos+offset+vf2d{0,12.f},helpText,0.f,helpTextSize/2);
+		}else if(buttonImg=="smallbutton.png"){
+			int colorInd{0};
+			for(int ind{0};const std::string&color:game.hamsterColorNames){
+				if(color==game.hamsterColor){
+					colorInd=ind;
+					break;
+				}
+				ind++;
+			}
+			game.DrawPartialRotatedDecal(pos+offset,game.GetGFX(std::format("hamster{}.png",colorInd+1)).Decal(),0.f,{8.f,6.f},{64.f,64.f},{16.f,12.f});
 		}else game.DrawRotatedStringPropDecal(pos+offset,buttonText,0.f,game.GetTextSizeProp(buttonText)/2,highlightTextCol);
+	}else if(buttonImg=="smallbutton.png"){
+		game.DrawRotatedDecal(pos+offset,game.GetGFX(buttonImg).Decal(),0.f,game.GetGFX(buttonImg).Sprite()->Size()/2);
+		int colorInd{0};
+		for(int ind{0};const std::string&color:game.hamsterColorNames){
+			if(color==game.hamsterColor){
+				colorInd=ind;
+				break;
+			}
+			ind++;
+		}
+		game.DrawPartialRotatedDecal(pos+offset,game.GetGFX(std::format("hamster{}.png",colorInd+1)).Decal(),0.f,{8.f,6.f},{64.f,64.f},{16.f,12.f});
 	}else{
 		game.DrawRotatedDecal(pos+offset,game.GetGFX(buttonImg).Decal(),0.f,game.GetGFX(buttonImg).Sprite()->Size()/2);
 		game.DrawRotatedStringPropDecal(pos+offset,buttonText,0.f,game.GetTextSizeProp(buttonText)/2,textCol);
