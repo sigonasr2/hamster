@@ -38,11 +38,19 @@ All rights reserved.
 #pragma once
 
 #include "olcPixelGameEngine.h"
+#include <functional>
 
 class HamsterGame;
 class Menu{
 	class Button{
 		std::string buttonText;
+		vf2d pos;
+		Renderable&buttonImg;
+		std::function<void()>onClick;
+	public:
+		Button(const vf2d pos,std::string buttonText,Renderable&buttonImg,std::function<void()>onClick={});
+		void Update(const float fElapsedTime);
+		void Draw(HamsterGame&game);
 	};
 	enum MenuType{
 		INITIALIZE,
@@ -81,7 +89,9 @@ class Menu{
 	int colorNumb{1};
 	bool loading{false};
 	float loadingPct{0.f};
+	std::vector<Button>menuButtons;
 	std::string selectedMap{"StageI.tmx"};
+	std::optional<int>selectedButton;
 	void Transition(const TransitionType type,const MenuType gotoMenu,const float transitionTime);
 	void Draw(HamsterGame&game,const MenuType menu,const vi2d pos);
 	void DrawTransition(HamsterGame&game);

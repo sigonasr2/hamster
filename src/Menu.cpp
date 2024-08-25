@@ -98,7 +98,11 @@ void Menu::Transition(const TransitionType type,const MenuType gotoMenu,const fl
 	currentTransition=type;
 }
 void Menu::OnMenuTransition(){
+	selectedButton.reset();
 	switch(currentMenu){
+		case MAIN_MENU:{
+			//selectedButton
+		}break;
 		case LOADING:{
 			colorNumb=util::random()%8+1;
 			loading=true;
@@ -208,4 +212,14 @@ void Menu::OnLevelLoaded(){
 
 void Menu::UpdateLoadingProgress(const float pctLoaded){
 	loadingPct=pctLoaded;
+}
+
+Menu::Button::Button(const vf2d pos,std::string buttonText,Renderable&buttonImg,std::function<void()>onClick)
+:pos(pos),buttonText(buttonText),buttonImg(buttonImg),onClick(onClick){}
+
+void Menu::Button::Update(const float fElapsedTime){
+	
+}
+void Menu::Button::Draw(HamsterGame&game){
+	
 }

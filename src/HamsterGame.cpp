@@ -497,7 +497,7 @@ void HamsterGame::DrawRadar(){
 	};
 
 	const auto DeferRenderingBasedOnPosition=[this,&icon](const vf2d&pos,const IconType powerupIcon,const uint8_t iconAlpha){
-		if(geom2d::contains(geom2d::circle<float>{{43.f+5.f,44.f+8.f},43},geom2d::rect<float>{pos-vf2d{8.f,8.f},{16.f,16.f}}))DrawPartialRotatedDecal(pos+vf2d{5.f,8.f},GetGFX("radaricons.png").Decal(),0.f,{8.f,8.f},icon.at(powerupIcon).pos,icon.at(powerupIcon).size,{1.f,1.f},{255,255,255,iconAlpha});
+		if(geom2d::contains(geom2d::circle<float>{{43.f+5.f,44.f+8.f},43},pos+vf2d{5.f,8.f}))DrawPartialRotatedDecal(pos+vf2d{5.f,8.f},GetGFX("radaricons.png").Decal(),0.f,{8.f,8.f},icon.at(powerupIcon).pos,icon.at(powerupIcon).size,{1.f,1.f},{255,255,255,iconAlpha});
 	};
 
 	for(const Powerup&powerup:Powerup::GetPowerups()){
