@@ -373,6 +373,9 @@ void Menu::OnMenuTransition(){
 				HamsterGame::Game().pointsList.emplace_back(std::pair<HamsterGame::Points,HamsterGame::HamsterInd>{points,hamsterInd});
 			}
 			std::sort(HamsterGame::Game().pointsList.begin(),HamsterGame::Game().pointsList.end(),[](const std::pair<HamsterGame::Points,HamsterGame::HamsterInd>&ham1,const std::pair<HamsterGame::Points,HamsterGame::HamsterInd>&ham2){return ham1.first>ham2.first;});
+			if(HamsterGame::Game().obtainedNewPB){
+				HamsterGame::PlaySFX("new_record.wav");
+			}
 		}break;
 		case LOADING:{
 			colorNumb=util::random()%8+1;
@@ -514,12 +517,19 @@ void Menu::Draw(HamsterGame&game,const MenuType menu,const vi2d pos){
 			for(size_t ind{0};const auto&[finishTime,hamsterInd]:HamsterGame::Game().racerList){
 				const Hamster&hamster{Hamster::GetHamsters()[hamsterInd]};
 				if(hamster.IsPlayerControlled)game.FillRectDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x/2-64.f,game.SCREEN_FRAME.pos.y+game.SCREEN_FRAME.size.y/2-100.f+ind*16}-2.f,{164.f,12.f},{DARK_YELLOW.r,DARK_YELLOW.g,DARK_YELLOW.b,160});
+				if(hamster.IsPlayerControlled&&HamsterGame::Game().obtainedNewPB){
+					std::string newRecordStr{"NEW RECORD!"};
+					vf2d newRecordStrSize{HamsterGame::Game().GetTextSizeProp(newRecordStr)};
+					Pixel col{226,228,255};
+					if(fmod(HamsterGame::Game().GetRuntime(),0.25f)<0.125f)col=WHITE;
+					game.DrawShadowStringPropDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x/2-64.f-newRecordStrSize.x-4.f,game.SCREEN_FRAME.pos.y+game.SCREEN_FRAME.size.y/2-100.f+ind*16},newRecordStr,col);
+				}
 				game.DrawShadowStringDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x/2-64.f,game.SCREEN_FRAME.pos.y+game.SCREEN_FRAME.size.y/2-100.f+ind*16},std::format("{}.",ind+1));
 				game.DrawPartialRotatedDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x/2-64.f+24.f,game.SCREEN_FRAME.pos.y+game.SCREEN_FRAME.size.y/2-100.f+ind*16+6.f},game.GetGFX(hamster.GetHamsterImage()).Decal(),0.f,{8.f,6.f},{64.f,64.f},{16.f,12.f});
 				std::string timeStr{util::timerStr(finishTime)};
 				vf2d timeStrSize{game.GetTextSize(timeStr)};
 				game.DrawShadowStringDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x/2+64.f-timeStrSize.x,game.SCREEN_FRAME.pos.y+game.SCREEN_FRAME.size.y/2-100.f+ind*16},timeStr);
-				game.DrawShadowStringDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x/2+72.f,game.SCREEN_FRAME.pos.y+game.SCREEN_FRAME.size.y/2-100.f+ind*16},std::format("+{}",pointTable[ind]),YELLOW);
+				if(HamsterGame::Game().GetGameMode()!=HamsterGame::GameMode::SINGLE_RACE)game.DrawShadowStringDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x/2+72.f,game.SCREEN_FRAME.pos.y+game.SCREEN_FRAME.size.y/2-100.f+ind*16},std::format("+{}",pointTable[ind]),YELLOW);
 				ind++;
 			}
 			if(HamsterGame::Game().GetGameMode()!=HamsterGame::GameMode::SINGLE_RACE){
