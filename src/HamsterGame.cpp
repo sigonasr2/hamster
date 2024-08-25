@@ -357,6 +357,11 @@ void HamsterGame::DrawGame(){
 		timerColor.a=util::lerp(0.f,1.f,fmod(countdownTimer,1.f))*255;
 		DrawPartialRotatedDecal(SCREEN_FRAME.middle(),GetGFX("countdown.png").Decal(),0.f,{16.f,16.f},{int(countdownTimer)*32.f,0.f},{32,32},{4.f,4.f},timerColor);
 	}
+	if(HamsterGame::GetRaceTime()>=0){
+		std::string raceClockStr{util::timerStr(HamsterGame::GetRaceTime())};
+		vf2d raceClockStrSize{HamsterGame::Game().GetTextSize(raceClockStr)};
+		DrawShadowStringDecal(SCREEN_FRAME.pos+vf2d{SCREEN_FRAME.size.x-raceClockStrSize.x-8.f,8.f},raceClockStr);
+	}
 }
 
 const Terrain::TerrainType HamsterGame::GetTerrainTypeAtPos(const vf2d pos)const{
@@ -366,6 +371,9 @@ const Terrain::TerrainType HamsterGame::GetTerrainTypeAtPos(const vf2d pos)const
 		int tileX{int(floor(pos.x)/16)};
 		int tileY{int(floor(pos.y)/16)};
 		int tileID{layer.tiles[tileY][tileX]-1};
+		
+		tileID&=0x7FFFFFFF;
+
 		if(tileID==-1)continue;
 		if(currentTileset.value().GetData().GetTerrainData().count(tileID)){
 			if(currentTileset.value().GetData().GetTerrainData().at(tileID).type==Terrain::FOREST&&
@@ -385,6 +393,8 @@ const bool HamsterGame::IsTerrainSolid(const vf2d pos)const{
 		int tileY{int(floor(pos.y)/16)};
 		if(tileX<=0||tileX>=currentMap.value().GetData().GetMapData().MapSize.x||tileY<=0||tileY>=currentMap.value().GetData().GetMapData().MapSize.y)break;
 		int tileID{layer.tiles[tileY][tileX]-1};
+		
+		tileID&=0x7FFFFFFF;
 		if(tileID==-1)continue;
 		if(currentTileset.value().GetData().GetTerrainData().count(tileID)&&currentTileset.value().GetData().GetTerrainData().at(tileID).solid==Terrain::SolidType::SOLID)return true;
 	}
@@ -594,8 +604,10 @@ const Terrain::Direction&HamsterGame::GetTileFacingDirection(const vf2d worldPos
 		int tileY{int(floor(worldPos.y)/16)};
 		if(tileX<=0||tileX>=currentMap.value().GetData().GetMapData().MapSize.x||tileY<=0||tileY>=currentMap.value().GetData().GetMapData().MapSize.y)break;
 		int tileID{layer.tiles[tileY][tileX]-1};
+		
 		if(tileID==-1)continue;
-		tileFacingDir=currentTileset.value().GetData().GetTerrainData().at(tileID).facing;
+
+		if(currentTileset.value().GetData().GetTerrainData().count(tileID))tileFacingDir=currentTileset.value().GetData().GetTerrainData().at(tileID).facing;
 	}
 	return tileFacingDir;
 }
