@@ -62,6 +62,7 @@ void Menu::UpdateAndDraw(HamsterGame&game,const float fElapsedTime){
 		}break;
 		case MAIN_MENU:{
 			if(game.GetKey(SPACE).bPressed||game.GetMouse(Mouse::LEFT).bPressed){	
+				Transition(FADE_OUT,GAMEPLAY,0.5f);
 				game.SetupAndStartRace();
 			}
 		}break;
@@ -79,7 +80,10 @@ void Menu::UpdateAndDraw(HamsterGame&game,const float fElapsedTime){
 		if(menuTransitionRefreshTimer<=0.f){
 			menuTransitionRefreshTimer=MENU_TRANSITION_REFRESH_RATE;
 		}
-	}else Draw(game,currentMenu,game.SCREEN_FRAME.pos);
+	}else{
+		game.SetDrawTarget(nullptr);
+		Draw(game,currentMenu,game.SCREEN_FRAME.pos);
+	}
 }
 void Menu::Transition(const TransitionType type,const MenuType gotoMenu,const float transitionTime){
 	if(menuTimer>0.f)return;

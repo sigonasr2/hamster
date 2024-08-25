@@ -919,6 +919,7 @@ namespace olc
 		olc::Renderable pDrawTarget;
 		uint32_t nResID = 0;
 		std::vector<DecalInstance> vecDecalInstance;
+		std::vector<DecalInstance> vecForegroundDecalInstance;
 		olc::Pixel tint = olc::WHITE;
 		std::function<void()> funcHook = nullptr;
 	};
@@ -2881,7 +2882,8 @@ namespace olc
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
 		di.transform=transform;
-		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		if(transform==GFX3DTransform::TRANSFORM_REQUIRED)vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		else vLayers[nTargetLayer].vecForegroundDecalInstance.emplace_back(di);
 	}
 
 	void PixelGameEngine::DrawPartialDecal(const olc::vf2d& pos, const olc::vf2d& size, olc::Decal* decal, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint,const GFX3DTransform transform)
@@ -2911,7 +2913,8 @@ namespace olc
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
 		di.transform=transform;
-		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		if(transform==GFX3DTransform::TRANSFORM_REQUIRED)vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		else vLayers[nTargetLayer].vecForegroundDecalInstance.emplace_back(di);
 	}
 
 
@@ -2940,7 +2943,8 @@ namespace olc
 		di.structure = nDecalStructure;
 		di.transform=transform;
 		di.z = {z,z,z,z};
-		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		if(transform==GFX3DTransform::TRANSFORM_REQUIRED)vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		else vLayers[nTargetLayer].vecForegroundDecalInstance.emplace_back(di);
 	}
 
 	void PixelGameEngine::DrawExplicitDecal(olc::Decal* decal, const olc::vf2d* pos, const olc::vf2d* uv, const olc::Pixel* col, uint32_t elements,const GFX3DTransform transform)
@@ -2981,7 +2985,8 @@ namespace olc
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
 		di.transform=transform;
-		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		if(transform==GFX3DTransform::TRANSFORM_REQUIRED)vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		else vLayers[nTargetLayer].vecForegroundDecalInstance.emplace_back(di);
 	}
 
 	void PixelGameEngine::DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<olc::vf2d>& uv, const olc::Pixel tint,const GFX3DTransform transform)
@@ -3004,7 +3009,8 @@ namespace olc
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
 		di.transform=transform;
-		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		if(transform==GFX3DTransform::TRANSFORM_REQUIRED)vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		else vLayers[nTargetLayer].vecForegroundDecalInstance.emplace_back(di);
 	}
 
 	void PixelGameEngine::DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<olc::vf2d>& uv, const std::vector<olc::Pixel> &tint,const GFX3DTransform transform)
@@ -3027,7 +3033,8 @@ namespace olc
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
 		di.transform=transform;
-		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		if(transform==GFX3DTransform::TRANSFORM_REQUIRED)vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		else vLayers[nTargetLayer].vecForegroundDecalInstance.emplace_back(di);
 	}
 
 	void PixelGameEngine::DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<olc::vf2d>& uv, const std::vector<olc::Pixel>& colours, const olc::Pixel tint,const GFX3DTransform transform)
@@ -3059,7 +3066,8 @@ namespace olc
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
 		di.transform=transform;
-		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		if(transform==GFX3DTransform::TRANSFORM_REQUIRED)vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		else vLayers[nTargetLayer].vecForegroundDecalInstance.emplace_back(di);
 	}
 
 	void PixelGameEngine::DrawPolygonDecal(olc::Decal* decal, const std::vector<olc::vf2d>& pos, const std::vector<float>& depth, const std::vector<olc::vf2d>& uv, const std::vector<olc::Pixel>& colours, const olc::Pixel tint,const GFX3DTransform transform)
@@ -3082,7 +3090,8 @@ namespace olc
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
 		di.transform=transform;
-		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		if(transform==GFX3DTransform::TRANSFORM_REQUIRED)vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		else vLayers[nTargetLayer].vecForegroundDecalInstance.emplace_back(di);
 	}
 
 
@@ -3109,7 +3118,8 @@ namespace olc
 		di.mode = nDecalMode;
 		di.structure = DecalStructure::LIST;
 		di.depth = true;
-		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		if(transform==GFX3DTransform::TRANSFORM_REQUIRED)vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		else vLayers[nTargetLayer].vecForegroundDecalInstance.emplace_back(di);
 	}
 
 	void PixelGameEngine::LW3D_DrawWarpedDecal(olc::Decal* decal, const std::vector<std::array<float, 3>>& pos, const olc::Pixel& tint)
@@ -3151,7 +3161,8 @@ namespace olc
 			di.mode = nDecalMode;
 			di.structure = nDecalStructure;
 			di.depth = true;
-			vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+			if(transform==GFX3DTransform::TRANSFORM_REQUIRED)vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+			else vLayers[nTargetLayer].vecForegroundDecalInstance.emplace_back(di);
 		}
 	}
 #endif
@@ -3264,7 +3275,8 @@ namespace olc
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
 		di.transform=transform;
-		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		if(transform==GFX3DTransform::TRANSFORM_REQUIRED)vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		else vLayers[nTargetLayer].vecForegroundDecalInstance.emplace_back(di);
 	}
 
 
@@ -3295,7 +3307,8 @@ namespace olc
 		di.mode = nDecalMode;
 		di.structure = nDecalStructure;
 		di.transform=transform;
-		vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		if(transform==GFX3DTransform::TRANSFORM_REQUIRED)vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+		else vLayers[nTargetLayer].vecForegroundDecalInstance.emplace_back(di);
 	}
 
 	void PixelGameEngine::DrawPartialWarpedDecal(olc::Decal* decal, const olc::vf2d* pos, const olc::vf2d& source_pos, const olc::vf2d& source_size, const olc::Pixel& tint,const GFX3DTransform transform)
@@ -3330,7 +3343,8 @@ namespace olc
 			di.mode = nDecalMode;
 			di.structure = nDecalStructure;
 			di.transform=transform;
-			vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+			if(transform==GFX3DTransform::TRANSFORM_REQUIRED)vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+			else vLayers[nTargetLayer].vecForegroundDecalInstance.emplace_back(di);
 		}
 	}
 
@@ -3364,7 +3378,8 @@ namespace olc
 			di.mode = nDecalMode;
 			di.structure = nDecalStructure;
 			di.transform=transform;
-			vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+			if(transform==GFX3DTransform::TRANSFORM_REQUIRED)vLayers[nTargetLayer].vecDecalInstance.emplace_back(di);
+			else vLayers[nTargetLayer].vecForegroundDecalInstance.emplace_back(di);
 		}
 	}
 
@@ -4092,6 +4107,10 @@ namespace olc
 						renderer->DrawDecal(decal);
 					}
 					layer->vecDecalInstance.clear();
+					for (auto& decal : layer->vecForegroundDecalInstance){
+						renderer->DrawDecal(decal);
+					}
+					layer->vecForegroundDecalInstance.clear();
 				}
 				else
 				{

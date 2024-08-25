@@ -1072,7 +1072,7 @@ namespace olc
 							   olc::Decal* dec,
 							   uint32_t nFlags)
 	{
-		pge->FillTexturedTriangleDecal(dec,{x1,y1},{x2,y2},{x3,y3},z1,z2,z3,{u1,v1},{u2,v2},{u3,v3},w1,w2,w3,c1,c2,c3);
+		pge->FillTexturedTriangleDecal(dec,{x1,y1},{x2,y2},{x3,y3},z1,z2,z3,{u1,v1},{u2,v2},{u3,v3},w1,w2,w3,c1,c2,c3,GFX3DTransform::TRANSFORM_REQUIRED);
 	}
 
 
