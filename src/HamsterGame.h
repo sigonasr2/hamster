@@ -112,6 +112,8 @@ public:
 	const std::string PopNextMap();
 	void ProcessMap();
 	void QuitGame();
+	std::string playerName{"OneLoneHamster"};
+	void SaveOptions();
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -173,6 +175,7 @@ private:
 		"Grand Prix I",
 		"Grand Prix II",
 		"Grand Prix III",
+		"Marathon",
 	};
 	std::string emscripten_temp_val{"123456"};
 	std::vector<std::string>hamsterColorNames{
@@ -195,4 +198,11 @@ private:
 	int totalOperationsCount{};
 	int operationsProgress{};
 	bool gameIsRunning{true};
+	std::string bgmVolLabel{"bgmVol"};
+	std::string sfxVolLabel{"sfxVol"};
+	std::string playerNameLabel{"playerName"};
+	std::string hamsterColorLabel{"hamsterColor"};
+	float bgmVol{0.7f};
+	float sfxVol{0.7f};
+	std::string hamsterColor{hamsterColorNames[0]};
 };

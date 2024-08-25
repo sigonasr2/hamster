@@ -24,8 +24,51 @@ HamsterGame::HamsterGame(const std::string&appName){
 bool HamsterGame::OnUserCreate(){
 	CreateLayer();
 	EnableLayer(1U,true);
+	for(const std::string&map:mapNameList){
+		mapPBs[map]=std::numeric_limits<int>::max();
+	}
 	LoadPBs();
 	audio.SetBackgroundPlay(true);
+
+	#ifdef __EMSCRIPTEN__
+		emscripten_idb_async_load("hamster",Game().bgmVolLabel.c_str(),&Game().bgmVol,[](void*arg,void*data,int length){
+			std::string rawMetadata=(char*)data;
+			std::cout<<rawMetadata<<std::endl;
+			*((float*)(arg))=stof(rawMetadata);
+			std::cout<<std::format("Success! Loaded BGM Volume {}",*((float*)(arg)))<<std::endl;
+		},
+		[](void*arg){
+			std::cout<<std::format("Failed to load BGM Volume")<<std::endl;
+		});
+		emscripten_idb_async_load("hamster",Game().sfxVolLabel.c_str(),&Game().sfxVol,[](void*arg,void*data,int length){
+			std::string rawMetadata=(char*)data;
+			std::cout<<rawMetadata<<std::endl;
+			*((float*)(arg))=stof(rawMetadata);
+			std::cout<<std::format("Success! Loaded SFX Volume {}",*((float*)(arg)))<<std::endl;
+		},
+		[](void*arg){
+			std::cout<<std::format("Failed to load SFX Volume")<<std::endl;
+		});
+		emscripten_idb_async_load("hamster",Game().playerNameLabel.c_str(),&Game().playerName,[](void*arg,void*data,int length){
+			std::string rawMetadata=(char*)data;
+			std::cout<<rawMetadata<<std::endl;
+			*((std::string*)(arg))=rawMetadata;
+			std::cout<<std::format("Success! Loaded Player Name {}",*((std::string*)(arg)))<<std::endl;
+		},
+		[](void*arg){
+			std::cout<<std::format("Failed to load Player Name")<<std::endl;
+		});
+		emscripten_idb_async_load("hamster",Game().hamsterColorLabel.c_str(),&Game().hamsterColor,[](void*arg,void*data,int length){
+			std::string rawMetadata=(char*)data;
+			std::cout<<rawMetadata<<std::endl;
+			*((std::string*)(arg))=std::string(rawMetadata);
+			std::cout<<std::format("Success! Loaded Hamster Color {}",*((std::string*)(arg)))<<std::endl;
+		},
+		[](void*arg){
+			std::cout<<std::format("Failed to load Hamster Color")<<std::endl;
+		});
+	#endif
+
 	olc::GFX3D::ConfigureDisplay();
 	camera=Camera2D{SCREEN_FRAME.size};
 	camera.SetMode(Camera2D::Mode::LazyFollow);
@@ -111,6 +154,8 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("highlight_button.png");
 	_LoadImage("button2.png");
 	_LoadImage("highlight_button2.png");
+	_LoadImage("longbutton2.png");
+	_LoadImage("longhighlight_button2.png");
 	_LoadImage("button3.png");
 	_LoadImage("highlight_button3.png");
 	_LoadImage("button4.png");
@@ -359,9 +404,8 @@ bool HamsterGame::OnUserUpdate(float fElapsedTime){
 	if(!netInitialized){
 		net.InitSession();
 		netInitialized=true;
-	
-		net.SetName("OneLoneHamster");
-		net.SetColor(hamsterColorNames[0]);
+		net.SetName(playerName);
+		net.SetColor(hamsterColor);
 	}
 
 	runTime+=fElapsedTime;
@@ -549,7 +593,8 @@ const std::string&HamsterGame::GetCurrentMapName()const{
 }
 
 void HamsterGame::OnTextEntryComplete(const std::string& sText){
-	HamsterAI::OnTextEntryComplete(sText);
+	if(HamsterAI::IsRecording())HamsterAI::OnTextEntryComplete(sText);
+	else menu.OnTextEntryComplete(sText);
 }
 
 const Difficulty&HamsterGame::GetMapDifficulty()const{
@@ -562,6 +607,17 @@ void HamsterGame::OnPlayerFinishedRace(){
 	if(result.second)HamsterGame::SavePB(GetCurrentMapName(),result.first);
 }
 
+void HamsterGame::SaveOptions(){
+	#ifndef __EMSCRIPTEN__
+		std::ofstream file{ASSETS_DIR+"PBData"};
+		for(const std::string&mapName:Game().mapNameList){
+			file<<mapPBs[mapName]<<" ";
+		}
+		file<<Game().bgmVol<<" "<<Game().sfxVol<<" "<<Game().playerName<<" "<<Game().hamsterColor;
+		file.close();
+	#endif
+}
+
 void HamsterGame::SavePB(const std::string&mapName,int ms){
 	auto it=std::find(Game().mapNameList.begin(),Game().mapNameList.end(),mapName);
 	if(it==Game().mapNameList.end())throw std::runtime_error{std::format("WARNING! Somehow got a map name that is invalid! Map Name: {}. THIS SHOULD NOT BE HAPPENING!",mapName)};
@@ -571,7 +627,7 @@ void HamsterGame::SavePB(const std::string&mapName,int ms){
 		mapPBs[mapName]=ms;
 		Game().emscripten_temp_val=std::to_string(ms);
 		#ifdef __EMSCRIPTEN__
-			emscripten_idb_async_store("hamster",Game().mapNameList[std::distance(Game().mapNameList.begin(),it)].c_str(),&Game().emscripten_temp_val,Game().emscripten_temp_val.length(),0,[](void*args){
+			emscripten_idb_async_store("hamster",Game().mapNameList[std::distance(Game().mapNameList.begin(),it)].c_str(),Game().emscripten_temp_val.data(),Game().emscripten_temp_val.length(),0,[](void*args){
 				std::cout<<"Success!"<<std::endl;
 			},
 			[](void*args){
@@ -582,38 +638,59 @@ void HamsterGame::SavePB(const std::string&mapName,int ms){
 			for(const std::string&mapName:Game().mapNameList){
 				file<<mapPBs[mapName]<<" ";
 			}
+			file<<Game().bgmVol<<" "<<Game().sfxVol<<" "<<Game().playerName<<" "<<Game().hamsterColor;
 			file.close();
 		#endif
 	}
 }
 
 void HamsterGame::LoadPBs(){
-	for(int i{0};const std::string&mapName:Game().mapNameList){
-		mapPBs[mapName]=UNPLAYED;
-		#ifdef __EMSCRIPTEN__
-			emscripten_idb_async_load("hamster",Game().mapNameList[i].c_str(),&Game().mapNameList[i],[](void*arg,void*data,int length){
-				std::string rawMetadata=(char*)data;
-				std::cout<<rawMetadata<<std::endl;
-				HamsterGame::mapPBs[*((std::string*)(arg))]=stoi(rawMetadata);
-				std::cout<<std::format("Success! PB for {} is {}",*((std::string*)(arg)),HamsterGame::mapPBs[*((std::string*)(arg))])<<std::endl;
-			},
-			[](void*arg){
-				std::cout<<std::format("Failed to retrieve PB for {}",*((std::string*)(arg)))<<std::endl;
-			});
-		#else
-			std::ifstream file{ASSETS_DIR+"PBData"};
-			int readCounter{0};
-			while(file.good()){
-				if(readCounter>=Game().mapNameList.size())break;
-				int readVal;
-				file>>readVal;
-				mapPBs[Game().mapNameList[readCounter]]=readVal;
-				readCounter++;
+	#ifdef __EMSCRIPTEN__
+		for(int i{0};const std::string&mapName:Game().mapNameList){
+			mapPBs[mapName]=UNPLAYED;
+				emscripten_idb_async_load("hamster",Game().mapNameList[i].c_str(),&Game().mapNameList[i],[](void*arg,void*data,int length){
+					std::string rawMetadata=(char*)data;
+					std::cout<<rawMetadata<<std::endl;
+					HamsterGame::mapPBs[*((std::string*)(arg))]=stoi(rawMetadata);
+					std::cout<<std::format("Success! PB for {} is {}",*((std::string*)(arg)),HamsterGame::mapPBs[*((std::string*)(arg))])<<std::endl;
+				},
+				[](void*arg){
+					std::cout<<std::format("Failed to retrieve PB for {}",*((std::string*)(arg)))<<std::endl;
+				});
+			i++;
+		}
+	#endif
+	#ifndef __EMSCRIPTEN__
+		std::ifstream file{ASSETS_DIR+"PBData"};
+		int readCounter{0};
+		while(file.good()){
+			switch(readCounter){
+				case 16:{
+					file>>Game().bgmVol;
+					std::cout<<Game().bgmVol<<std::endl;
+				}break;
+				case 17:{
+					file>>Game().sfxVol;
+					std::cout<<Game().sfxVol<<std::endl;
+				}break;
+				case 18:{
+					file>>Game().playerName;
+					std::cout<<Game().playerName<<std::endl;
+				}break;
+				case 19:{
+					file>>Game().hamsterColor;
+					std::cout<<Game().hamsterColor<<std::endl;
+				}break;
+				default:{
+					int readVal;
+					file>>readVal;
+					mapPBs[Game().mapNameList[readCounter]]=readVal;
+				}
 			}
-			file.close();
-		#endif
-		i++;
-	}
+			readCounter++;
+		}
+		file.close();
+	#endif
 }
 
 const HamsterGame::GameMode HamsterGame::GetGameMode(){

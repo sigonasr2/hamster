@@ -149,3 +149,7 @@ const HamsterAI::ActionOptRef HamsterAI::PeekNextAction(){
 void HamsterAI::OnBoost(const vi2d pos){
 	recordedActions.emplace_back(pos,Action::BOOST);
 }
+
+const bool HamsterAI::IsRecording(){
+	return recordingMode;
+}

@@ -3879,10 +3879,6 @@ namespace olc
 			}
 
 		// Check for command characters
-		if (GetKey(olc::Key::LEFT).bPressed)
-			nTextEntryCursor = std::max(0, nTextEntryCursor - 1);
-		if (GetKey(olc::Key::RIGHT).bPressed)
-			nTextEntryCursor = std::min(int32_t(sTextEntryString.size()), nTextEntryCursor + 1);
 		if (GetKey(olc::Key::BACK).bPressed && nTextEntryCursor > 0)
 		{
 			sTextEntryString.erase(nTextEntryCursor-1, 1);
@@ -3891,40 +3887,9 @@ namespace olc
 		if (GetKey(olc::Key::DEL).bPressed && nTextEntryCursor < sTextEntryString.size())
 			sTextEntryString.erase(nTextEntryCursor, 1);	
 
-		if (GetKey(olc::Key::UP).bPressed)
-		{
-			if (!sCommandHistory.empty())
-			{
-				if (sCommandHistoryIt != sCommandHistory.begin())
-					sCommandHistoryIt--;
+		
 
-				nTextEntryCursor = int32_t(sCommandHistoryIt->size());
-				sTextEntryString = *sCommandHistoryIt;
-			}
-		}
-
-		if (GetKey(olc::Key::DOWN).bPressed)
-		{	
-			if (!sCommandHistory.empty())
-			{
-				if (sCommandHistoryIt != sCommandHistory.end())
-				{
-					sCommandHistoryIt++;
-					if (sCommandHistoryIt != sCommandHistory.end())
-					{
-						nTextEntryCursor = int32_t(sCommandHistoryIt->size());
-						sTextEntryString = *sCommandHistoryIt;
-					}
-					else
-					{
-						nTextEntryCursor = 0;
-						sTextEntryString = "";
-					}
-				}
-			}
-		}
-
-		if (GetKey(olc::Key::ENTER).bPressed)
+		if (GetKey(olc::Key::ENTER).bPressed||GetKey(olc::Key::ESCAPE).bPressed)
 		{
 			if (bConsoleShow)
 			{

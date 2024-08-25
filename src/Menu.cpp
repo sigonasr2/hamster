@@ -42,6 +42,7 @@ All rights reserved.
 #include "Hamster.h"
 
 void Menu::UpdateAndDraw(HamsterGame&game,const float fElapsedTime){
+	if(HamsterGame::Game().IsTextEntryEnabled()||ignoreInputs)goto Drawing;
 	menuTransitionRefreshTimer-=fElapsedTime;
 
 	for(int i{0};const Button&b:menuButtons){
@@ -74,6 +75,7 @@ void Menu::UpdateAndDraw(HamsterGame&game,const float fElapsedTime){
 		}
 	}
 
+	Drawing:
 	game.EnableLayer(0U,menuTimer>0.f);
 
 	switch(currentMenu){
@@ -109,6 +111,7 @@ void Menu::UpdateAndDraw(HamsterGame&game,const float fElapsedTime){
 		Draw(game,currentMenu,game.SCREEN_FRAME.pos);
 	}
 	game.border.Update(fElapsedTime);
+	ignoreInputs=false;
 }
 void Menu::Transition(const TransitionType type,const MenuType gotoMenu,const float transitionTime){
 	if(menuTimer>0.f)return;
@@ -121,22 +124,54 @@ std::vector<Menu::Button>Menu::GetMenuButtons(const MenuType type){
 	std::vector<Menu::Button>buttons;
 	switch(type){
 		case MAIN_MENU:{
-			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-32.f},"Grand Prix","button.png","highlight_button.png",Pixel{165,208,96},Pixel{37,134,139},[this](){Transition(SHIFT_LEFT,GRAND_PRIX,0.5f);});
-			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,0.f},"Single Race","button.png","highlight_button.png",Pixel{165,208,96},Pixel{37,134,139},[this](){Transition(SHIFT_UP,SINGLE_RACE,0.5f);});
-			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,32.f},"Options","button.png","highlight_button.png",Pixel{165,208,96},Pixel{37,134,139},[this](){Transition(SHIFT_RIGHT,OPTIONS,0.5f);});
-			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,64.f},"Quit","button.png","highlight_button.png",Pixel{165,208,96},Pixel{37,134,139},[this](){Transition(SHIFT_DOWN,QUIT,0.5f);});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-32.f},"Grand Prix","button.png","highlight_button.png",Pixel{165,208,96},Pixel{37,134,139},[this](Button&self){Transition(SHIFT_LEFT,GRAND_PRIX,0.5f);});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,0.f},"Single Race","button.png","highlight_button.png",Pixel{165,208,96},Pixel{37,134,139},[this](Button&self){Transition(SHIFT_UP,SINGLE_RACE,0.5f);});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,32.f},"Options","button.png","highlight_button.png",Pixel{165,208,96},Pixel{37,134,139},[this](Button&self){Transition(SHIFT_RIGHT,OPTIONS,0.5f);});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,64.f},"Quit","button.png","highlight_button.png",Pixel{165,208,96},Pixel{37,134,139},[this](Button&self){Transition(SHIFT_DOWN,QUIT,0.5f);});
 		}break;
 		case GRAND_PRIX:{
 			//Add more buttons up here!
-			buttons.emplace_back(vf2d{54.f,HamsterGame::SCREEN_FRAME.size.y-24.f},"< Back","button3.png","highlight_button3.png",Pixel{145,199,255},Pixel{145,199,255},[this](){Transition(SHIFT_RIGHT,MAIN_MENU,0.5f);});
+			buttons.emplace_back(vf2d{54.f,HamsterGame::SCREEN_FRAME.size.y-24.f},"< Back","button3.png","highlight_button3.png",Pixel{145,199,255},Pixel{145,199,255},[this](Button&self){Transition(SHIFT_RIGHT,MAIN_MENU,0.5f);});
 		}break;
 		case SINGLE_RACE:{
 			//Add more buttons up here!
-			buttons.emplace_back(vf2d{54.f,HamsterGame::SCREEN_FRAME.size.y-24.f},"< Back","button4.png","highlight_button4.png",Pixel{220,185,155},Pixel{180,140,152},[this](){Transition(SHIFT_DOWN,MAIN_MENU,0.5f);});
+			buttons.emplace_back(vf2d{54.f,HamsterGame::SCREEN_FRAME.size.y-24.f},"< Back","button4.png","highlight_button4.png",Pixel{220,185,155},Pixel{180,140,152},[this](Button&self){Transition(SHIFT_DOWN,MAIN_MENU,0.5f);});
 		}break;
 		case OPTIONS:{
-			//Add more buttons up here!
-			buttons.emplace_back(vf2d{54.f,HamsterGame::SCREEN_FRAME.size.y-24.f},"< Back","button2.png","highlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](){Transition(SHIFT_LEFT,MAIN_MENU,0.5f);});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,-32.f},std::format("BGM: {}",int(round(HamsterGame::Game().bgmVol*100))),"button2.png","highlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				HamsterGame::Game().bgmVol=((int(round(HamsterGame::Game().bgmVol*100))+10)%110)/100.f;
+				self.buttonText=std::format("BGM: {}",int(round(HamsterGame::Game().bgmVol*100)));
+				HamsterGame::Game().emscripten_temp_val=std::to_string(HamsterGame::Game().bgmVol);
+				#ifdef __EMSCRIPTEN__
+					emscripten_idb_async_store("hamster",HamsterGame::Game().bgmVolLabel.c_str(),HamsterGame::Game().emscripten_temp_val.data(),HamsterGame::Game().emscripten_temp_val.length(),0,[](void*args){
+						std::cout<<"Success!"<<std::endl;
+					},
+					[](void*args){
+						std::cout<<"Failed"<<std::endl;
+					});
+				#else
+					HamsterGame::Game().SaveOptions();
+				#endif
+			});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,0.f},std::format("SFX: {}",int(round(HamsterGame::Game().sfxVol*100))),"button2.png","highlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				HamsterGame::Game().sfxVol=((int(round(HamsterGame::Game().sfxVol*100))+10)%110)/100.f;
+				self.buttonText=std::format("SFX: {}",int(round(HamsterGame::Game().sfxVol*100)));
+				HamsterGame::Game().emscripten_temp_val=std::to_string(HamsterGame::Game().sfxVol);
+				#ifdef __EMSCRIPTEN__
+					emscripten_idb_async_store("hamster",HamsterGame::Game().sfxVolLabel.c_str(),HamsterGame::Game().emscripten_temp_val.data(),HamsterGame::Game().emscripten_temp_val.length(),0,[](void*args){
+						std::cout<<"Success!"<<std::endl;
+					},
+					[](void*args){
+						std::cout<<"Failed"<<std::endl;
+					});
+				#else
+					HamsterGame::Game().SaveOptions();
+				#endif
+			});
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,32.f},std::format("Player Name: {}",HamsterGame::Game().playerName),"longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				HamsterGame::Game().TextEntryEnable(true,HamsterGame::Game().playerName);
+			});
+			buttons.emplace_back(vf2d{54.f,HamsterGame::SCREEN_FRAME.size.y-24.f},"< Back","button2.png","highlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){Transition(SHIFT_LEFT,MAIN_MENU,0.5f);});
 		}break;
 	}
 	return buttons;
@@ -281,7 +316,11 @@ void Menu::OnLevelLoaded(){
 	Powerup::Initialize(HamsterGame::Game().mapPowerupsTemp);
 	Checkpoint::Initialize(HamsterGame::Game().checkpointsTemp);
 
+	HamsterGame::Game().audio.SetVolume(HamsterGame::Game().bgm.at(HamsterGame::Game().currentMap.value().GetData().GetBGM()),HamsterGame::Game().bgmVol);
 	HamsterGame::Game().audio.Play(HamsterGame::Game().bgm.at(HamsterGame::Game().currentMap.value().GetData().GetBGM()),true);
+	HamsterGame::Game().net.SetName(HamsterGame::Game().playerName);
+	HamsterGame::Game().net.SetColor(HamsterGame::Game().hamsterColor);
+
 	Hamster::MoveHamstersToSpawn(HamsterGame::Game().currentMap.value().GetData().GetSpawnZone());
 	HamsterGame::Game().countdownTimer=3.f;
 	
@@ -294,7 +333,7 @@ void Menu::UpdateLoadingProgress(const float pctLoaded){
 	loadingPct=pctLoaded;
 }
 
-Menu::Button::Button(const vf2d pos,const std::string&buttonText,const std::string&buttonImg,const std::string&highlightButtonImg,const Pixel textCol,const Pixel highlightTextCol,const std::function<void()>onClick)
+Menu::Button::Button(const vf2d pos,const std::string&buttonText,const std::string&buttonImg,const std::string&highlightButtonImg,const Pixel textCol,const Pixel highlightTextCol,const std::function<void(Button&self)>onClick)
 :pos(pos),buttonText(buttonText),buttonImg(buttonImg),highlightButtonImg(highlightButtonImg),onClick(onClick),textCol(textCol),highlightTextCol(highlightTextCol){}
 
 const bool Menu::Button::IsHovered(const vf2d&offset)const{
@@ -303,7 +342,14 @@ const bool Menu::Button::IsHovered(const vf2d&offset)const{
 void Menu::Button::Draw(HamsterGame&game,const vf2d&offset,std::optional<std::reference_wrapper<Button>>selectedButton)const{
 	if(selectedButton.has_value()&&&selectedButton.value().get()==this){
 		game.DrawRotatedDecal(pos+offset,game.GetGFX(highlightButtonImg).Decal(),0.f,game.GetGFX(highlightButtonImg).Sprite()->Size()/2);
-		game.DrawRotatedStringPropDecal(pos+offset,buttonText,0.f,game.GetTextSizeProp(buttonText)/2,highlightTextCol);
+		if(game.IsTextEntryEnabled()&&buttonText.starts_with("Player Name")){
+			std::string blinkingCursor{" "};
+			if(fmod(game.GetRuntime(),1.f)<0.5f)blinkingCursor="|";
+			game.DrawRotatedStringPropDecal(pos+offset,std::format("Player Name: {}{}",game.TextEntryGetString(),blinkingCursor),0.f,game.GetTextSizeProp(buttonText)/2,highlightTextCol);
+			std::string helpText{"Press <ENTER> or <ESC> to finish name entry."};
+			const vf2d helpTextSize{game.GetTextSizeProp(helpText)};
+			game.DrawShadowRotatedStringPropDecal(pos+offset+vf2d{0,12.f},helpText,0.f,helpTextSize/2);
+		}else game.DrawRotatedStringPropDecal(pos+offset,buttonText,0.f,game.GetTextSizeProp(buttonText)/2,highlightTextCol);
 	}else{
 		game.DrawRotatedDecal(pos+offset,game.GetGFX(buttonImg).Decal(),0.f,game.GetGFX(buttonImg).Sprite()->Size()/2);
 		game.DrawRotatedStringPropDecal(pos+offset,buttonText,0.f,game.GetTextSizeProp(buttonText)/2,textCol);
@@ -311,5 +357,26 @@ void Menu::Button::Draw(HamsterGame&game,const vf2d&offset,std::optional<std::re
 }
 
 void Menu::Button::OnClick(){
-	onClick();
+	onClick(*this);
+}
+
+void Menu::OnTextEntryComplete(const std::string&text){
+	HamsterGame::Game().playerName=text.substr(0,30);
+	HamsterGame::Game().emscripten_temp_val=HamsterGame::Game().playerName;
+	#ifdef __EMSCRIPTEN__
+		emscripten_idb_async_store("hamster",HamsterGame::Game().playerNameLabel.c_str(),HamsterGame::Game().emscripten_temp_val.data(),HamsterGame::Game().emscripten_temp_val.length(),0,[](void*args){
+			std::cout<<"Success!"<<std::endl;
+		},
+		[](void*args){
+			std::cout<<"Failed"<<std::endl;
+		});
+	#else
+		HamsterGame::Game().SaveOptions();
+	#endif
+	for(Button&b:menuButtons){
+		if(b.buttonText.starts_with("Player Name")){
+			b.buttonText=std::format("Player Name: {}",HamsterGame::Game().playerName);
+		}
+	}
+	ignoreInputs=true;
 }

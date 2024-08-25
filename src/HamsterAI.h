@@ -82,6 +82,7 @@ public:
 
 	static void Update(const float fElapsedTime);
 	static void DrawOverlay();
+	static const bool IsRecording();
 private:
 	static bool recordingMode;
 	static std::vector<Action>recordedActions;

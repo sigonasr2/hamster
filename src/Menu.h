@@ -43,15 +43,15 @@ All rights reserved.
 class HamsterGame;
 class Menu{
 	class Button{
-		std::string buttonText;
 		vf2d pos;
 		std::string buttonImg;
 		std::string highlightButtonImg;
 		Pixel textCol;
 		Pixel highlightTextCol;
-		std::function<void()>onClick;
+		std::function<void(Button&self)>onClick;
 	public:
-		Button(const vf2d pos,const std::string&buttonText,const std::string&buttonImg,const std::string&highlightButtonImg,const Pixel textCol,const Pixel highlightTextCol,const std::function<void()>onClick={});
+		std::string buttonText;
+		Button(const vf2d pos,const std::string&buttonText,const std::string&buttonImg,const std::string&highlightButtonImg,const Pixel textCol,const Pixel highlightTextCol,const std::function<void(Button&self)>onClick={});
 		const bool IsHovered(const vf2d&offset)const;
 		void OnClick();
 		void Draw(HamsterGame&game,const vf2d&pos,std::optional<std::reference_wrapper<Button>>selectedButton={})const;
@@ -103,8 +103,10 @@ class Menu{
 	void DrawTransition(HamsterGame&game);
 	void OnMenuTransition();
 	std::vector<Button>GetMenuButtons(const MenuType type);
+	bool ignoreInputs{false};
 public:
 	void UpdateAndDraw(HamsterGame&game,const float fElapsedTime);
 	void OnLevelLoaded();
 	void UpdateLoadingProgress(const float pctLoaded);
+	void OnTextEntryComplete(const std::string&text);
 };
