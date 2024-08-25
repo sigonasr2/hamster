@@ -297,6 +297,11 @@ void HamsterGame::DrawGame(){
 	SetZ(0.f);
 	FloatingText::DrawFloatingText(tv);
 	border.Draw();
+	if(HamsterGame::GetRaceTime()>=0){
+		std::string raceClockStr{util::timerStr(HamsterGame::GetRaceTime())};
+		vf2d raceClockStrSize{HamsterGame::Game().GetTextSize(raceClockStr)};
+		DrawShadowStringDecal(SCREEN_FRAME.pos+vf2d{SCREEN_FRAME.size.x-raceClockStrSize.x-8.f,8.f},raceClockStr);
+	}
 	Hamster::DrawOverlay();
 	HamsterAI::DrawOverlay();
 	#pragma region Powerup Display
@@ -356,11 +361,6 @@ void HamsterGame::DrawGame(){
 		Pixel timerColor{fmod(countdownTimer,1.f)<0.5f?GREEN:WHITE};
 		timerColor.a=util::lerp(0.f,1.f,fmod(countdownTimer,1.f))*255;
 		DrawPartialRotatedDecal(SCREEN_FRAME.middle(),GetGFX("countdown.png").Decal(),0.f,{16.f,16.f},{int(countdownTimer)*32.f,0.f},{32,32},{4.f,4.f},timerColor);
-	}
-	if(HamsterGame::GetRaceTime()>=0){
-		std::string raceClockStr{util::timerStr(HamsterGame::GetRaceTime())};
-		vf2d raceClockStrSize{HamsterGame::Game().GetTextSize(raceClockStr)};
-		DrawShadowStringDecal(SCREEN_FRAME.pos+vf2d{SCREEN_FRAME.size.x-raceClockStrSize.x-8.f,8.f},raceClockStr);
 	}
 }
 

@@ -424,7 +424,7 @@ void Hamster::DrawOverlay(){
 		vf2d powerupInfoStrSize{HamsterGame::Game().GetTextSizeProp(HamsterGame::Game().powerupHelpDisplay)};
 		uint8_t alpha{255U};
 		if(HamsterGame::Game().collectedPowerupTimer<1.f)alpha=uint8_t(util::lerp(0,255,HamsterGame::Game().collectedPowerupTimer));
-		HamsterGame::Game().DrawShadowRotatedStringPropDecal(HamsterGame::SCREEN_FRAME.middle()+vf2d{0.f,-HamsterGame::SCREEN_FRAME.size.y/2+powerupInfoStrSize.y+4.f},HamsterGame::Game().powerupHelpDisplay,0.f,powerupInfoStrSize/2,{255,255,255,alpha},{0,0,0,alpha});
+		HamsterGame::Game().DrawShadowRotatedStringPropDecal(HamsterGame::SCREEN_FRAME.middle()+vf2d{0.f,-HamsterGame::SCREEN_FRAME.size.y/2+powerupInfoStrSize.y+4.f+16.f},HamsterGame::Game().powerupHelpDisplay,0.f,powerupInfoStrSize/2,{255,255,255,alpha},{0,0,0,alpha});
 	}
 }
 

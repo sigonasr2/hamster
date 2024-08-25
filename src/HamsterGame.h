@@ -221,4 +221,5 @@ private:
 	float sfxVol{0.7f};
 	int lastDigitPlayedSound{};
 	float playerDifferentialTime{};
+	float holdEscTimer{0.f};
 };
