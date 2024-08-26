@@ -247,7 +247,7 @@ if (EMSCRIPTEN)
             -sUSE_LIBPNG=1
             -sLLD_REPORT_UNDEFINED
             -s ASYNCIFY
-            -sASYNCIFY_IMPORTS=hamsterNet__initSession,hamsterNet__setRacerName,hamsterNet__startRace,hamsterNet__finishRace,hamsterNet__getLeaderboard
+            -sASYNCIFY_IMPORTS=hamsterNet__initSession,hamsterNet__setRacerName,hamsterNet__startRace,hamsterNet__finishRace,hamsterNet__getLeaderboard,hamsterNet__startPause,hamsterNet__endPause
             --preload-file ${SOURCE_DATA_DIR}@assets)
     else()
         target_link_options(
@@ -259,7 +259,7 @@ if (EMSCRIPTEN)
             -sUSE_LIBPNG=1
             -sLLD_REPORT_UNDEFINED
             -s ASYNCIFY
-            -sASYNCIFY_IMPORTS=hamsterNet__initSession,hamsterNet__setRacerName,hamsterNet__startRace,hamsterNet__finishRace,hamsterNet__getLeaderboard
+            -sASYNCIFY_IMPORTS=hamsterNet__initSession,hamsterNet__setRacerName,hamsterNet__startRace,hamsterNet__finishRace,hamsterNet__getLeaderboard,hamsterNet__startPause,hamsterNet__endPause
             )
     endif()
     
