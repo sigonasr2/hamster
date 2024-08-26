@@ -301,7 +301,7 @@ bool HamsterNet::StartRace(const std::string& map)
 
 int HamsterNet::GetCurrentRaceTime(){
     std::chrono::duration<double, std::milli> duration = std::chrono::system_clock::now() - m_tp1;
-    return static_cast<int>(duration.count());
+    return static_cast<int>(duration.count() - m_pause_time);
 }
 
 std::pair<HamsterNet::FinishTime,bool> HamsterNet::FinishRace()
