@@ -31,3 +31,4 @@ vs-build
 /CMakeCache.txt
 /cmake_install.cmake
 /hamster.vcxproj.user
+PBData

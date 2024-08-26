@@ -89,8 +89,6 @@ bool HamsterGame::OnUserCreate(){
 	LoadSound("shiru8bit - Proper Summer.ogg");
 	LoadSound("shiru8bit - Enchanted Woods.ogg");
 	LoadSound("shiru8bit - A Little Journey.ogg");
-	LoadSound("nene - Boss Battle #3 Alternate.ogg");
-	LoadSound("nene - Boss Battle #5 V2.ogg");
 
 	border.ChangeBorder(Border::DEFAULT);
 
@@ -210,7 +208,9 @@ void HamsterGame::LoadAnimations(){
 }
 
 void HamsterGame::LoadLevel(const std::string&mapName){
+	raceStarted=false;
 	currentMap=TMXParser{ASSETS_DIR+mapName};
+	std::string previousMapName=currentMapName;
 	currentMapName=mapName;
 	cloudSpd.x=util::random_range(-12.f,12.f);
 	cloudSpd.y=util::random_range(-0.3f,0.3f);
@@ -221,11 +221,7 @@ void HamsterGame::LoadLevel(const std::string&mapName){
 	camera.SetTarget(currentMap.value().GetData().GetSpawnZone().middle());
 	camera.Update(0.f);
 	camera.SetMode(Camera2D::Mode::LazyFollow);
-	
-	mapImage.Create(currentMap.value().GetData().GetMapData().width*16,currentMap.value().GetData().GetMapData().height*16);
 
-	mapPowerupsTemp.clear();
-	checkpointsTemp.clear();
 	
 	totalOperationsCount=0;
 	for(const LayerTag&layer:currentMap.value().GetData().GetLayers()){
@@ -235,10 +231,19 @@ void HamsterGame::LoadLevel(const std::string&mapName){
 	loadingMapLayerInd=0U;
 	loadingMapLayerTileY=0U;
 	
-	SetDrawTarget(mapImage.Sprite());
-	Clear(BLANK);
+	if(previousMapName!=currentMapName){
+		mapImage.Create(currentMap.value().GetData().GetMapData().width*16,currentMap.value().GetData().GetMapData().height*16);
+		mapPowerupsTemp.clear();
+		checkpointsTemp.clear();
+		SetDrawTarget(mapImage.Sprite());
+		Clear(BLANK);
 
-	ProcessMap();
+		ProcessMap();
+	}else{
+		operationsProgress=totalOperationsCount;
+		menu.UpdateLoadingProgress(1.f);
+		menu.OnLevelLoaded();
+	}
 }
 
 void HamsterGame::UpdateGame(const float fElapsedTime){
@@ -247,6 +252,7 @@ void HamsterGame::UpdateGame(const float fElapsedTime){
 		if(countdownTimer<=0.f){
 			countdownTimer=0.f;
 			PlaySFX("start_race_whistle.wav");
+			raceStarted=true;
 			leaderboard.OnRaceStart();
 			net.StartRace(currentMapName);
 		}else if(int(countdownTimer)!=lastDigitPlayedSound){
@@ -729,7 +735,11 @@ void HamsterGame::LoadRace(const std::string&mapName){
 }
 
 const int HamsterGame::GetRaceTime(){
-	return net.GetCurrentRaceTime();
+	if(!raceStarted)return 0;
+	if(racePauseTime.has_value())return racePauseTime.value();
+	if(Hamster::GetPlayer().GetFinishedTime()!=std::numeric_limits<int>::max()){
+		return Hamster::GetPlayer().GetFinishedTime();
+	}else return net.GetCurrentRaceTime();
 }
 
 const bool HamsterGame::RaceCountdownCompleted(){

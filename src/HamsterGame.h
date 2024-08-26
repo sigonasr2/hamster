@@ -222,4 +222,6 @@ private:
 	int lastDigitPlayedSound{};
 	float playerDifferentialTime{};
 	float holdEscTimer{0.f};
+	std::optional<int>racePauseTime{};
+	bool raceStarted{false};
 };

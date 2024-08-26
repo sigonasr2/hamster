@@ -73,10 +73,11 @@ void Menu::UpdateAndDraw(HamsterGame&game,const float fElapsedTime){
 		menuTimer-=fElapsedTime;
 		if(menuTimer<=0.f){
 			menuTimer=0.f;
+			MenuType previousMenu=currentMenu;
 			currentMenu=nextMenu;
 			oldLayerPos={};
 			newLayerPos=game.SCREEN_FRAME.pos;
-			OnMenuTransition();
+			OnMenuTransition(previousMenu);
 		}
 	}
 
@@ -95,20 +96,13 @@ void Menu::UpdateAndDraw(HamsterGame&game,const float fElapsedTime){
 		case MAIN_MENU:{
 		}break;
 		case GAMEPLAY:{
-			//if(game.GetKey(ESCAPE).bPressed)Transition(TransitionType::FADE_OUT,PAUSE,0.1f);
+			if(game.GetKey(ESCAPE).bPressed){
+				game.net.StartPause();
+				game.racePauseTime=HamsterGame::Game().GetRaceTime();
+				Transition(TransitionType::FADE_OUT,PAUSE,0.1f);
+			}
 			game.UpdateGame(fElapsedTime);
 			game.DrawGame();
-			if(game.GetKey(ESCAPE).bHeld){
-				uint8_t alpha{uint8_t(abs(sin(float(geom2d::pi)*HamsterGame::Game().GetRuntime()))*255)};
-				game.DrawShadowStringDecal(game.SCREEN_FRAME.pos+vf2d{2.f,2.f},"Keep Holding Esc to Restart...",{255,255,0,alpha},{0,0,0,alpha},{2.f,2.f});
-				game.holdEscTimer+=fElapsedTime;
-				if(game.holdEscTimer>3.f){
-					game.holdEscTimer=0.f;
-					Transition(TransitionType::FADE_OUT,LOADING,0.1f);
-				}
-			}else{
-				game.holdEscTimer=0.f;
-			}
 		}break;
 		case PAUSE:{
 			if(game.GetKey(ESCAPE).bPressed)Transition(TransitionType::FADE_OUT,GAMEPLAY,0.1f);
@@ -366,13 +360,17 @@ std::vector<Menu::Button>Menu::GetMenuButtons(const MenuType type){
 	}
 	return buttons;
 }
-void Menu::OnMenuTransition(){
+void Menu::OnMenuTransition(MenuType previousMenu){
 	selectedButton.reset();
 	menuButtons.clear();
 	newMenuButtons.clear();
 	menuButtons=GetMenuButtons(currentMenu);
 	if(currentMenu!=GAMEPLAY&&currentMenu!=GAMEPLAY_RESULTS&&currentMenu!=AFTER_RACE_MENU&&currentMenu!=PAUSE)HamsterGame::Game().audio.Play(HamsterGame::Game().bgm["Trevor Lentz - Guinea Pig Hero.ogg"]);
 	switch(currentMenu){
+		case GAMEPLAY:{
+			HamsterGame::Game().racePauseTime.reset();
+			if(previousMenu==PAUSE)HamsterGame::Game().net.EndPause();
+		}break;
 		case GAMEPLAY_RESULTS:{
 			const std::vector<int>pointTable{10,7,5,3,2,1};
 			for(size_t ind{0};const auto&[finishTime,hamsterInd]:HamsterGame::Game().racerList){
@@ -591,6 +589,7 @@ void Menu::OnLevelLoaded(){
 	HamsterGame::Game().holdEscTimer=0.f;
 	HamsterGame::Game().obtainedNewPB=false;
 	HamsterGame::Game().mapImage.Decal()->Update();
+	HamsterGame::Game().racePauseTime.reset();
 
 	Powerup::Initialize(HamsterGame::Game().mapPowerupsTemp);
 	Checkpoint::Initialize(HamsterGame::Game().checkpointsTemp);

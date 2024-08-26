@@ -108,7 +108,7 @@ private:
 	int lastHovered{};
 	void Draw(HamsterGame&game,const MenuType menu,const vi2d pos);
 	void DrawTransition(HamsterGame&game);
-	void OnMenuTransition();
+	void OnMenuTransition(MenuType previousMenu);
 	std::vector<Button>GetMenuButtons(const MenuType type);
 	bool ignoreInputs{false};
 	std::vector<LeaderboardEntry>loadedLeaderboard;
