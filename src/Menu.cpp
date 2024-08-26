@@ -297,7 +297,7 @@ std::vector<Menu::Button>Menu::GetMenuButtons(const MenuType type){
 			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,32.f},std::format("Player Name: {}",HamsterGame::Game().playerName),"longbutton2.png","longhighlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
 				HamsterGame::Game().TextEntryEnable(true,HamsterGame::Game().playerName);
 			});
-			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{0.f,64.f},"","smallbutton.png","smallhighlight_button.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+			buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{-16.f,64.f},"","smallbutton.png","smallhighlight_button.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
 				HamsterGame::PlaySFX("select_track_confirm_name_menu.wav");
 				int colorInd{0};
 				for(int ind{0};const std::string&color:HamsterGame::Game().hamsterColorNames){
@@ -320,6 +320,33 @@ std::vector<Menu::Button>Menu::GetMenuButtons(const MenuType type){
 					HamsterGame::Game().SaveOptions();
 				#endif
 			});
+			Button&newButton{buttons.emplace_back(HamsterGame::SCREEN_FRAME.size/2+vf2d{16.f,64.f},"","directionalmovement.png","directionalmovement_selected.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){
+				HamsterGame::PlaySFX("select_track_confirm_name_menu.wav");
+				if(HamsterGame::Game().GetSteeringMode()==HamsterGame::SteeringMode::DIRECTIONAL){
+					HamsterGame::Game().SetSteeringMode(HamsterGame::SteeringMode::ROTATIONAL);
+					self.buttonImg="rotationalmovement.png";
+					self.highlightButtonImg="rotationalmovement_selected.png";
+				}else{
+					HamsterGame::Game().SetSteeringMode(HamsterGame::SteeringMode::DIRECTIONAL);
+					self.buttonImg="directionalmovement.png";
+					self.highlightButtonImg="directionalmovement_selected.png";
+				}
+				#ifdef __EMSCRIPTEN__
+					HamsterGame::Game().emscripten_temp_val=std::to_string(int(HamsterGame::Game().GetSteeringMode()));
+					emscripten_idb_async_store("hamster",HamsterGame::Game().steeringModeLabel.c_str(),HamsterGame::Game().emscripten_temp_val.data(),HamsterGame::Game().emscripten_temp_val.length(),0,[](void*args){
+						std::cout<<"Success!"<<std::endl;
+					},
+					[](void*args){
+						std::cout<<"Failed"<<std::endl;
+					});
+				#else
+					HamsterGame::Game().SaveOptions();
+				#endif
+			})};
+			if(HamsterGame::Game().GetSteeringMode()==HamsterGame::SteeringMode::ROTATIONAL){
+				newButton.buttonImg="rotationalmovement.png";
+				newButton.highlightButtonImg="rotationalmovement_selected.png";
+			}
 			buttons.emplace_back(vf2d{54.f,HamsterGame::SCREEN_FRAME.size.y-24.f},"< Back","button2.png","highlight_button2.png",Pixel{114,109,163},Pixel{79,81,128},[this](Button&self){Transition(SHIFT_LEFT,MAIN_MENU,0.5f);});
 		}break;
 		case GAMEPLAY_RESULTS:{
@@ -597,8 +624,6 @@ void Menu::OnLevelLoaded(){
 	HamsterGame::Game().audio.SetVolume(HamsterGame::Game().bgm.at(HamsterGame::Game().currentMap.value().GetData().GetBGM()),HamsterGame::Game().bgmVol);
 	HamsterGame::Game().audio.Stop(HamsterGame::Game().bgm["Trevor Lentz - Guinea Pig Hero.ogg"]);
 	HamsterGame::Game().audio.Play(HamsterGame::Game().bgm.at(HamsterGame::Game().currentMap.value().GetData().GetBGM()),true);
-	HamsterGame::Game().net.SetName(HamsterGame::Game().playerName);
-	HamsterGame::Game().net.SetColor(HamsterGame::Game().hamsterColor);
 
 	Hamster::MoveHamstersToSpawn(HamsterGame::Game().currentMap.value().GetData().GetSpawnZone());
 	HamsterGame::Game().countdownTimer=3.f;
@@ -626,9 +651,25 @@ void Menu::Button::Draw(HamsterGame&game,const vf2d&offset,std::optional<std::re
 			if(fmod(game.GetRuntime(),1.f)<0.5f)blinkingCursor="|";
 			game.DrawRotatedStringPropDecal(pos+offset,std::format("Player Name: {}{}",game.TextEntryGetString(),blinkingCursor),0.f,game.GetTextSizeProp(buttonText)/2,highlightTextCol);
 			std::string helpText{"Press <ENTER> or <ESC> to finish name entry."};
+			Pixel helpTextCol{WHITE};
+			if(game.menu.badNameEntered){
+				helpText="           Invalid name entered!          \nPlease try again, then press <ENTER> or <ESC>.";
+				helpTextCol=RED;
+			}
 			const vf2d helpTextSize{game.GetTextSizeProp(helpText)};
-			game.DrawShadowRotatedStringPropDecal(pos+offset+vf2d{0,12.f},helpText,0.f,helpTextSize/2);
-		}else if(buttonImg=="smallbutton.png"){
+			game.DrawShadowRotatedStringPropDecal(pos+offset+vf2d{0,12.f},helpText,0.f,helpTextSize/2,helpTextCol);
+		}else if(buttonImg.starts_with("directionalmovement")){
+			std::string helpText{"Hamster moves in direction of pressed key."};
+			Pixel helpTextCol{WHITE};
+			const vf2d helpTextSize{game.GetTextSizeProp(helpText)};
+			game.DrawShadowRotatedStringPropDecal(pos+offset+vf2d{0,12.f},helpText,0.f,helpTextSize/2,helpTextCol);
+		}else if(buttonImg.starts_with("rotationalmovement")){
+			std::string helpText{"Hamster rotates with LEFT/RIGHT.\nForwards/backwards with UP/DOWN."};
+			Pixel helpTextCol{WHITE};
+			const vf2d helpTextSize{game.GetTextSizeProp(helpText)};
+			game.DrawShadowRotatedStringPropDecal(pos+offset+vf2d{0,12.f},helpText,0.f,helpTextSize/2,helpTextCol);
+		}else
+		if(buttonImg=="smallbutton.png"){
 			int colorInd{0};
 			for(int ind{0};const std::string&color:game.hamsterColorNames){
 				if(color==game.hamsterColor){
@@ -660,25 +701,42 @@ void Menu::Button::OnClick(){
 	onClick(*this);
 }
 
-void Menu::OnTextEntryComplete(const std::string&text){
-	HamsterGame::Game().playerName=text.substr(0,30);
-	HamsterGame::Game().emscripten_temp_val=HamsterGame::Game().playerName;
-	#ifdef __EMSCRIPTEN__
-		emscripten_idb_async_store("hamster",HamsterGame::Game().playerNameLabel.c_str(),HamsterGame::Game().emscripten_temp_val.data(),HamsterGame::Game().emscripten_temp_val.length(),0,[](void*args){
-			std::cout<<"Success!"<<std::endl;
-		},
-		[](void*args){
-			std::cout<<"Failed"<<std::endl;
-		});
-	#else
-		HamsterGame::Game().SaveOptions();
-	#endif
+void Menu::OnTextEntryCancelled(const std::string&text){
 	for(Button&b:menuButtons){
 		if(b.buttonText.starts_with("Player Name")){
 			b.buttonText=std::format("Player Name: {}",HamsterGame::Game().playerName);
 		}
 	}
 	ignoreInputs=true;
-	HamsterGame::PlaySFX("menu_set_name.wav");
+	badNameEntered=false;
+}
+
+void Menu::OnTextEntryComplete(const std::string&text){
+	const bool netResponse{HamsterGame::Game().net.SetName(text.substr(0,30))};
+	if(netResponse){
+		HamsterGame::Game().playerName=text.substr(0,30);
+		HamsterGame::Game().emscripten_temp_val=HamsterGame::Game().playerName;
+		#ifdef __EMSCRIPTEN__
+			emscripten_idb_async_store("hamster",HamsterGame::Game().playerNameLabel.c_str(),HamsterGame::Game().emscripten_temp_val.data(),HamsterGame::Game().emscripten_temp_val.length(),0,[](void*args){
+				std::cout<<"Success!"<<std::endl;
+			},
+			[](void*args){
+				std::cout<<"Failed"<<std::endl;
+			});
+		#else
+			HamsterGame::Game().SaveOptions();
+		#endif
+		for(Button&b:menuButtons){
+			if(b.buttonText.starts_with("Player Name")){
+				b.buttonText=std::format("Player Name: {}",HamsterGame::Game().playerName);
+			}
+		}
+		ignoreInputs=true;
+		HamsterGame::PlaySFX("menu_set_name.wav");
+		badNameEntered=false;
+	}else{
+		badNameEntered=true;
+		HamsterGame::Game().TextEntryEnable(true,text.substr(0,30));
+	}
 }
 

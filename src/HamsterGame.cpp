@@ -30,45 +30,6 @@ bool HamsterGame::OnUserCreate(){
 	LoadPBs();
 	audio.SetBackgroundPlay(true);
 
-	#ifdef __EMSCRIPTEN__
-		emscripten_idb_async_load("hamster",Game().bgmVolLabel.c_str(),&Game().bgmVol,[](void*arg,void*data,int length){
-			std::string rawMetadata=(char*)data;
-			std::cout<<rawMetadata<<std::endl;
-			*((float*)(arg))=stof(rawMetadata.substr(0,length));
-			std::cout<<std::format("Success! Loaded BGM Volume {}",*((float*)(arg)))<<std::endl;
-		},
-		[](void*arg){
-			std::cout<<std::format("Failed to load BGM Volume")<<std::endl;
-		});
-		emscripten_idb_async_load("hamster",Game().sfxVolLabel.c_str(),&Game().sfxVol,[](void*arg,void*data,int length){
-			std::string rawMetadata=(char*)data;
-			std::cout<<rawMetadata<<std::endl;
-			*((float*)(arg))=stof(rawMetadata.substr(0,length));
-			std::cout<<std::format("Success! Loaded SFX Volume {}",*((float*)(arg)))<<std::endl;
-		},
-		[](void*arg){
-			std::cout<<std::format("Failed to load SFX Volume")<<std::endl;
-		});
-		emscripten_idb_async_load("hamster",Game().playerNameLabel.c_str(),&Game().playerName,[](void*arg,void*data,int length){
-			std::string rawMetadata=(char*)data;
-			std::cout<<rawMetadata<<std::endl;
-			*((std::string*)(arg))=rawMetadata.substr(0,length);
-			std::cout<<std::format("Success! Loaded Player Name {}",*((std::string*)(arg)))<<std::endl;
-		},
-		[](void*arg){
-			std::cout<<std::format("Failed to load Player Name")<<std::endl;
-		});
-		emscripten_idb_async_load("hamster",Game().hamsterColorLabel.c_str(),&Game().hamsterColor,[](void*arg,void*data,int length){
-			std::string rawMetadata=(char*)data;
-			std::cout<<rawMetadata<<std::endl;
-			*((std::string*)(arg))=rawMetadata.substr(0,length);
-			std::cout<<std::format("Success! Loaded Hamster Color {}",*((std::string*)(arg)))<<std::endl;
-		},
-		[](void*arg){
-			std::cout<<std::format("Failed to load Hamster Color")<<std::endl;
-		});
-	#endif
-
 	olc::GFX3D::ConfigureDisplay();
 	camera=Camera2D{SCREEN_FRAME.size};
 	camera.SetMode(Camera2D::Mode::LazyFollow);
@@ -165,6 +126,10 @@ void HamsterGame::LoadGraphics(){
 	_LoadImage("highlight_trackselectbutton.png");
 	_LoadImage("smallbutton3.png");
 	_LoadImage("highlight_smallbutton3.png");
+	_LoadImage("directionalmovement.png");
+	_LoadImage("directionalmovement_selected.png");
+	_LoadImage("rotationalmovement.png");
+	_LoadImage("rotationalmovement_selected.png");
 }
 
 void HamsterGame::LoadAnimations(){
@@ -432,8 +397,58 @@ bool HamsterGame::OnUserUpdate(float fElapsedTime){
 	if(!netInitialized){
 		net.InitSession();
 		netInitialized=true;
-		net.SetName(playerName);
-		net.SetColor(hamsterColor);
+
+		#ifdef __EMSCRIPTEN__
+			emscripten_idb_async_load("hamster",Game().bgmVolLabel.c_str(),&Game().bgmVol,[](void*arg,void*data,int length){
+				std::string rawMetadata=(char*)data;
+				std::cout<<rawMetadata<<std::endl;
+				*((float*)(arg))=stof(rawMetadata.substr(0,length));
+				std::cout<<std::format("Success! Loaded BGM Volume {}",*((float*)(arg)))<<std::endl;
+			},
+			[](void*arg){
+				std::cout<<std::format("Failed to load BGM Volume")<<std::endl;
+			});
+			emscripten_idb_async_load("hamster",Game().sfxVolLabel.c_str(),&Game().sfxVol,[](void*arg,void*data,int length){
+				std::string rawMetadata=(char*)data;
+				std::cout<<rawMetadata<<std::endl;
+				*((float*)(arg))=stof(rawMetadata.substr(0,length));
+				std::cout<<std::format("Success! Loaded SFX Volume {}",*((float*)(arg)))<<std::endl;
+			},
+			[](void*arg){
+				std::cout<<std::format("Failed to load SFX Volume")<<std::endl;
+			});
+			emscripten_idb_async_load("hamster",Game().playerNameLabel.c_str(),&Game().playerName,[](void*arg,void*data,int length){
+				std::string rawMetadata=(char*)data;
+				std::cout<<rawMetadata<<std::endl;
+				*((std::string*)(arg))=rawMetadata.substr(0,length);
+				std::cout<<std::format("Success! Loaded Player Name {}",*((std::string*)(arg)))<<std::endl;
+				HamsterGame::Game().net.SetName(*((std::string*)(arg)));
+			},
+			[](void*arg){
+				std::cout<<std::format("Failed to load Player Name")<<std::endl;
+				HamsterGame::Game().net.SetName(*((std::string*)arg));
+			});
+			emscripten_idb_async_load("hamster",Game().hamsterColorLabel.c_str(),&Game().hamsterColor,[](void*arg,void*data,int length){
+				std::string rawMetadata=(char*)data;
+				std::cout<<rawMetadata<<std::endl;
+				*((std::string*)(arg))=rawMetadata.substr(0,length);
+				std::cout<<std::format("Success! Loaded Hamster Color {}",*((std::string*)(arg)))<<std::endl;
+				HamsterGame::Game().net.SetColor(*((std::string*)(arg)));
+			},
+			[](void*arg){
+				std::cout<<std::format("Failed to load Hamster Color")<<std::endl;
+				HamsterGame::Game().net.SetColor(*((std::string*)arg));
+			});
+			emscripten_idb_async_load("hamster",Game().steeringModeLabel.c_str(),&Game().steeringMode,[](void*arg,void*data,int length){
+				std::string rawMetadata=(char*)data;
+				std::cout<<rawMetadata<<std::endl;
+				*((HamsterGame::SteeringMode*)(arg))=HamsterGame::SteeringMode(stoi(rawMetadata.substr(0,length)));
+				std::cout<<std::format("Success! Loaded Steering Mode {}",int(*((HamsterGame::SteeringMode*)(arg))))<<std::endl;
+			},
+			[](void*arg){
+				std::cout<<std::format("Failed to load Steering Mode")<<std::endl;
+			});
+		#endif
 	}
 
 	runTime+=fElapsedTime;
@@ -626,6 +641,9 @@ void HamsterGame::OnTextEntryComplete(const std::string& sText){
 	if(HamsterAI::IsRecording())HamsterAI::OnTextEntryComplete(sText);
 	else menu.OnTextEntryComplete(sText);
 }
+void HamsterGame::OnTextEntryCancelled(const std::string& sText){
+	menu.OnTextEntryCancelled(sText);
+}
 
 const Difficulty&HamsterGame::GetMapDifficulty()const{
 	return currentMap.value().GetData().GetMapDifficulty();
@@ -645,7 +663,7 @@ void HamsterGame::SaveOptions(){
 		for(const std::string&mapName:Game().mapNameList){
 			file<<mapPBs[mapName]<<" ";
 		}
-		file<<Game().bgmVol<<" "<<Game().sfxVol<<" "<<Game().playerName<<" "<<Game().hamsterColor;
+		file<<Game().bgmVol<<" "<<Game().sfxVol<<" "<<Game().playerName<<" "<<Game().hamsterColor<<" "<<int(GetSteeringMode());
 		file.close();
 	#endif
 }
@@ -708,11 +726,19 @@ void HamsterGame::LoadPBs(){
 				}break;
 				case 18:{
 					file>>Game().playerName;
+					Game().net.SetName(Game().playerName);
 					std::cout<<Game().playerName<<std::endl;
 				}break;
 				case 19:{
 					file>>Game().hamsterColor;
+					Game().net.SetColor(Game().hamsterColor);
 					std::cout<<Game().hamsterColor<<std::endl;
+				}break;
+				case 20:{
+					int steeringModeNumb{};
+					file>>steeringModeNumb;
+					Game().steeringMode=HamsterGame::SteeringMode(steeringModeNumb);
+					std::cout<<int(Game().steeringMode)<<std::endl;
 				}break;
 				default:{
 					int readVal;
@@ -823,6 +849,13 @@ void HamsterGame::PlaySFX(vf2d pos,const std::string&filename){
 
 const float HamsterGame::GetPlayerDifferentialTime()const{
 	return playerDifferentialTime;
+}
+
+const HamsterGame::SteeringMode HamsterGame::GetSteeringMode()const{
+	return steeringMode;
+}
+void HamsterGame::SetSteeringMode(const SteeringMode steeringMode){
+	this->steeringMode=steeringMode;
 }
 
 int main()

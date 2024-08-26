@@ -444,24 +444,52 @@ const vf2d&Hamster::GetPos()const{
 void Hamster::HandlePlayerControls(){
 	lastTappedSpace+=HamsterGame::Game().GetElapsedTime();
 	vf2d aimingDir{};
-	if(HamsterGame::Game().GetKey(W).bHeld||HamsterGame::Game().GetKey(UP).bHeld){
-		aimingDir+=vf2d{0,-1};
-	}
-	if(HamsterGame::Game().GetKey(D).bHeld||HamsterGame::Game().GetKey(RIGHT).bHeld){
-		aimingDir+=vf2d{1,0};
-	}
-	if(HamsterGame::Game().GetKey(S).bHeld||HamsterGame::Game().GetKey(DOWN).bHeld){
-		aimingDir+=vf2d{0,1};
-	}
-	if(HamsterGame::Game().GetKey(A).bHeld||HamsterGame::Game().GetKey(LEFT).bHeld){
-		aimingDir+=vf2d{-1,0};
-	}
-	if(aimingDir!=vf2d{}){
-		targetRot=aimingDir.norm().polar().y;
-		const vf2d currentVel{vel};
-		vel=vf2d{currentVel.polar().x+((GetMaxSpeed()/GetTimeToMaxSpeed())*HamsterGame::Game().GetElapsedTime()),rot}.cart();
-		vel=vf2d{std::min(GetMaxSpeed(),vel.polar().x),vel.polar().y}.cart();
-		frictionEnabled=false;
+	switch(HamsterGame::Game().GetSteeringMode()){
+		case HamsterGame::SteeringMode::DIRECTIONAL:{
+			if(HamsterGame::Game().GetKey(W).bHeld||HamsterGame::Game().GetKey(UP).bHeld){
+				aimingDir+=vf2d{0,-1};
+			}
+			if(HamsterGame::Game().GetKey(D).bHeld||HamsterGame::Game().GetKey(RIGHT).bHeld){
+				aimingDir+=vf2d{1,0};
+			}
+			if(HamsterGame::Game().GetKey(S).bHeld||HamsterGame::Game().GetKey(DOWN).bHeld){
+				aimingDir+=vf2d{0,1};
+			}
+			if(HamsterGame::Game().GetKey(A).bHeld||HamsterGame::Game().GetKey(LEFT).bHeld){
+				aimingDir+=vf2d{-1,0};
+			}
+			if(aimingDir!=vf2d{}){
+				targetRot=aimingDir.norm().polar().y;
+				const vf2d currentVel{vel};
+				vel=vf2d{currentVel.polar().x+((GetMaxSpeed()/GetTimeToMaxSpeed())*HamsterGame::Game().GetElapsedTime()),rot}.cart();
+				vel=vf2d{std::min(GetMaxSpeed(),vel.polar().x),vel.polar().y}.cart();
+				frictionEnabled=false;
+			}
+		}break;
+		case HamsterGame::SteeringMode::ROTATIONAL:{
+			if(HamsterGame::Game().GetKey(W).bHeld||HamsterGame::Game().GetKey(UP).bHeld){
+				const vf2d currentVel{vel};
+				vel=vf2d{currentVel.polar().x+((GetMaxSpeed()/GetTimeToMaxSpeed())*HamsterGame::Game().GetElapsedTime()),rot}.cart();
+				vel=vf2d{std::min(GetMaxSpeed(),vel.polar().x),vel.polar().y}.cart();
+				frictionEnabled=false;
+			}
+			if(HamsterGame::Game().GetKey(A).bHeld||HamsterGame::Game().GetKey(LEFT).bHeld){
+				rot-=GetTurnSpeed()*HamsterGame::Game().GetElapsedTime();
+				targetRot-=GetTurnSpeed()*HamsterGame::Game().GetElapsedTime();
+				frictionEnabled=false;
+			}
+			if(HamsterGame::Game().GetKey(D).bHeld||HamsterGame::Game().GetKey(RIGHT).bHeld){
+				rot+=GetTurnSpeed()*HamsterGame::Game().GetElapsedTime();
+				targetRot+=GetTurnSpeed()*HamsterGame::Game().GetElapsedTime();
+				frictionEnabled=false;
+			}
+			if(HamsterGame::Game().GetKey(S).bHeld||HamsterGame::Game().GetKey(DOWN).bHeld){
+				const vf2d currentVel{vel};
+				vel=vf2d{currentVel.polar().x+((GetMaxSpeed()/GetTimeToMaxSpeed())*HamsterGame::Game().GetElapsedTime()),float(rot+geom2d::pi)}.cart();
+				vel=vf2d{std::min(GetMaxSpeed()*0.5f,vel.polar().x),vel.polar().y}.cart();
+				frictionEnabled=false;
+			}
+		}break;
 	}
 	if(HamsterGame::Game().GetKey(R).bPressed&&boostCounter>0){
 		boostCounter--;

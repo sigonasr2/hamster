@@ -65,6 +65,10 @@ class HamsterGame : public olc::PixelGameEngine
 {
 	friend class Menu;
 public:
+	enum class SteeringMode{
+		DIRECTIONAL,
+		ROTATIONAL,
+	};
 	enum class GameMode{
 		GRAND_PRIX_1,
 		GRAND_PRIX_2,
@@ -132,6 +136,8 @@ public:
 	const float GetPlayerDifferentialTime()const;
 	float collectedPowerupTimer{};
 	std::string powerupHelpDisplay;
+	const SteeringMode GetSteeringMode()const;
+	void SetSteeringMode(const SteeringMode steeringMode);
 private:
 	void UpdateGame(const float fElapsedTime);
 	void DrawGame();
@@ -145,6 +151,7 @@ private:
 	Border border;
 	void DrawLevelTiles();
 	void LoadRace(const std::string&mapName);
+	virtual void OnTextEntryCancelled(const std::string&sText)override final;
 	std::optional<TMXParser>currentMap;
 	std::optional<TSXParser>currentTileset;
 	double runTime{};
@@ -217,6 +224,7 @@ private:
 	std::string sfxVolLabel{"sfxVol"};
 	std::string playerNameLabel{"playerName"};
 	std::string hamsterColorLabel{"hamsterColor"};
+	std::string steeringModeLabel{"steeringMode"};
 	float bgmVol{0.7f};
 	float sfxVol{0.7f};
 	int lastDigitPlayedSound{};
@@ -224,4 +232,5 @@ private:
 	float holdEscTimer{0.f};
 	std::optional<int>racePauseTime{};
 	bool raceStarted{false};
+	SteeringMode steeringMode{SteeringMode::DIRECTIONAL};
 };

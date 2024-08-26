@@ -993,6 +993,7 @@ namespace olc
 
 		// Called when a text entry is confirmed with "enter" key
 		virtual void OnTextEntryComplete(const std::string& sText);
+		virtual void OnTextEntryCancelled(const std::string& sText);
 		// Called when a console command is executed
 		virtual bool OnConsoleCommand(const std::string& sCommand);
 
@@ -3891,8 +3892,10 @@ namespace olc
 			sTextEntryString.erase(nTextEntryCursor, 1);	
 
 		
-
-		if (GetKey(olc::Key::ENTER).bPressed||GetKey(olc::Key::ESCAPE).bPressed)
+		if(GetKey(olc::Key::ESCAPE).bPressed){
+			OnTextEntryCancelled(sTextEntryString);
+			TextEntryEnable(false);
+		}else if (GetKey(olc::Key::ENTER).bPressed)
 		{
 			if (bConsoleShow)
 			{
@@ -3907,8 +3910,8 @@ namespace olc
 			}
 			else
 			{
-				OnTextEntryComplete(sTextEntryString);
 				TextEntryEnable(false);
+				OnTextEntryComplete(sTextEntryString);
 			}
 		}
 	}
@@ -3926,6 +3929,7 @@ namespace olc
 	bool PixelGameEngine::OnUserDestroy()
 	{ return true; }
 
+	void PixelGameEngine::OnTextEntryCancelled(const std::string& sText) { UNUSED(sText); }
 	void PixelGameEngine::OnTextEntryComplete(const std::string& sText) { UNUSED(sText); }
 	bool PixelGameEngine::OnConsoleCommand(const std::string& sCommand) { UNUSED(sCommand); return false; }
 	

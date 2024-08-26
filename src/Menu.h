@@ -45,13 +45,13 @@ class HamsterGame;
 class Menu{
 	class Button{
 		vf2d pos;
-		std::string buttonImg;
-		std::string highlightButtonImg;
 		Pixel textCol;
 		Pixel highlightTextCol;
 		std::function<void(Button&self)>onClick;
 	public:
 		std::string buttonText;
+		std::string buttonImg;
+		std::string highlightButtonImg;
 		Button(const vf2d pos,const std::string&buttonText,const std::string&buttonImg,const std::string&highlightButtonImg,const Pixel textCol,const Pixel highlightTextCol,const std::function<void(Button&self)>onClick={});
 		const bool IsHovered(const vf2d&offset)const;
 		void OnClick();
@@ -93,7 +93,7 @@ private:
 	MenuType currentMenu{INITIALIZE};
 	MenuType nextMenu{TITLE_SCREEN};
 	float menuTimer{};
-	const float MENU_TRANSITION_REFRESH_RATE{0.1f};
+	const float MENU_TRANSITION_REFRESH_RATE{0.06f};
 	float menuTransitionRefreshTimer{MENU_TRANSITION_REFRESH_RATE};
 	float originalMenuTimer{};
 	vi2d oldLayerPos{};
@@ -112,10 +112,12 @@ private:
 	std::vector<Button>GetMenuButtons(const MenuType type);
 	bool ignoreInputs{false};
 	std::vector<LeaderboardEntry>loadedLeaderboard;
+	bool badNameEntered{false};
 public:
 	void UpdateAndDraw(HamsterGame&game,const float fElapsedTime);
 	void OnLevelLoaded();
 	void UpdateLoadingProgress(const float pctLoaded);
 	void OnTextEntryComplete(const std::string&text);
+	void OnTextEntryCancelled(const std::string&text);
 	void Transition(const TransitionType type,const MenuType gotoMenu,const float transitionTime);
 };
