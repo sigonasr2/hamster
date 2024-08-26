@@ -27,7 +27,6 @@ bool HamsterGame::OnUserCreate(){
 	for(const std::string&map:mapNameList){
 		mapPBs[map]=std::numeric_limits<int>::max();
 	}
-	LoadPBs();
 	audio.SetBackgroundPlay(true);
 
 	olc::GFX3D::ConfigureDisplay();
@@ -397,6 +396,7 @@ bool HamsterGame::OnUserUpdate(float fElapsedTime){
 	if(!netInitialized){
 		net.InitSession();
 		netInitialized=true;
+		LoadPBs();
 
 		#ifdef __EMSCRIPTEN__
 			emscripten_idb_async_load("hamster",Game().bgmVolLabel.c_str(),&Game().bgmVol,[](void*arg,void*data,int length){
@@ -433,6 +433,7 @@ bool HamsterGame::OnUserUpdate(float fElapsedTime){
 				std::cout<<rawMetadata<<std::endl;
 				*((std::string*)(arg))=rawMetadata.substr(0,length);
 				std::cout<<std::format("Success! Loaded Hamster Color {}",*((std::string*)(arg)))<<std::endl;
+				if(*((std::string*)(arg))=="PurpleRed")*((std::string*)(arg))="Purple";
 				HamsterGame::Game().net.SetColor(*((std::string*)(arg)));
 			},
 			[](void*arg){
@@ -731,6 +732,7 @@ void HamsterGame::LoadPBs(){
 				}break;
 				case 19:{
 					file>>Game().hamsterColor;
+					if(Game().hamsterColor=="PurpleRed")Game().hamsterColor="Purple";
 					Game().net.SetColor(Game().hamsterColor);
 					std::cout<<Game().hamsterColor<<std::endl;
 				}break;

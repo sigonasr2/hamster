@@ -89,7 +89,7 @@ private:
 		"Cyan",
 		"Black",
 		"Green",
-		"Purple"
+		"Purple",
 		"Red",
 		"Blue",
 	};
