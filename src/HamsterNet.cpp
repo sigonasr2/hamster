@@ -310,7 +310,8 @@ std::pair<HamsterNet::FinishTime,bool> HamsterNet::FinishRace()
     std::chrono::duration<double, std::milli> duration = m_tp2 - m_tp1;
     m_time = static_cast<int>(duration.count());
 
-    return {m_time,(hamsterNet__finishRace(m_map.c_str(), m_color.c_str(), m_time) == 1)};
+    return {m_time,(hamsterNet__finishRace(m_map.c_str(), m_color.c_str(), m_time - m_pause_time) == 1)};
+}
 
 bool HamsterNet::StartPause()
 {
