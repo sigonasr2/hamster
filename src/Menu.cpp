@@ -526,6 +526,12 @@ void Menu::Draw(HamsterGame&game,const MenuType menu,const vi2d pos){
 					lastHovered=selectedButton.value();
 				}
 				if(loadedLeaderboard.size()>0){
+					auto it{std::find_if(loadedLeaderboard.begin(),loadedLeaderboard.end(),[](const LeaderboardEntry&entry){return entry.time==HamsterGame::mapPBs[entry.map];})};
+					std::optional<int>leaderboardInd{};
+					if(it!=loadedLeaderboard.end()){
+						leaderboardInd=std::distance(loadedLeaderboard.begin(),it);
+					}
+
 					game.DrawShadowStringPropDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x,0.f}+vf2d{4.f,4.f},"Leaderboard",YELLOW,BLACK,{1.f,1.f});
 					for(int i=0;i<std::min(size_t(10),loadedLeaderboard.size());i++){
 						const LeaderboardEntry&entry{loadedLeaderboard[i]};
@@ -534,6 +540,10 @@ void Menu::Draw(HamsterGame&game,const MenuType menu,const vi2d pos){
 						vf2d entryStrSize{game.GetTextSizeProp(entry.name)};
 
 						int totalPixelSpaceForName{int(96-16-placementStrSize.x)};
+
+						vf2d fillRectCorner{vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x,0.f}+vf2d{4.f,4.f+(i+1)*20.f}-vf2d{2.f,2.f}};
+
+						if(i==leaderboardInd)game.FillRectDecal(fillRectCorner,vf2d{game.ScreenWidth()-fillRectCorner.x-2.f,20.f},{DARK_YELLOW.r,DARK_YELLOW.g,DARK_YELLOW.b,160});
 
 						game.DrawShadowStringPropDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x,0.f}+vf2d{4.f,4.f+(i+1)*20.f},placementStr,WHITE,BLACK,{1.f,1.f});
 						if(entryStrSize.x>totalPixelSpaceForName){
@@ -544,6 +554,28 @@ void Menu::Draw(HamsterGame&game,const MenuType menu,const vi2d pos){
 				
 						std::string hamsterDisplayImg{game.ColorToHamsterImage(entry.color)};
 						game.DrawPartialRotatedDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x,0.f}+vf2d{96.f-6.f,4.f+(i+1)*20.f+2.f},game.GetGFX(hamsterDisplayImg).Decal(),0.f,{8.f,6.f},{64.f,64.f},{16.f,12.f},{-1.f,1.f});
+					}
+					
+					if(leaderboardInd&&game.mapPBs[mapName]!=std::numeric_limits<int>::max()){
+						const LeaderboardEntry&entry{loadedLeaderboard[leaderboardInd.value()]};
+						std::string placementStr{std::format("{}.",leaderboardInd.value()+1)};
+						vf2d placementStrSize{game.GetTextSizeProp(placementStr)};
+						vf2d entryStrSize{game.GetTextSizeProp(entry.name)};
+
+						int totalPixelSpaceForName{int(96-16-placementStrSize.x)};
+
+						vf2d fillRectCorner{vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x,0.f}+vf2d{4.f,4.f+(12+1)*20.f}-vf2d{2.f,2.f}};
+						game.FillRectDecal(fillRectCorner,vf2d{game.ScreenWidth()-fillRectCorner.x-2.f,20.f},{DARK_YELLOW.r,DARK_YELLOW.g,DARK_YELLOW.b,160});
+
+						game.DrawShadowStringPropDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x,0.f}+vf2d{4.f,4.f+(12+1)*20.f},placementStr,WHITE,BLACK,{1.f,1.f});
+						if(entryStrSize.x>totalPixelSpaceForName){
+							float nameScaleX{totalPixelSpaceForName/entryStrSize.x};
+							game.DrawShadowStringPropDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x,0.f}+vf2d{4.f+placementStrSize.x,4.f+(12+1)*20.f},std::format("{}",entry.name,util::timerStr(entry.time)),WHITE,BLACK,{nameScaleX,1.f});
+						}else game.DrawShadowStringPropDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x,0.f}+vf2d{4.f+placementStrSize.x,4.f+(12+1)*20.f},std::format("{}",entry.name,util::timerStr(entry.time)),WHITE,BLACK,{1.f,1.f});
+						game.DrawShadowStringPropDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x,0.f}+vf2d{4.f+placementStrSize.x+4.f,4.f+(12+1)*20.f+10.f},std::format("{}",util::timerStr(entry.time)),WHITE,BLACK,{1.f,1.f});
+				
+						std::string hamsterDisplayImg{game.ColorToHamsterImage(entry.color)};
+						game.DrawPartialRotatedDecal(vf2d{game.SCREEN_FRAME.pos.x+game.SCREEN_FRAME.size.x,0.f}+vf2d{96.f-6.f,4.f+(12+1)*20.f+2.f},game.GetGFX(hamsterDisplayImg).Decal(),0.f,{8.f,6.f},{64.f,64.f},{16.f,12.f},{-1.f,1.f});
 					}
 				}
 			}
