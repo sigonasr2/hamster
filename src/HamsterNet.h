@@ -32,16 +32,21 @@ public:
     int GetCurrentRaceTime();
     std::pair<FinishTime,bool> FinishRace();
 
+    bool StartPause();
+    bool EndPause();
+
     std::vector<LeaderboardEntry> GetLeaderboard(const std::string& map, const int offset = 0, const int limit = 100, const std::string& sortBy = "time", bool ascending = true);
 
 private:
     std::chrono::time_point<std::chrono::system_clock> m_tp1, m_tp2;
+    std::chrono::time_point<std::chrono::system_clock> m_pause_tp1, m_pause_tp2;
 
     std::string m_color;
     std::string m_name;
     std::string m_map;
     int m_time;
-
+    int m_pause_time;
+    
     std::string raceId;
 };
 
