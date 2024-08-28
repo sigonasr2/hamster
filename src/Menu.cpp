@@ -750,6 +750,12 @@ void Menu::OnTextEntryComplete(const std::string&text){
 		HamsterGame::Game().emscripten_temp_val=HamsterGame::Game().playerName;
 		#ifdef __EMSCRIPTEN__
 			emscripten_idb_async_store("hamster",HamsterGame::Game().playerNameLabel.c_str(),HamsterGame::Game().emscripten_temp_val.data(),HamsterGame::Game().emscripten_temp_val.length(),0,[](void*args){
+				
+				// set playerName in localStorage as well
+				EM_ASM({
+					window.localStorage.setItem("playerName", UTF8ToString($0));
+				}, HamsterGame::Game().playerName.c_str());
+				
 				std::cout<<"Success!"<<std::endl;
 			},
 			[](void*args){

@@ -420,6 +420,12 @@ bool HamsterGame::OnUserUpdate(float fElapsedTime){
 			emscripten_idb_async_load("hamster",Game().playerNameLabel.c_str(),&Game().playerName,[](void*arg,void*data,int length){
 				std::string rawMetadata=(char*)data;
 				std::cout<<rawMetadata<<std::endl;
+
+				// set playerName in localStorage as well
+				EM_ASM({
+					window.localStorage.setItem("playerName", UTF8ToString($0));
+				}, rawMetadata.c_str());
+
 				*((std::string*)(arg))=rawMetadata.substr(0,length);
 				std::cout<<std::format("Success! Loaded Player Name {}",*((std::string*)(arg)))<<std::endl;
 				HamsterGame::Game().net.SetName(*((std::string*)(arg)));
